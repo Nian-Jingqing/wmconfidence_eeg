@@ -19,18 +19,15 @@ neutcol <- '#bdbdbd'
 
 se <- function(x) sd(x)/sqrt(length(x))
 
-wd <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri'
+wd <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
 setwd(wd)
 
 dpath <- paste0(wd, '/data') #path to folder with behavioural data
 figpath <- paste0(wd, '/figures')
-
-
-fpath <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri/data/datafiles/outside_pilot1/wmConfidence_eegfmri_outsidescanner_S01_allData_preprocessed.csv'
-
+fpath <- paste0(dpath, '/datafiles/wmConfidence_BehaviouralData_All.csv')
 
 #get my block of test data
-df <- read.csv(fpath, header = T, as.is = T, sep = ',') %>% select(-X) # str(df) if you want to see the columns and values etc
+df <- read.csv(fpath, header = T, as.is = T, sep = ',') # str(df) if you want to see the columns and values etc
 nsubs <- length(unique(df$subid))
 subs2use <- c(1,2,3,4,5,6,7,9,10,11,13,14,15,16,17,18,19,20,21,22)
 
