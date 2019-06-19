@@ -6,7 +6,6 @@ Created on Tue Jun  4 12:05:48 2019
 @author: sammirc
 """
 
-
 import numpy as np
 import scipy as sp
 import pandas as pd
@@ -18,32 +17,26 @@ import sys
 from matplotlib import pyplot as plt
 
 #sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri/analysis_scripts')
-sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence_eegfmri/analysis_scripts')
+sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
 from wmConfidence_funcs import get_subject_info_wmConfidence
 
-wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri'; #laptop wd
-wd = '/home/sammirc/Desktop/DPhil/wmConfidence_eegfmri' #workstation wd
+wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'; #laptop wd
+wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array(['pilot1_inside', 'pilot2_inside', 'pilot1_outside'])
+subs = np.array([1,2])
+subind = 1 #get first subject
 
-
-subind = 3 #get first subject
-
-sub = dict(loc='workstation',
-           id=subs[subind-1]) #get subject name for param extraction
-
-
+sub = dict(loc='workstation', id=subs[subind-1]) #get subject name for param extraction
 param = get_subject_info_wmConfidence(sub)
 
 
 #read raw data
 raw = mne.io.read_raw_fif(fname = param['rawcleaned'], preload=True)
 
-#raw.set_eeg_reference(ref_channels='average') #see what it all looks like with common average reference
 
-# # # # # EPOCHING # # # # #
+#epoching
 #here it's important to specify a dictionary that assigns each trigger to its own integer value
 #mne.events_from_annotations will assign each trigger to an ordered integer, so e.g. trig11 will be 2, but epoching 11 will include another trigger
 #this solves it
@@ -58,7 +51,10 @@ events_cue = {'neutral/probeleft'  : 11,
 events,_ = mne.events_from_annotations(raw, event_id = event_id)
 tmin, tmax = -0.5, 1.5
 baseline = (None,0)
+
+
 cuelocked_epochs = mne.Epochs(raw, events, events_cue, tmin, tmax, baseline, reject_by_annotation=True, preload=True)
+
 
 
 bdata = pd.DataFrame.from_csv(path = param['behaviour'])
@@ -69,6 +65,7 @@ cuelocked_epochs = cuelocked_epochs['DTcheck ==0 and clickresp == 1'] #throw out
 cuelocked_epochs.plot(scalings='auto', n_epochs=4, n_channels=len(cuelocked_epochs.info['ch_names'])) 
 cuelocked_epochs.drop_bad()
 
+cuelocked_epochs.set_eeg_reference(ref_channels=['RM'])
 
 freqs = np.arange(1, 40, 1)  # frequencies from 2-35Hz
 n_cycles = freqs *.3  # 300ms timewindow for estimation
@@ -99,11 +96,15 @@ lvsr_scaled = np.multiply(np.divide(lvsr,lplsr),100)
 
 tf_lvsr_scaled = mne.time_frequency.AverageTFR(info=tfr_cueleft.info, data = lvsr_scaled, times=tfr_cueleft.times, freqs = tfr_cueleft.freqs, nave = tfr_cueleft.nave)
 
-tf_lvsr_scaled.plot(baseline = (-0.5,-0.2),mode='mean', combine='mean',fmin=8,fmax=14)#, picks=np.ravel([visright_picks,visleft_picks]))
 
-tf_lvsr_scaled.plot_joint(baseline=(-0.5,0.0),mode='mean')
-tf_lvsr_scaled.plot_topomap(tmin=0.4, tmax=0.8,fmin=8,fmax=14,baseline=(-0.5,-0.2), mode='mean', sensors='k+',vmin=-15,vmax=15)
+#plots mean of the left and right sensors (which obv makes no sense)
+tf_lvsr_scaled.plot(baseline = (-0.5,-0.2),mode='mean', combine='mean', picks=np.ravel([visright_picks,visleft_picks]))
 
+#plot average of the right visual electrodes (because cued left vs cued right)
+tf_lvsr_scaled.plot_joint(baseline=(-0.5,-0.2),mode='mean',vmin=-25,vmax=25, cmap='RdBu', picks= visleft_picks)
+
+#plot the topography of the alpha band (8-14Hz) in the timewindow of the alpha suppression seen
+tf_lvsr_scaled.plot_topomap(tmin=0.6,tmax=1.0,fmin=8,fmax=14,baseline=(-0.5,-0.2), mode='mean', sensors=True,vmin=-25,vmax=25, cmap='RdBu', cbar_fmt=None)
 
 
 

@@ -17,23 +17,20 @@ import sys
 from matplotlib import pyplot as plt
 
 #sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri/analysis_scripts')
-sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence_eegfmri/analysis_scripts')
+sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
 from wmConfidence_funcs import get_subject_info_wmConfidence
 
-wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri'; #laptop wd
-wd = '/home/sammirc/Desktop/DPhil/wmConfidence_eegfmri' #workstation wd
+wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'; #laptop wd
+wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array(['pilot1_inside', 'pilot2_inside', 'pilot1_outside'])
+subs = np.array([1,2])
 
 
-subind = 3 #get first subject
+subind = 1 #get first subject
 
-sub = dict(loc='workstation',
-           id=subs[subind-1]) #get subject name for param extraction
-
-
+sub = dict(loc='workstation', id=subs[subind-1]) #get subject name for param extraction
 param = get_subject_info_wmConfidence(sub)
 
 
@@ -64,17 +61,18 @@ cuelocked_epochs = mne.Epochs(raw, events, events_cue, tmin, tmax, baseline, rej
 
 #read in behavioural data to allow removal of trials
 bdata = pd.DataFrame.from_csv(path = param['behaviour'])
+bdata.groupby('cond').aggregate({'clickresp':'sum'})
 cuelocked_epochs.metadata = bdata
 
 cuelocked_epochs = cuelocked_epochs['DTcheck ==0 and clickresp == 1'] #throw out trials based on behavioural data
-cuelocked_epochs.filter(1,30)
+cuelocked_epochs.filter(.01,30)
 #go through and check for bad epochs -- remove trls with excessive blinks and/or excessive noise on visual inspection
 cuelocked_epochs.plot(scalings='auto', n_epochs=4, n_channels=len(cuelocked_epochs.info['ch_names'])) 
 cuelocked_epochs.drop_bad()
 
 
 cuelocked_epochs_noref = deepcopy(cuelocked_epochs)
-cuelocked_epochs_mast  = deepcopy(cuelocked_epochs).set_eeg_reference(ref_channels = ['M1', 'M2'])
+cuelocked_epochs_mast  = deepcopy(cuelocked_epochs).set_eeg_reference(ref_channels = ['RM'])
 cuelocked_epochs_car   = deepcopy(cuelocked_epochs).set_eeg_reference(ref_channels = 'average')
 
 #save these data objects -- can't seem to save them (assert not self.times.flags['WRITEABLE']) some error in mne
@@ -106,7 +104,7 @@ tl_cueright_car = cuelocked_epochs_car['cued/proberight'].average()
 tl_cueright_car.apply_baseline(baseline=(-0.5,0))
 
 
-mne.viz.plot_evoked_topomap(tl_cueleft_car, sensors = 'k+', times = np.arange(0,1,0.2), average=.4,
+mne.viz.plot_evoked_topomap(tl_cueleft_car, sensors = True, times = np.arange(0,1,0.2), average=.4,size =1,
                             title = 'evoked scalp activity, cued left, common reference')
 
 
