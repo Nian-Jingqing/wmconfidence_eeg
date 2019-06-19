@@ -6,9 +6,9 @@ library(afex)      # anovas etc
 #set theme for plots to standardise them and make cleaner
 theme_set(theme_bw() +
             theme(
-              axis.text        = element_text(size=8, color = '#000000'),
+              axis.text        = element_text(size=10, color = '#000000'),
               legend.text      = element_text(size=12, color = '#000000'),
-              strip.text.x     = element_text(size=6, color = '#000000'),
+              strip.text.x     = element_text(size=10, color = '#000000'),
               strip.background = element_blank()
             ))
 #hex codes for colours to use in figures:
@@ -19,7 +19,7 @@ neutcol <- '#bdbdbd'
 
 se <- function(x) sd(x)/sqrt(length(x))
 
-wd <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
+wd <- '/home/sammirc/Desktop/DPhil/wmConfidence'
 setwd(wd)
 
 dpath <- paste0(wd, '/data') #path to folder with behavioural data
@@ -29,7 +29,7 @@ fpath <- paste0(dpath, '/datafiles/wmConfidence_BehaviouralData_All.csv')
 #get my block of test data
 df <- read.csv(fpath, header = T, as.is = T, sep = ',') # str(df) if you want to see the columns and values etc
 nsubs <- length(unique(df$subid))
-subs2use <- c(1,2,3,4,5,6,7,9,10,11,13,14,15,16,17,18,19,20,21,22)
+subs2use <- c(1,2)
 
 #just quickly look at how many trials aren't clickresped/DTchecked
 df %>%
@@ -52,7 +52,7 @@ df %<>% dplyr::filter(subid %in% subs2use)
 
 #this section won't change df in place, just do stuff to it without change
 df %>%
-  dplyr::filter(DTcheck == 0) %>% dplyr::filter(clickresp == 1) %>%
+  dplyr::filter(DTcheck == 0) %>% #dplyr::filter(clickresp == 1) %>%
   ggplot(aes(x = DT, fill = cond)) +
   geom_histogram(aes(y = ..count../sum(..count..)),stat = 'bin', binwidth = .1) + #DT is measure in seconds, not milliseconds, so a .1 bin width is 100ms bins (this line does normalised bins rel to trial number)
   #geom_histogram(stat = 'bin', binwidth = .2) +
@@ -64,7 +64,7 @@ ggsave(filename = paste0(figpath, '/DT_hist_11subs_pilot.pdf'),
 
 #density plot of decision times (time taken to press space, after the probe appears)
 df %>%
-  dplyr::filter(DTcheck ==0) %>% dplyr::filter(clickresp == 1) %>%
+  dplyr::filter(DTcheck ==0) %>% #dplyr::filter(clickresp == 1) %>%
   ggplot(aes(x = DT, fill = cond)) +
   geom_density(alpha = .5, adjust = 2) + #adjust sets the kernel width of the gaussian smoothing
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
@@ -87,7 +87,7 @@ df.dt.diffs %>%
   ggplot(aes(x = 1, y = mean, ymin = mean-se, ymax = mean + se)) +
   geom_bar(stat = 'identity', width = .4, fill = neutcol) + 
   geom_errorbar(stat = 'identity', width = .15, size = .4) +
-  geom_point(data = df.dt.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(.01)) + 
+  geom_point(data = df.dt.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.2,height=0)) + 
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   labs(x = '', y = 'difference in DT between neutral and cued condition (s)') +
   xlim(c(0.5,1.5)) +
@@ -176,7 +176,7 @@ df.mad.diffs %>%
   ggplot(aes(x = 1, y = mean, ymin = mean-se, ymax = mean + se)) +
   geom_bar(stat = 'identity', width = .4, fill = neutcol) + 
   geom_errorbar(stat = 'identity', width = .1, size = .4) +
-  geom_point(data = df.mad.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(.01)) + 
+  geom_point(data = df.mad.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.2,height=0)) + 
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   labs(x = '', y = 'difference in MAD between neutral and cued condition (degrees)') +
   xlim(c(0.5,1.5)) +
@@ -242,7 +242,7 @@ df.acc.diffs %>%
   ggplot(aes(x = 1, y = mean, ymin = mean-se, ymax = mean + se)) +
   geom_bar(stat = 'identity', width = .4, fill = neutcol) + 
   geom_errorbar(stat = 'identity', width = .1, size = .4) +
-  geom_point(data = df.acc.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(0.02)) + 
+  geom_point(data = df.acc.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.2,height=0)) + 
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   labs(x = '', y = 'difference in response variability (SD) between neutral and cued condition ') +
   xlim(c(0.5,1.5)) +

@@ -1,7 +1,8 @@
 library(dplyr)
+library(magrittr)
 getwd()
 dir <- '/home/sammirc/Desktop/DPhil/wmConfidence'
-dir <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
+#dir <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
 setwd(dir)
 
 datapath <- paste0(dir, '/data/datafiles')

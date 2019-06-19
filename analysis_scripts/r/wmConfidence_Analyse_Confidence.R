@@ -5,10 +5,12 @@ library(afex)      # anovas etc
 library(RePsychLing)
 library(MASS)
 
-loadfonts = F
+loadfonts = T
 if(loadfonts){
   library(extrafont)
   font_import() #yes to this
+  font_import(paths='/home/sammirc/Desktop/fonts')
+  fonts()
   loadfonts(device = "pdf");
   loadfonts(device = 'postscript')
 }
@@ -28,22 +30,20 @@ diffcol <- '#B2DF8A' #for colouring of the bars of difference plots, third disti
 se <- function(x) sd(x)/sqrt(length(x))
 
 
-wd <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri'
+wd <- '/home/sammirc/Desktop/DPhil/wmConfidence'
 setwd(wd)
 
 dpath <- paste0(wd, '/data') #path to folder with behavioural data
 figpath <- paste0(wd, '/figures')
 
-#get my block of test data
-fpath <- paste0(dpath, '/wmSelection_BehaviouralData_All_Preprocessed.csv')
-#fpath <- paste0(wd, '/EEG/data/s01/behaviour/wmSelection_EEG_S01_allData.csv') #look at Alex's EEG session behavioural data
-fpath <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri/data/datafiles/outside_pilot1/wmConfidence_eegfmri_outsidescanner_S01_allData_preprocessed.csv'
+#get behavioural data
+fpath <- paste0(dpath, '/datafiles/wmConfidence_BehaviouralData_All.csv')
 
 
 
-df <- read.csv(fpath, header = T, as.is = T, sep = ',') %>% dplyr::select(-X) # str(df) if you want to see the columns and values etc
+df <- read.csv(fpath, header = T, as.is = T, sep = ',') 
 nsubs = length(unique(df$subid))
-subs2use <- c(1,2,3,4,5,6,7,9,10,11,13,14,15,16,17,18,19,20,21,22)
+subs2use <- c(1)
 
 
 df %>%
@@ -146,7 +146,7 @@ df.confacc.diffs %>%
   ggplot(aes(x = 1, y = mean, ymin = mean-se, ymax = mean + se)) +
   geom_bar(stat = 'identity', width = .4, fill = diffcol) + 
   geom_errorbar(stat = 'identity', width = .15, size = .4) +
-  geom_point(data = df.confacc.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(.01)) + 
+  geom_point(data = df.confacc.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.2,height=0)) + 
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   labs(x = '', y = 'difference in % trials where target inside\nconfidence interval (neutral - cued)') +
   xlim(c(0.5,1.5)) +
@@ -205,7 +205,7 @@ df.confmu.diffs %>%
   ggplot(aes(x = 1, y = mean, ymin = mean-se, ymax = mean + se)) +
   geom_bar(stat = 'identity', width = .4, fill = diffcol) + 
   geom_errorbar(stat = 'identity', width = .15, size = .4) +
-  geom_point(data = df.confmu.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(.01)) + 
+  geom_point(data = df.confmu.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.2,height=0)) + 
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   labs(x = '', y = 'difference in mean confidence interval deviation between neutral and cued') +
   xlim(c(0.5,1.5)) +
@@ -276,7 +276,7 @@ df.confmu.separate.diffs %>%
   ggplot(aes(x = targinconf, y = mean, ymin = mean-se, ymax = mean+se)) +
   geom_bar(stat = 'identity', width = .7, fill = diffcol) +
   geom_errorbar(width = .35, size = 1) +
-  geom_point(inherit.aes = F, data = df.confmu.separate.diffs, aes(x = targinconf, y = diff), position = position_jitter(.05)) +
+  geom_point(inherit.aes = F, data = df.confmu.separate.diffs, aes(x = targinconf, y = diff), position = position_jitter(width=.2,height=0)) +
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = 1) +
   labs(x='', y = 'Difference in mean confidence interval deviation (neutral - cued)')
 ggsave(filename = paste0(figpath, '/confmu_separate_groupaverage_diffs.pdf'), device = 'pdf', dpi = 600, height = 5, width = 5)
@@ -297,7 +297,7 @@ df.confvar <- df %>% dplyr::filter(clickresp == 1) %>%
 # - - - --  - - - -
 
 #quickly look at change of behaviour across trials
-xlines = seq(1,256,by=32)
+xlines = seq(32,320,by=32)
 #this is a messy version where values are zscored
 df %>%
   dplyr::mutate(cond2 = cond) %>%
@@ -378,7 +378,6 @@ df %>%
 
 
 lmm.data <- df %>%
-  dplyr::filter(subid != 12 & subid != 8) %>% droplevels(.) %>%
   dplyr::mutate(confwidth = rad(confwidth), absrdif = rad(absrdif)) %>%
   dplyr::filter(clickresp == 1, DTcheck == 0, confclicked == 1) %>% #just to be sure, but it should be fine
   dplyr::mutate(subid = as.factor(subid)) %>%
