@@ -30,7 +30,7 @@ diffcol <- '#B2DF8A' #for colouring of the bars of difference plots, third disti
 se <- function(x) sd(x)/sqrt(length(x))
 
 
-wd <- '/home/sammirc/Desktop/DPhil/wmConfidence'
+wd <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
 setwd(wd)
 
 dpath <- paste0(wd, '/data') #path to folder with behavioural data
@@ -42,7 +42,7 @@ fpath <- paste0(dpath, '/datafiles/wmConfidence_BehaviouralData_All.csv')
 
 
 df <- read.csv(fpath, header = T, as.is = T, sep = ',') 
-nsubs = length(unique(df$subid))
+nsubs <- length(unique(df$subid))
 subs2use <- c(1)
 
 
@@ -52,7 +52,13 @@ df %>%
   dplyr::mutate(confclicked = (confclicked -1)*-1) %>%
   dplyr::summarise_at(.vars = c('confclicked'), .funs = c('sum')) %>%
   as.data.frame() %>%
-  dplyr::mutate(clickresp = round((confclicked/128)*100,1))
+  dplyr::mutate(confclicked = ifelse(subid %in% c(1,2), (confclicked/160)*100, confclicked)) %>%
+  dplyr::mutate(confclicked = ifelse(subid == 3, (confclicked/128)*100, confclicked)) %>%
+  dplyr::mutate(confclicked = ifelse(subid > 3, (confclicked/256)*100, confclicked)) %>%
+  dplyr::mutate(confclicked = round(confclicked,1) )
+#confclicked is the percentage of trials, within condition, where the participant did not click to confirm their confidence response
+
+subs2use <- c(1,3,4,5,6,7) #subject 2 is removed based on clickresp from the primary response, but also from this too
 
 
 df %<>% dplyr::filter(subid %in% subs2use) %>% #keep only subjects safe to use based on clicking to confirm response (this is a failsafe in case it's not coded later on)
@@ -395,7 +401,7 @@ lmm.data %>%
   scale_color_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   scale_fill_manual(values = c('neutral' = '#d9d9d9', 'cued' = '#d9d9d9')) +
   geom_abline(intercept = 0, slope = 1, linetype = 'dashed', color = '#636363') +
-  facet_wrap(~subid,  nrow = 4, ncol = 5)
+  facet_wrap(~subid,  nrow = 2, ncol = 3)
 ggsave(filename = paste0(figpath, '/absrdif~confwidth.pdf'), device = 'pdf', dpi = 600, height = 10, width = 10)
 ggsave(filename = paste0(figpath, '/absrdif~confwidth.eps'), device = 'eps', dpi = 600, height = 10, width = 10)
 

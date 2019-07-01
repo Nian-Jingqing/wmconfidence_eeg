@@ -16,10 +16,11 @@ theme_set(theme_bw() +
 # #bdbdbd -- light-ish grey, use for neutral
 cuedcol <- '#3182bd'
 neutcol <- '#bdbdbd'
+diffcol <- '#B2DF8A'
 
 se <- function(x) sd(x)/sqrt(length(x))
 
-wd <- '/home/sammirc/Desktop/DPhil/wmConfidence'
+wd <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
 setwd(wd)
 
 dpath <- paste0(wd, '/data') #path to folder with behavioural data
@@ -29,7 +30,6 @@ fpath <- paste0(dpath, '/datafiles/wmConfidence_BehaviouralData_All.csv')
 #get my block of test data
 df <- read.csv(fpath, header = T, as.is = T, sep = ',') # str(df) if you want to see the columns and values etc
 nsubs <- length(unique(df$subid))
-subs2use <- c(1,2)
 
 #just quickly look at how many trials aren't clickresped/DTchecked
 df %>%
@@ -38,12 +38,20 @@ df %>%
   dplyr::mutate(clickresp = (clickresp -1)*-1) %>%
   dplyr::summarise_at(.vars = c('clickresp', 'DTcheck'), .funs = c('sum')) %>%
   as.data.frame() %>%
-  dplyr::mutate(clickresp = round((clickresp/128)*100,1))
+  dplyr::mutate(clickresp = ifelse(subid %in% c(1,2), (clickresp/160)*100, clickresp)) %>%
+  dplyr::mutate(clickresp = ifelse(subid == 3, (clickresp/128)*100, clickresp)) %>%
+  dplyr::mutate(clickresp = ifelse(subid > 3, (clickresp/256)*100, clickresp)) %>%
+  dplyr::mutate(clickresp = round(clickresp,1) )
 # clickresp -- percentage of trials in condition where they didn't click to respond
 # DTcheck   -- number of trials outside 2.5 SDs of the within condition mean
 # may need to replace some subjects on the basis of this, as some subjects are missing a lot of trials (like 30-40% get thrown out because of clickresp)
 
-#outside pilot1: 4.7% trials fail clickresp, 1-3% fail DTcheck
+#note:
+#subjects 1 & 2 have 320 trials (1 session of 10 blocks)
+#subject 3 has one session of 8 blocks (256 trials)
+#subjects 4 onwards have 2 sessions of 8 blocks (512 trials in total)
+
+subs2use <- c(1,3,4,5,6,7)
 
 
 
@@ -58,13 +66,13 @@ df %>%
   #geom_histogram(stat = 'bin', binwidth = .2) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = 'Decision Time (s)') +
-  facet_wrap(subid~cond, ncol = 6)
+  facet_wrap(subid~cond, ncol = 6, scales= 'free')
 ggsave(filename = paste0(figpath, '/DT_hist_11subs_pilot.pdf'),
        dpi = 600, height = 10, width = 10)
 
 #density plot of decision times (time taken to press space, after the probe appears)
 df %>%
-  dplyr::filter(DTcheck ==0) %>% #dplyr::filter(clickresp == 1) %>%
+  dplyr::filter(DTcheck ==0) %>% dplyr::filter(clickresp == 1) %>%
   ggplot(aes(x = DT, fill = cond)) +
   geom_density(alpha = .5, adjust = 2) + #adjust sets the kernel width of the gaussian smoothing
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
@@ -87,7 +95,7 @@ df.dt.diffs %>%
   ggplot(aes(x = 1, y = mean, ymin = mean-se, ymax = mean + se)) +
   geom_bar(stat = 'identity', width = .4, fill = neutcol) + 
   geom_errorbar(stat = 'identity', width = .15, size = .4) +
-  geom_point(data = df.dt.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.2,height=0)) + 
+  geom_point(data = df.dt.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.1,height=0)) + 
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   labs(x = '', y = 'difference in DT between neutral and cued condition (s)') +
   xlim(c(0.5,1.5)) +
@@ -126,7 +134,7 @@ df %>%
   geom_vline(aes(xintercept = 0), linetype = 'dashed', color = '#000000') +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = 'response deviation (degrees)') +
-  facet_wrap(cond ~ subid, nrow = 2, ncol = nsubs)
+  facet_wrap(cond ~ subid, nrow = 2, ncol = length(subs2use))
 
 #look at responses relative to non-target orientation
 df %>%
@@ -153,7 +161,7 @@ df %>%
   geom_vline(xintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = 'response deviation (degrees)') +
-  facet_wrap(~subid,  nrow = 5, ncol = 4)
+  facet_wrap(~subid,  nrow = 2, ncol = 3)
 ggsave(filename = paste0(figpath, '/rdif_density.eps'), device = 'eps', dpi = 600, height = 10, width = 10)
 ggsave(filename = paste0(figpath, '/rdif_density.pdf'), device = 'pdf', dpi = 600, height = 10, width = 10)
 
@@ -174,9 +182,9 @@ df.mad.diffs <- df.mad %>%
 df.mad.diffs %>%
   dplyr::summarise_at(.vars = 'diff', .funs = c('mean', 'se')) %>%
   ggplot(aes(x = 1, y = mean, ymin = mean-se, ymax = mean + se)) +
-  geom_bar(stat = 'identity', width = .4, fill = neutcol) + 
+  geom_bar(stat = 'identity', width = .4, fill = diffcol) + 
   geom_errorbar(stat = 'identity', width = .1, size = .4) +
-  geom_point(data = df.mad.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.2,height=0)) + 
+  geom_point(data = df.mad.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.1,height=0)) + 
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   labs(x = '', y = 'difference in MAD between neutral and cued condition (degrees)') +
   xlim(c(0.5,1.5)) +
@@ -240,7 +248,7 @@ df.acc.diffs <- df.acc %>%
 df.acc.diffs %>%
   dplyr::summarise_at(.vars = 'diff', .funs = c('mean', 'se')) %>%
   ggplot(aes(x = 1, y = mean, ymin = mean-se, ymax = mean + se)) +
-  geom_bar(stat = 'identity', width = .4, fill = neutcol) + 
+  geom_bar(stat = 'identity', width = .4, fill = diffcol) + 
   geom_errorbar(stat = 'identity', width = .1, size = .4) +
   geom_point(data = df.acc.diffs, aes(x = 1, y = diff), inherit.aes = F,size = .5, position = position_jitter(width=.2,height=0)) + 
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
