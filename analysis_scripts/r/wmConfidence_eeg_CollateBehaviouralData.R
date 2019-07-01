@@ -7,11 +7,12 @@ setwd(dir)
 datapath <- paste0(dir, '/data/datafiles')
 
 # only doing this for specific subjects really, for now at least
-sublist <- seq(1, 2, by = 1)
+sublist <- seq(1, 7, by = 1)
 for(sub in sublist){
-  subpath <- paste0(datapath, sprintf('/s%02d/', sub))
   
-  fileList  <- sort(list.files(path = subpath, pattern = '.csv'))
+  if(sub %in% c(1,2)){
+  subpath <- paste0(datapath, sprintf('/s%02d/', sub))
+  fileList  <- sort(list.files(path = subpath, pattern = sprintf('wmConfidence_s%02d_', sub))) #.csv))
   dataFiles <- list(NULL)
   count <- 1
   for(i in fileList){
@@ -20,8 +21,46 @@ for(sub in sublist){
     dataFiles[[count]] <- tmp
     count <- count + 1
   }
-  
   df <- do.call('rbind', dataFiles)
-  fname <- paste0(subpath, sprintf('wmConfidence_S%02d_allData.csv', sub))
+  fname <- paste0(datapath, '/collated_data/', sprintf('wmConfidence_S%02d_allData.csv', sub))
   write.csv(df, file = fname, eol = '\n',col.names = T)
+  }
+  
+  if(sub == 3){
+    subpath <- paste0(datapath, sprintf('/s%02d/', sub))
+    fileList  <- sort(list.files(path = subpath, pattern = sprintf('wmConfidence_s%02da_', sub))) #.csv))
+    dataFiles <- list(NULL)
+    count <- 1
+    for(i in fileList){
+      path <- paste0(subpath, '/', i)
+      tmp <- read.csv(path, header = T, as.is = T, sep = ',')
+      dataFiles[[count]] <- tmp
+      count <- count + 1
+    }
+    df <- do.call('rbind', dataFiles)
+    df$session <- 'a'
+    fname <- paste0(datapath, '/collated_data/', sprintf('wmConfidence_S%02d_allData.csv', sub))
+    write.csv(df, file = fname, eol = '\n',col.names = T)
+  }
+  
+  if(sub>3){
+    for(part in c('a', 'b')){
+      subpath <- paste0(datapath, sprintf('/s%02d/%s', sub,part))
+      fileList  <- sort(list.files(path = subpath, pattern = sprintf('wmConfidence_s%02d%s_', sub,part))) #.csv))
+      dataFiles <- list(NULL)
+      count <- 1
+      for(i in fileList){
+        path <- paste0(subpath, '/', i)
+        tmp <- read.csv(path, header = T, as.is = T, sep = ',')
+        dataFiles[[count]] <- tmp
+        count <- count + 1
+      }
+      df <- do.call('rbind', dataFiles)
+      df$session <- part
+      fname <- paste0(datapath, '/collated_data/', sprintf('wmConfidence_S%02d%s_allData.csv', sub,part))
+      write.csv(df, file = fname, eol = '\n',col.names = T)
+    }
+    
+  }
 }
+

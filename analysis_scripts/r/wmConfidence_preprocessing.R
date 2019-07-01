@@ -5,45 +5,80 @@ library(magrittr)  # allows use of more pipes
 wd <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
 setwd(wd)
 
-datapath <- paste0(dir, '/data/datafiles')
+datapath <- paste0(wd, '/data/datafiles/collated_data')
+outpath  <- paste0(wd, '/data/datafiles/preprocessed_data')
 
 
 # only doing this for specific subjects really, for now at least
-sublist <- seq(1, 2, by = 1)
-
+sublist <- seq(1, 7, by = 1)
 
 for(sub in sublist){
-  subpath <- paste0(datapath, sprintf('/s%02d/', sub))
-  
-  fpath <- paste0(subpath, sprintf('wmConfidence_S%02d_allData.csv', sub))
+  if(sub <= 3){
+    fpath <- paste0(datapath, sprintf('/wmConfidence_S%02d_allData.csv', sub))
+    df <- read.csv(fpath, header = T, as.is = T, sep = ',') %>% select(-X)
+    
+    df %<>%
+      dplyr::mutate(cond = ifelse(cue == 0, 'neutral', 'cued')) %>%
+      dplyr::mutate(cond = as.factor(cond)) %>%
+      dplyr::mutate(cond = relevel(cond, 'neutral')) %>%
+      dplyr::mutate(session = 'a') %>% #force to 'a', as only one session in these subjects, corrects fact that no session var in subs 1&2
+      dplyr::mutate(DTcheck = 1) %>% #make new variable to approve discards
+      dplyr::group_by(subid, cue) %>%
+      dplyr::mutate(DTcheck = ifelse(DT <= ( mean(DT) + 2.5*sd(DT)) & DT >= (mean(DT) - 2.5*sd(DT)), 0, DTcheck)) %>%
+      as.data.frame()
+    
+    library(circular)
+    wrap <- function(x) (x+180)%%360 - 180 #function to wrap data between +/- 90 degrees. keeps sign of the response (-ve leftwards, +ve rightwards)
+    wrap90 <- function(x) (x+90)%%180 - 90
+    
+    #bound response deviation between -90 and 90 because of symmetry
+    df %<>% dplyr::mutate(rdif = wrap90(resp-targori))
+    
+    #compute some things about the confidence judgement
+    df %<>%
+      dplyr::mutate(confwidth = abs(wrap90(confang-resp))) %>% #get width of confidence interval
+      dplyr::mutate(absrdif = abs(rdif)) %>% #get absolute deviation
+      dplyr::mutate(confdiff = abs(rdif) - confwidth) #get the difference between confidence width, and response deviation (i.e. whether target inside or outside confidence interval)
+    
+    detach("package:circular", unload=TRUE)
+    
+    fname <- paste0(outpath, sprintf('/wmConfidence_S%02d_allData_preprocessed.csv', sub))
+    write.csv(df, file = fname, eol = '\n', col.names = T)
+  }
+  if(sub > 3){
+    for(part in c('a', 'b')){
+      fpath <- paste0(datapath, sprintf('/wmConfidence_S%02d%s_allData.csv', sub, part))
+      df <- read.csv(fpath, header = T, as.is = T, sep = ',') %>% select(-X)
+      
+      df %<>%
+        dplyr::mutate(cond = ifelse(cue == 0, 'neutral', 'cued')) %>%
+        dplyr::mutate(cond = as.factor(cond)) %>%
+        dplyr::mutate(cond = relevel(cond, 'neutral')) %>%
+        dplyr::mutate(DTcheck = 1) %>% #make new variable to approve discards
+        dplyr::group_by(subid, cue) %>%
+        dplyr::mutate(DTcheck = ifelse(DT <= ( mean(DT) + 2.5*sd(DT)) & DT >= (mean(DT) - 2.5*sd(DT)), 0, DTcheck)) %>%
+        as.data.frame()
+      
+      library(circular)
+      wrap <- function(x) (x+180)%%360 - 180 #function to wrap data between +/- 90 degrees. keeps sign of the response (-ve leftwards, +ve rightwards)
+      wrap90 <- function(x) (x+90)%%180 - 90
+      
+      #bound response deviation between -90 and 90 because of symmetry
+      df %<>% dplyr::mutate(rdif = wrap90(resp-targori))
+      
+      #compute some things about the confidence judgement
+      df %<>%
+        dplyr::mutate(confwidth = abs(wrap90(confang-resp))) %>% #get width of confidence interval
+        dplyr::mutate(absrdif = abs(rdif)) %>% #get absolute deviation
+        dplyr::mutate(confdiff = abs(rdif) - confwidth) #get the difference between confidence width, and response deviation (i.e. whether target inside or outside confidence interval)
+      
+      detach("package:circular", unload=TRUE)
+      
+      fname <- paste0(outpath, sprintf('/wmConfidence_S%02d%s_allData_preprocessed.csv', sub,part))
+      write.csv(df, file = fname, eol = '\n', col.names = T)
 
-  df <- read.csv(fpath, header = T, as.is=T, sep = ',') %>% select(-X)
+      
+    }
+  }
   
-  df %<>%
-    dplyr::mutate(cond = ifelse(cue ==0, 'neutral', 'cued')) %>%
-    dplyr::mutate(cond = as.factor(cond)) %>%
-    dplyr::mutate(cond = relevel(cond, 'neutral')) %>%
-    dplyr::mutate(DTcheck = 1) %>% #make new variable to approve discards
-    dplyr::group_by(subid, cue) %>%
-    dplyr::mutate(DTcheck = ifelse(DT <= ( mean(DT) + 2.5*sd(DT)) & DT >= (mean(DT) - 2.5*sd(DT)), 0, DTcheck)) %>%
-    as.data.frame()
-  
-
-  library(circular)
-  wrap <- function(x) (x+180)%%360 - 180 #function to wrap data between +/- 90 degrees. keeps sign of the response (-ve leftwards, +ve rightwards)
-  wrap90 <- function(x) (x+90)%%180 - 90
-  
-  #bound response deviation between -90 and 90 because of symmetry
-  df %<>% dplyr::mutate(rdif = wrap90(resp-targori))
-  
-  #compute some things about the confidence judgement
-  df %<>%
-    dplyr::mutate(confwidth = abs(wrap90(confang-resp))) %>% #get width of confidence interval
-    dplyr::mutate(absrdif = abs(rdif)) %>% #get absolute deviation
-    dplyr::mutate(confdiff = abs(rdif) - confwidth) #get the difference between confidence width, and response deviation (i.e. whether target inside or outside confidence interval)
-  
-  detach("package:circular", unload=TRUE)
-  
-  fname <- paste0(subpath, sprintf('wmConfidence_S%02d_allData_preprocessed.csv', sub))
-  write.csv(df, file = fname, eol = '\n', col.names = T)
 }
