@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jul  3 10:28:14 2019
+
+@author: sammirc
+"""
+import numpy as np
+import scipy as sp
+import pandas as pd
+import mne
+from copy import deepcopy
+import os
+import os.path as op
+import sys
+from matplotlib import pyplot as plt
+
+#sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri/analysis_scripts')
+sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
+from wmConfidence_funcs import get_subject_info_wmConfidence
+from wmConfidence_funcs import gesd, plot_AR
+
+wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'; #laptop wd
+wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
+os.chdir(wd)
+
+
+#subs = np.array([1,2, 3, 4, 5, 6, 7])
+subs = np.array([1,2,4,5,6,7])
+for i in subs:
+    print('\n\nworking on subject ' + str(i) +'\n\n')
+    sub = dict(loc = 'workstation', id = i)
+    param = get_subject_info_wmConfidence(sub)
+
+    epoch = mne.read_epochs(fname = param['cuelocked'],preload = True)
+    epoch.set_eeg_reference(ref_channels = 'average')
+    epoch.resample(sfreq=250) #resample to 250hz
+        
+    #remove some trials based on behavioural data
+    epoch = epoch['DTcheck == 0 and clickresp == 1 and arraycueblink==0'] #this removes trials where RT outside 2.5 SDs of condition mean, didn't click to respond, or blinked at array/cue presentation
+    
+    # automated process of looking for trials with heightened variance (noise) and output which trials to keep
+    _, keeps = plot_AR(epoch, method = 'gesd', zthreshold = 1.5, p_out=.1, alpha = .05, outlier_side = 1)
+    plt.suptitle(param['subid'])
+    plt.close()
+    keeps = keeps.flatten()
+    
+    #get trials to discard based on the gesd approach
+    discards = np.ones(len(epoch), dtype = 'bool')
+    discards[keeps] = False
+    epoch = epoch.drop(discards)
+    
+    
+    freqs = np.arange(1, 40, 1)  # frequencies from 2-35Hz
+    n_cycles = freqs*.3  # 300ms timewindow for estimation
+    
+    # Run TF decomposition overall epochs
+    print('\n\nrunning time frequency decomposition\n\n')
+    tfr = mne.time_frequency.tfr_multitaper(epoch, freqs, n_cycles, use_fft=False, average=False, return_itc=False)
+    print('\n\n saving tfr\n\n')
+    tfr.save(fname=param['cuelocked_tfr'], overwrite=True)
+    tfr.metadata.to_csv(param['cuelocked_tfr_meta'], sep=',', index=False)
+    
+    del(tfr)
+    del(epoch)
+    
+#    tf_cleft = mne.time_frequency.tfr_multitaper(epoch_left,
+#                                                 freqs, n_cycles, use_fft=False,
+#                                                 average=False, return_itc=False)
+#    tf_cright= mne.time_frequency.tfr_multitaper(epoch_right,
+#                                                 freqs, n_cycles, use_fft=False,
+#                                                 average=False, return_itc=False)
+#    
+#    tf_cleft  = tf_cleft.average()
+#    tf_cright = tf_cright.average()
+#    
+##    visright_picks = mne.pick_channels(tfr_cuedleft.ch_names, ['PO8', 'O2', 'PO4'])
+##    visleft_picks  = mne.pick_channels(tfr_cuedleft.ch_names, ['PO7', 'O1', 'PO3'])
+#    po8 = mne.pick_channels(tf_cleft.ch_names, ['PO8'])
+#    po7 = mne.pick_channels(tf_cleft.ch_names, ['PO7'])
+#    
+#    #lateralisation
+#    ldata = tf_cleft.data
+#    rdata = tf_cright.data
+#    lvsr = np.subtract(ldata,rdata); lplsr = np.add(ldata, rdata)
+#    lvsr_scale = np.multiply(np.divide(lvsr,lplsr),100)
+#    tf_lvsr = mne.time_frequency.AverageTFR(info = tf_cleft.info,
+#                                            data = lvsr_scale,
+#                                            times= tf_cleft.times,
+#                                            freqs= tf_cleft.freqs,
+#                                            nave = tf_cleft.nave)
+#    
+#    tf_lvsr.plot_joint(baseline=(-0.3,-0.1),vmin=-30,vmax=30)
+#    
+#    tf_lvsr.plot(baseline=(-0.3,-0.1), picks=po8, vmin=-30,vmax=30)
+#    
+#    
+#    
+#    
+#    #get contra-ipsi and contra+ipsi
+#    tf_lvsr.save(fname=param['cuelocked_tfr'], overwrite=True)
+#    
+    #del(tfr)
+    del(tf_lvsr)
+    del(tfr_cuedleft)
+    del(tfr_cuedright)
+    del(epoch)
+    
+    
+    
+######
+subs = np.array([1,2,4,5,6,7])
+
+#get each subjects data and get into one object to loop over
+alldat = []
+for i in subs:
+    print('\nworking on subject ' + str(i) +'\n')
+    sub = dict(loc = 'workstation', id = i)
+    param = get_subject_info_wmConfidence(sub)
+    data = mne.time_frequency.read_tfrs(fname = param['cuelocked_tfr'])
+    alldat.append(data)
+alldat = np.squeeze(alldat)
+
+pwr_gave = mne.grand_average(alldat)
+visright_picks = mne.pick_channels(pwr_gave.ch_names, ['PO8', 'O2', 'PO4'])
+po8 = mne.pick_channels(pwr_gave.ch_names, ['PO8'])
+
+
+#plot time frequencies of cue evoked response for all subjects
+for i in alldat:
+    i = i.apply_baseline((-0.3, -0.1))
+
+count = 0
+fig, axes = plt.subplots(nrows=int(len(alldat)/2), ncols=2)
+for i in alldat:
+    cntr = axes[count%3,count%2].contourf(i.times, i.freqs, np.nanmean(i.data[visright_picks,:,:], 0),
+               vmin=-50, vmax=50, levels=64, cmap='RdBu_r')
+    cbar = fig.colorbar(cntr, ax=axes[count], extend='both')
+    cbar.set_ticks(ticks=np.arange(-50,50,6).tolist())
+    cbar.set_ticklabels(np.arange(-30, 30, 6))
+    axes[count%3,count%2].set_title('sub'+str(count+1+3))
+    axes[count%3,count%2].axvline(x=0, ymin=0, ymax=40,ls = '--')
+    axes[count%3,count%2].axvline(x=.250, ymin=0, ymax=40, ls='--', color='k')
+    print((count%3, count%2))
+    count+=1
+plt.subplots_adjust(hspace = .8)
+
+######
+    
+    
+    
