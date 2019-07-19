@@ -27,8 +27,9 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1,2, 3, 4, 5, 6, 7])
+subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10])
 subs = np.array([5,6,7])
+subs = [8, 9, 10]
 for i in subs:
     sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub)

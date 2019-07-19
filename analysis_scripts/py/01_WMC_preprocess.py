@@ -24,7 +24,8 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1,2, 3, 4, 5, 6, 7])
+subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10])
+subs = np.array([8, 9, 10])
 
 for i in subs:
     sub   = dict(loc = 'workstation', id = i)
@@ -49,7 +50,7 @@ for i in subs:
         ica.apply(inst=raw)
         
         raw.save(fname = param['rawcleaned'], fmt='double')
-    elif i == 3:
+    elif i in [3, 10]:
         raw = mne.io.read_raw_eeglab(
                 input_fname=param['rawset_sess1'],
                 montage = 'easycap-M1',
@@ -59,11 +60,14 @@ for i in subs:
         raw.filter(1, 40) #filter raw data
         ica = mne.preprocessing.ICA(n_components = .99, method = 'infomax').fit(raw)
         eog_epochs = mne.preprocessing.create_eog_epochs(raw)
-        eog_inds, eog_scores = ica.find_bads_eog(eog_epochs, threshold=2)
+        eog_inds, eog_scores = ica.find_bads_eog(eog_epochs, threshold=1)
         ica.plot_scores(eog_scores)
         
         ica.plot_components(inst=raw)
-        ica.exclude.extend(eog_inds)
+        if i ==10:
+            ica.exclude.extend(eog_inds[0:3])
+        else:
+            ica.exclude.extend(eog_inds[0:2])
         ica.apply(inst=raw)
         
         raw.save(fname = param['rawcleaned_sess1'], fmt='double')
@@ -81,7 +85,7 @@ for i in subs:
             eog_epochs = mne.preprocessing.create_eog_epochs(raw)
             eog_inds, eog_scores = ica.find_bads_eog(eog_epochs, threshold=1)
             eog_inds
-            #ica.plot_scores(eog_scores)
+            ica.plot_scores(eog_scores)
             
             ica.plot_components(inst=raw)
             ica.exclude.extend(eog_inds[0:2])
