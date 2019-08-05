@@ -182,7 +182,7 @@ def get_subject_info_wmConfidence(subject):
         
     if subject['id'] == 7:
         param['subid']                   = 's07'
-        param['behaviour_sess1']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S06a_allData_preprocessed.csv')
+        param['behaviour_sess1']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S07a_allData_preprocessed.csv')
         param['rawdata_sess1']           = op.join(param['path'], 'eeg/s07/wmConfidence_s07a_26062019.cdt')
         param['rawset_sess1']            = op.join(param['path'], 'eeg/s07/wmConfidence_s07a_26062019.set')
         param['rawcleaned_sess1']        = op.join(param['path'], 'eeg/s07/wmConfidence_s07a_icacleaned_raw.fif')
@@ -213,6 +213,95 @@ def get_subject_info_wmConfidence(subject):
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
         param['fblocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked_metadata.csv')
         
+    if subject['id'] == 8:
+        param['subid']                   = 's08'
+        param['behaviour_sess1']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S08a_allData_preprocessed.csv')
+        param['rawdata_sess1']           = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08a_17072019.cdt')
+        param['rawset_sess1']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08a_17072019.set')
+        param['rawcleaned_sess1']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08a_icacleaned_raw.fif')
+        param['cuelock_noref_sess1']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08a_cuelock_noref-epo.fif')
+        param['cuelock_car_sess1']       = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08a_cuelock_car-epo.fif')
+        param['cuelock_mast_sess1']      = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08a_cuelock_mast-epo.fif')
+        param['raweyes_sess1']           = op.join(param['path'], 'eyes', param['subid'], 'WMCS08a.asc')
+        param['cleanedeyes_sess1']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s08a_preprocessed.pickle')
+        param['behaviour_blinkchecked1'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S08a_blinkchecked_preprocessed.csv')
+
+        
+        param['behaviour_sess2']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S08b_allData_preprocessed.csv')
+        param['rawdata_sess2']           = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08b_17072019.cdt')
+        param['rawset_sess2']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08b_17072019.set')
+        param['rawcleaned_sess2']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08b_icacleaned_raw.fif')
+        param['cuelock_noref_sess2']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08b_cuelock_noref-epo.fif')
+        param['cuelock_car_sess2']       = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08b_cuelock_car-epo.fif')
+        param['cuelock_mast_sess2']      = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s08b_cuelock_mast-epo.fif')
+        param['raweyes_sess2']           = op.join(param['path'], 'eyes', param['subid'], 'WMCS08b.asc')
+        param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s08b_preprocessed.pickle')
+        param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S08b_blinkchecked_preprocessed.csv')
+        param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
+        param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
+        param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
+        param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+
+        param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
+        param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
+        param['fblocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked_metadata.csv')
+        
+    if subject['id'] == 9:
+        param['subid']                   = 's09'
+        param['behaviour_sess1']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S09a_allData_preprocessed.csv')
+        param['rawdata_sess1']           = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09a_18072019.cdt')
+        param['rawset_sess1']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09a_18072019.set')
+        param['rawcleaned_sess1']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09a_icacleaned_raw.fif')
+        param['cuelock_noref_sess1']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09a_cuelock_noref-epo.fif')
+        param['cuelock_car_sess1']       = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09a_cuelock_car-epo.fif')
+        param['cuelock_mast_sess1']      = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09a_cuelock_mast-epo.fif')
+        param['raweyes_sess1']           = op.join(param['path'], 'eyes', param['subid'], 'WMCS09a.asc')
+        param['cleanedeyes_sess1']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s09a_preprocessed.pickle')
+        param['behaviour_blinkchecked1'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S09a_blinkchecked_preprocessed.csv')
+
+        
+        param['behaviour_sess2']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S09b_allData_preprocessed.csv')
+        param['rawdata_sess2']           = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09b_18072019.cdt')
+        param['rawset_sess2']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09b_18072019.set')
+        param['rawcleaned_sess2']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09b_icacleaned_raw.fif')
+        param['cuelock_noref_sess2']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09b_cuelock_noref-epo.fif')
+        param['cuelock_car_sess2']       = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09b_cuelock_car-epo.fif')
+        param['cuelock_mast_sess2']      = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s09b_cuelock_mast-epo.fif')
+        param['raweyes_sess2']           = op.join(param['path'], 'eyes', param['subid'], 'WMCS09b.asc')
+        param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s09b_preprocessed.pickle')
+        param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S09b_blinkchecked_preprocessed.csv')
+        param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
+        param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
+        param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
+        param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+
+        param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
+        param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
+        param['fblocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked_metadata.csv')
+        
+    if subject['id'] == 10:
+        param['subid']                   = 's10'
+        param['behaviour_sess1']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S10_allData_preprocessed.csv')
+        param['rawdata_sess1']           = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s10a_18072019.cdt')
+        param['rawset_sess1']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s10a_18072019.set')
+        param['rawcleaned_sess1']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s10a_icacleaned_raw.fif')
+        param['cuelock_noref_sess1']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s10a_cuelock_noref-epo.fif')
+        param['cuelock_car_sess1']       = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s10a_cuelock_car-epo.fif')
+        param['cuelock_mast_sess1']      = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s10a_cuelock_mast-epo.fif')
+        param['raweyes_sess1']           = op.join(param['path'], 'eyes', param['subid'], 'WMCS10a.asc')
+        param['cleanedeyes_sess1']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s10a_preprocessed.pickle')
+        param['behaviour_blinkchecked'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S10_blinkchecked_preprocessed.csv')
+
+        
+      
+        param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
+        param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
+        param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
+        param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+
+        param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
+        param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
+        param['fblocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked_metadata.csv')
         
         
     return param
