@@ -2,23 +2,24 @@ library(dplyr)
 library(magrittr)
 getwd()
 dir <- '/home/sammirc/Desktop/DPhil/wmConfidence'
-dir <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
+#dir <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
 setwd(dir)
 
 datapath <- paste0(dir, '/data/datafiles/preprocessed_data')
 
-sublist <- seq(1, 7, by = 1)
+sublist <- seq(1, 10, by = 1)
+sublist <- seq(8, 10, by = 1)
 
 #this will collate all parts of the same subjects into one file per subject
 dataFiles = list(NULL)
 for(sub in sublist){
-  if(sub <= 3){
+  if(sub <= 3 | sub == 10){
     fname <- paste0(datapath, sprintf('/wmConfidence_S%02d_allData_preprocessed.csv', sub))
     df <- read.csv(fname, header = T, as.is = T, sep = ',') %>% select(-X)
     outpath <- sprintf('%s/data/datafiles/s%02d/wmConfidence_S%02d_gathered_preprocessed.csv', dir, sub, sub)
     write.csv(df, file = outpath, sep = ',', eol = '\n', dec = '.', col.names = T, row.names = F)
   }
-  if(sub>3){ #only two parts to subjects after subject 3, so only need to concatenate two files from sub4 onwards
+  if(sub>3 & sub != 10){ #only two parts to subjects after subject 3, so only need to concatenate two files from sub4 onwards
     parts <- c('a', 'b')
     fname1 <- paste0(datapath, sprintf('/wmConfidence_S%02d%s_allData_preprocessed.csv', sub, parts[1]))
     fname2 <- paste0(datapath, sprintf('/wmConfidence_S%02d%s_allData_preprocessed.csv', sub, parts[2]))
