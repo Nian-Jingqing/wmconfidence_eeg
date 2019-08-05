@@ -89,12 +89,12 @@ for i in subs:
         #save the behavioural data back to csv, with column for if there was a blink by the array or cue presentation
         bdata.to_csv(param['behaviour_blinkchecked'], index=False) 
         
-    if i == 3: #subject 3 has one session of 8 blocks because of time constraints
+    elif i in [3, 10]: #subject 3 has one session of 8 blocks because of time constraints - s10 didn't want to do 2nd block
         
         #we're going to read in the raw data, filter it, epoch it around the array/cue triggers and check to see if there are blinks nearby
         raw = mne.io.read_raw_eeglab(input_fname = param['rawset_sess1'], montage = 'easycap-M1', eog = ['VEOG', 'HEOG'], preload=True)
         raw.set_montage('easycap-M1')
-        raw.filter(1,40)
+        raw.filter(1,40, picks='eog')
         
         #epoching
         #here it's important to specify a dictionary that assigns each trigger to its own integer value
@@ -143,7 +143,7 @@ for i in subs:
         #save the behavioural data back to csv, with column for if there was a blink by the array or cue presentation
         bdata.to_csv(param['behaviour_blinkchecked'], index=False) 
         
-    if i > 3: #subjects 4 onwards, with two sessions per participant
+    else: #subjects 4 onwards, with two sessions per participant
         for part in ['a', 'b']:
             if part == 'a':
                 session = '1'
