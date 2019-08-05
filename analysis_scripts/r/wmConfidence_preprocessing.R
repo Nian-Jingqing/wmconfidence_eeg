@@ -3,6 +3,7 @@ library(tidyverse) # general data manipulation & plotting
 library(magrittr)  # allows use of more pipes
 
 wd <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
+wd <- '/home/sammirc/Desktop/DPhil/wmConfidence'
 setwd(wd)
 
 datapath <- paste0(wd, '/data/datafiles/collated_data')
@@ -10,10 +11,10 @@ outpath  <- paste0(wd, '/data/datafiles/preprocessed_data')
 
 
 # only doing this for specific subjects really, for now at least
-sublist <- seq(1, 7, by = 1)
-
+sublist <- seq(1, 10, by = 1)
+sublist <- seq(8, 10, by = 1) #dont want to overwrite the older subjects
 for(sub in sublist){
-  if(sub <= 3){
+  if(sub <= 3 | sub == 10){
     fpath <- paste0(datapath, sprintf('/wmConfidence_S%02d_allData.csv', sub))
     df <- read.csv(fpath, header = T, as.is = T, sep = ',') %>% select(-X)
     
@@ -45,7 +46,7 @@ for(sub in sublist){
     fname <- paste0(outpath, sprintf('/wmConfidence_S%02d_allData_preprocessed.csv', sub))
     write.csv(df, file = fname, eol = '\n', col.names = T)
   }
-  if(sub > 3){
+  if(sub > 3 & sub != 10){
     for(part in c('a', 'b')){
       fpath <- paste0(datapath, sprintf('/wmConfidence_S%02d%s_allData.csv', sub, part))
       df <- read.csv(fpath, header = T, as.is = T, sep = ',') %>% select(-X)
