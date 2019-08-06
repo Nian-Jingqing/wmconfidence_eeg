@@ -26,6 +26,7 @@ os.chdir(wd)
 
 
 subs = np.array([1,2, 3, 4, 5, 6, 7])
+subs = np.array([8, 9, 10])
 #subs = np.array([5,6,7])
 for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
@@ -65,7 +66,7 @@ for i in subs:
         del(raw)
 
         
-    if i == 3: #subject 3 has one session of 8 blocks because of time constraints
+    if i == 3 or i == 10: #subject 3 has one session of 8 blocks because of time constraints
         
         #we're going to read in the raw data, filter it, epoch it around the array/cue triggers and check to see if there are blinks nearby
         raw = mne.io.read_raw_fif(fname = param['rawcleaned_sess1'], preload=True)
@@ -95,7 +96,7 @@ for i in subs:
         cuelocked.save(fname = param['cuelocked'], overwrite=True)        
         del(cuelocked)
         del(raw)
-    if i > 3: #subjects 4 onwards, with two sessions per participant
+    if i > 3 and i != 10: #subjects 4 onwards, with two sessions per participant
         parts = ['a', 'b']
 
         #we're going to read in the raw data, filter it, epoch it around the array/cue triggers and check to see if there are blinks nearby
