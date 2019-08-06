@@ -61,7 +61,7 @@ for i in subs:
     cues = tfr.metadata.cue.to_numpy()
     cues = np.where(tfr.metadata.cuetrig==14, -1, cues)
     DTcues = np.multiply(tfr.metadata.DT.to_numpy(), cues)
-    regressors.append( glm.regressors.ParametricRegressor(name ='DT x cuedside', values = DTcues, preproc='z', num_observations=glmdata.num_observations))    
+    regressors.append( glm.regressors.ParametricRegressor(name = 'DT x cuedside', values = DTcues, preproc = 'z', num_observations = glmdata.num_observations))    
 
 
     contrasts = list()
