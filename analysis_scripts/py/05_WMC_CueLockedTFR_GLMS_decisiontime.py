@@ -135,7 +135,7 @@ for i in subs:
 
 #%%   if the betas are already saved ...
 
-alldata_lvsr = []
+#alldata_lvsr = []
 alldata_DTxCue = []
 alldata_DT = []
 for i in subs:
@@ -143,49 +143,42 @@ for i in subs:
     sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub)
 
-    lvsr = mne.time_frequency.read_tfrs(fname = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_tfr_lvsr_betas-tfr.h5')); lvsr = lvsr[0]
-    alldata_lvsr.append(lvsr)
+    #lvsr = mne.time_frequency.read_tfrs(fname = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_tfr_lvsr_betas-tfr.h5')); lvsr = lvsr[0]
+    #alldata_lvsr.append(lvsr)
     DTxCue = mne.time_frequency.read_tfrs(fname = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_tfr_DTxCue_betas-tfr.h5')); DTxCue = DTxCue[0]
     alldata_DTxCue.append(DTxCue)
     DT = mne.time_frequency.read_tfrs(fname = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_tfr_DT_betas-tfr.h5')); DT = DT[0]
     alldata_DT.append(DT)
 
-gave_lvsr   = mne.grand_average(alldata_lvsr)
+#gave_lvsr   = mne.grand_average(alldata_lvsr)
 gave_DTxCue = mne.grand_average(alldata_DTxCue)
 gave_DT     = mne.grand_average(alldata_DT)
 
 
 baseline = (-0.5, -0.3)
+timefreqs = {(.50, 10): (.5, 4),
+             (.75, 10): (.5, 4),
+             (1.0, 10): (.5, 4),
+             (1.25, 10):(.5, 4)}
 
-gave_lvsr.plot_joint(topomap_args = dict(outlines = 'head', contours=0),
-                     title = 'cued left vs right grand average betas',
-                     baseline=baseline,
-                     timefreqs = {
-                             (.50, 10): (.5, 4),
-                             (.75, 10): (.5, 4),
-                             (1.0, 10): (.5, 4),
-                             (1.25, 10):(.5, 4)
-                             })
+#gave_lvsr.plot_joint(topomap_args = dict(outlines = 'head', contours=0),
+#                     title = 'cued left vs right grand average betas',
+#                     baseline=baseline,
+#                     timefreqs = timefreqs)
 
-gave_DTxCue.plot_joint(topomap_args = dict(outlines='head', contours=0),
+gave_DTxCue.plot_joint(topomap_args = dict(outlines='head', contours=0,
+                                          vmin = np.min(gave_DTxCue.data)/5, 
+                                          vmax = np.multiply(np.min(gave_DTxCue.data)/5, -1)),
                        title = 'grand average interaction between cue and reaction time',
                        baseline = baseline,
-                       timefreqs = {
-                             (.50, 10): (.5, 4),
-                             (.75, 10): (.5, 4),
-                             (1.0, 10): (.5, 4),
-                             (1.25, 10):(.5, 4)
-                             })
+                       timefreqs = timefreqs)
     
-gave_DT.plot_joint(topomap_args = dict(outlines='head', contours=0),
+gave_DT.plot_joint(topomap_args = dict(outlines='head', contours=0,
+                                          vmin = np.min(gave_DT.data)/.2, 
+                                          vmax = np.multiply(np.min(gave_DT.data)/.2, -1)),
                        title = 'grand average main effect of decision time',
                        baseline = baseline,
-                       timefreqs = {
-                             (.50, 10): (.5, 4),
-                             (.75, 10): (.5, 4),
-                             (1.0, 10): (.5, 4),
-                             (1.25, 10):(.5, 4)
-                             })
+                       timefreqs = timefreqs)
 
 
 

@@ -48,7 +48,7 @@ os.chdir(wd)
 
 
 subs = np.array([1, 2, 4, 5, 6, 7, 8, 9, 10])
-subs = np.array([9, 10]) # memory error when i got to subject 9 :(
+#subs = np.array([9, 10]) # memory error when i got to subject 9 :(
 #%% only needs running if cuelocked TFR glms not already present
 for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
@@ -250,47 +250,46 @@ timefreqs = {(.50, 10): (.5, 4),
              (1.0, 10): (.5, 4),
              (1.25, 10):(.5, 4)}
 
-#plot cued left vs cued right
 gave_lvsr.drop_channels(['RM'])
+gave_acc.drop_channels(['RM'])
+gave_conf.drop_channels(['RM'])
+gave_inter_acc.drop_channels(['RM'])
+gave_inter_conf.drop_channels(['RM'])
+
+
+#plot cued left vs cued right
 gave_lvsr.plot_joint( topomap_args = dict(outlines='head', contours=0,
-                                          vmin = np.min(gave_lvsr.data)/5, 
-                                          vmax = np.multiply(np.min(gave_lvsr.data)/5, -1)),
+                                          vmin = np.min(gave_lvsr.data)/2, 
+                                          vmax = np.multiply(np.min(gave_lvsr.data)/2, -1)),
                      title = 'grand average of cued left vs right - betas',
                      baseline = baseline, timefreqs = timefreqs)
 
-gave_acc.drop_channels(['RM'])
 gave_acc.plot_joint( topomap_args = dict(outlines='head', contours=0,
-                                          vmin = np.min(gave_acc.data)/10, 
-                                          vmax = np.multiply(np.min(gave_acc.data)/10, -1)),
+                                          vmin = np.min(gave_acc.data)/20, 
+                                          vmax = np.multiply(np.min(gave_acc.data)/20, -1)),
                      title = 'grand average of main effect of accuracy - betas',
                      baseline = baseline, timefreqs = timefreqs)
         
 
-gave_conf.drop_channels(['RM'])
 gave_conf.plot_joint( topomap_args = dict(outlines='head', contours=0,
-                                          vmin = np.min(gave_conf.data)/5, 
-                                          vmax = np.multiply(np.min(gave_conf.data)/5, -1)),
+                                          vmin = np.min(gave_conf.data)/10, 
+                                          vmax = np.multiply(np.min(gave_conf.data)/10, -1)),
                      title = 'grand average of main effect of confidence width - betas',
                      baseline = baseline, timefreqs = timefreqs)
 
 
-gave_inter_acc.drop_channels(['RM'])
 gave_inter_acc.plot_joint( topomap_args = dict(outlines='head', contours=0,
-                                          vmin = np.min(gave_inter_acc.data)/1, 
-                                          vmax = np.multiply(np.min(gave_inter_acc.data)/1, -1)),
+                                          vmin = np.min(gave_inter_acc.data)/2, 
+                                          vmax = np.multiply(np.min(gave_inter_acc.data)/2, -1)),
                      title = 'grand average of interaction between accuracy and cued side - betas',
                      baseline = baseline, timefreqs = timefreqs)
 
 
-gave_inter_conf.drop_channels(['RM'])
 gave_inter_conf.plot_joint( topomap_args = dict(outlines='head', contours=0,
                                           vmin = np.min(gave_inter_conf.data)/5, 
                                           vmax = np.multiply(np.min(gave_inter_conf.data)/5, -1)),
                      title = 'grand average of interaction between confidence width and cued side - betas',
                      baseline = baseline, timefreqs = timefreqs)
-
-
-
 
 #%%
 
