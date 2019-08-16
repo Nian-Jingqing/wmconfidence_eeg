@@ -92,7 +92,9 @@ for i in subs:
         
         cuelocked   = mne.Epochs(raw, events, events_cue, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
         bdata = pd.DataFrame.from_csv(path = param['behaviour_blinkchecked'], index_col=None)
-
+        
+        cuelocked.metadata = bdata #assign behavioural data into the datafile from here on
+        
         cuelocked.save(fname = param['cuelocked'], overwrite=True)        
         del(cuelocked)
         del(raw)

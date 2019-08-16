@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul  9 10:23:54 2019
+Created on Tue Aug 13 10:29:05 2019
 
 @author: sammirc
 """
@@ -48,23 +48,20 @@ for i in subs:
                     '61':61,'62':62,'63':63,'64':64,'71':71,'72':72,'73':73,'74':74,'76':76,'77':77,'78':78,'79':79,
                     '254':254,'255':255}
         
-        events_fb = {'neutral_left'  : 76,
-                      'neutral_right' : 77,
-                      'cued_left'     : 78,
-                      'cued_right'    : 79}
+        events_array = {'neutral'  : 1, 'cued' : 2} #cueing here really relates to whether there is subsequently a valid retrocue or not, but doesn't relate to encoding as not a precue
         events,_ = mne.events_from_annotations(raw, event_id = event_id)
-        tmin, tmax = -0.5, 1.5
-        baseline = (None,0)
+        tmin, tmax = -1., 1.0
+        baseline = (-0.5, 0)
         
-        fblocked   = mne.Epochs(raw, events, events_fb, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
+        arraylocked   = mne.Epochs(raw, events, events_array, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
         bdata = pd.DataFrame.from_csv(path = param['behaviour_blinkchecked'], index_col=None)
         bdata['nexttrlconfdiff'] = bdata.confdiff.shift(1) #write down on each trial what the subsequent trials error awareness was (used in glm)
 
-        fblocked.metadata = bdata
+        arraylocked.metadata = bdata
 
         #save the epoched data, combined with metadata, to file
-        fblocked.save(fname=param['fblocked'], overwrite=True)
-        del(fblocked)
+        arraylocked.save(fname=param['arraylocked'], overwrite=True)
+        del(arraylocked)
         del(raw)
 
         
@@ -84,22 +81,19 @@ for i in subs:
                     '61':61,'62':62,'63':63,'64':64,'71':71,'72':72,'73':73,'74':74,'76':76,'77':77,'78':78,'79':79,
                     '254':254,'255':255}
         
-        events_fb = {'neutral_left'  : 76,
-                      'neutral_right' : 77,
-                      'cued_left'     : 78,
-                      'cued_right'    : 79}
+        events_array = {'neutral'  : 1, 'cued' : 2} #cueing here really relates to whether there is subsequently a valid retrocue or not, but doesn't relate to encoding as not a precue
         events,_ = mne.events_from_annotations(raw, event_id = event_id)
-        tmin, tmax = -0.5, 1.5
-        baseline = (None,0)
+        tmin, tmax = -1., 1.0
+        baseline = (-0.5, 0)
         
-        fblocked   = mne.Epochs(raw, events, events_fb, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
+        arraylocked   = mne.Epochs(raw, events, events_array, tmin, tmax, baseline, reject_by_annotation=False, preload=True)      
         bdata = pd.DataFrame.from_csv(path = param['behaviour_blinkchecked'], index_col=None)
         bdata['nexttrlconfdiff'] = bdata.confdiff.shift(1) #write down on each trial what the subsequent trials error awareness was (used in glm)
 
-        fblocked.metadata = bdata
+        arraylocked.metadata = bdata
 
-        fblocked.save(fname = param['fblocked'], overwrite=True)        
-        del(fblocked)
+        arraylocked.save(fname = param['arraylocked'], overwrite=True)        
+        del(arraylocked)
         del(raw)
     if i > 3 and i != 10: #subjects 4 onwards, with two sessions per participant
         parts = ['a', 'b']
@@ -120,31 +114,28 @@ for i in subs:
                     '61':61,'62':62,'63':63,'64':64,'71':71,'72':72,'73':73,'74':74,'76':76,'77':77,'78':78,'79':79,
                     '254':254,'255':255}
         
-        events_fb = {'neutral_left'  : 76,
-                      'neutral_right' : 77,
-                      'cued_left'     : 78,
-                      'cued_right'    : 79}
+        events_array = {'neutral'  : 1,'cued' : 2}
         events1, _ = mne.events_from_annotations(raw1, event_id = event_id)
         events2, _ = mne.events_from_annotations(raw2, event_id = event_id)
-        tmin, tmax = -0.5, 1.5
-        baseline = (None,0)
+        tmin, tmax = -1., 1.
+        baseline = (-0.5, 0)
         
-        fblocked1   = mne.Epochs(raw1, events1, events_fb, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
-        fblocked2   = mne.Epochs(raw2, events2, events_fb, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
+        arraylocked1   = mne.Epochs(raw1, events1, events_array, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
+        arraylocked2   = mne.Epochs(raw2, events2, events_array, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
 
         bdata1 = pd.DataFrame.from_csv(path = param['behaviour_blinkchecked1'], index_col=None)
         bdata1['nexttrlconfdiff'] = bdata1.confdiff.shift(1)#write down on each trial what the subsequent trials error awareness was (used in glm)
         bdata2 = pd.DataFrame.from_csv(path = param['behaviour_blinkchecked2'], index_col=None)
         bdata2['nexttrlconfdiff'] = bdata2.confdiff.shift(1)#write down on each trial what the subsequent trials error awareness was (used in glm)
 
-        fblocked1.metadata = bdata1
-        fblocked2.metadata = bdata2
+        arraylocked1.metadata = bdata1
+        arraylocked2.metadata = bdata2
         
-        fblocked = mne.concatenate_epochs([fblocked1, fblocked2]) #combine the epoched data with aligned metadata
+        arraylocked = mne.concatenate_epochs([arraylocked1, arraylocked2]) #combine the epoched data with aligned metadata
 
-        fblocked.save(fname = param['fblocked'], overwrite=True)  
-        del(fblocked)
-        del(fblocked1)
-        del(fblocked2)
+        arraylocked.save(fname = param['arraylocked'], overwrite=True)  
+        del(arraylocked)
+        del(arraylocked1)
+        del(arraylocked2)
         del(raw1)
         del(raw2)
