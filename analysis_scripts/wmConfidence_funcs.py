@@ -30,10 +30,24 @@ def get_subject_info_wmConfidence(subject):
         param['raweyes']                = op.join(param['path'], 'eyes/s01/WMCS01.asc')
         param['cleanedeyes']            = op.join(param['path'], 'eyes/s01/wmConfidence_s01_preprocessed.pickle')
         param['behaviour_blinkchecked'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S01_blinkchecked_preprocessed.csv')
-        param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
-        param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
-        param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
-        param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['arraylocked']           = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']       = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']  = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']  = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
+        
+        param['cuelocked']             = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
+        param['cuelocked_tfr']         = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
+        param['cuelocked_tfr_meta']    = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
+        param['cuelocked_tfr_lvsr']    = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']           = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']       = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']  = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -51,10 +65,24 @@ def get_subject_info_wmConfidence(subject):
         param['raweyes']                = op.join(param['path'], 'eyes/s02/WMCS02.asc')
         param['cleanedeyes']            = op.join(param['path'], 'eyes/s02/wmConfidence_s02_preprocessed.pickle')
         param['behaviour_blinkchecked'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S02_blinkchecked_preprocessed.csv')
+        
+        param['arraylocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
+        
         param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
         param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
         param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
         param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -72,10 +100,24 @@ def get_subject_info_wmConfidence(subject):
         param['raweyes_sess1']          = op.join(param['path'], 'eyes/s03/WMCS03a.asc')
         param['cleanedeyes_sess1']      = op.join(param['path'], 'eyes/s03/wmConfidence_s03a_preprocessed.pickle')
         param['behaviour_blinkchecked'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S03_blinkchecked_preprocessed.csv')
+        
+        param['arraylocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
+        
         param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
         param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
         param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
         param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -94,7 +136,6 @@ def get_subject_info_wmConfidence(subject):
         param['cleanedeyes_sess1']       = op.join(param['path'], 'eyes/s04/wmConfidence_s04a_preprocessed.pickle')
         param['behaviour_blinkchecked1'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S04a_blinkchecked_preprocessed.csv')
 
-        
         param['behaviour_sess2']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S04b_allData_preprocessed.csv')
         param['rawdata_sess2']           = op.join(param['path'], 'eeg/s04/wmConfidence_s04b_24062019.cdt')
         param['rawset_sess2']            = op.join(param['path'], 'eeg/s04/wmConfidence_s04b_24062019.set')
@@ -105,10 +146,24 @@ def get_subject_info_wmConfidence(subject):
         param['raweyes_sess2']           = op.join(param['path'], 'eyes/s04/WMCS04b.asc')
         param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes/s04/wmConfidence_s04b_preprocessed.pickle')
         param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S04b_blinkchecked_preprocessed.csv')
+        
+        param['arraylocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
+        
         param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
         param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
         param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
         param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -127,7 +182,6 @@ def get_subject_info_wmConfidence(subject):
         param['cleanedeyes_sess1']       = op.join(param['path'], 'eyes/s05/wmConfidence_s05a_preprocessed.pickle')
         param['behaviour_blinkchecked1'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S05a_blinkchecked_preprocessed.csv')
 
-        
         param['behaviour_sess2']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S05b_allData_preprocessed.csv')
         param['rawdata_sess2']           = op.join(param['path'], 'eeg/s05/wmConfidence_s05b_25062019.cdt')
         param['rawset_sess2']            = op.join(param['path'], 'eeg/s05/wmConfidence_s05b_25062019.set')
@@ -138,10 +192,24 @@ def get_subject_info_wmConfidence(subject):
         param['raweyes_sess2']           = op.join(param['path'], 'eyes/s05/WMCS05b.asc')
         param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes/s05/wmConfidence_s05b_preprocessed.pickle')
         param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S05b_blinkchecked_preprocessed.csv')
+        
+        param['arraylocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
+        
         param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
         param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
         param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
         param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -171,10 +239,24 @@ def get_subject_info_wmConfidence(subject):
         param['raweyes_sess2']           = op.join(param['path'], 'eyes/s06/WMCS06b.asc')
         param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes/s06/wmConfidence_s06b_preprocessed.pickle')
         param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S06b_blinkchecked_preprocessed.csv')
+        
+        param['arraylocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
+        
         param['cuelocked']               = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s06_cuelocked-epo.fif')
         param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
         param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
         param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -204,10 +286,24 @@ def get_subject_info_wmConfidence(subject):
         param['raweyes_sess2']           = op.join(param['path'], 'eyes/s07/WMCS07b.asc')
         param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes/s07/wmConfidence_s07b_preprocessed.pickle')
         param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S07b_blinkchecked_preprocessed.csv')
+        
+        param['arraylocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
+        
         param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
         param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
         param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
         param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -237,10 +333,24 @@ def get_subject_info_wmConfidence(subject):
         param['raweyes_sess2']           = op.join(param['path'], 'eyes', param['subid'], 'WMCS08b.asc')
         param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s08b_preprocessed.pickle')
         param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S08b_blinkchecked_preprocessed.csv')
+        
+        param['arraylocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
+        
         param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
         param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
         param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
         param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -270,10 +380,24 @@ def get_subject_info_wmConfidence(subject):
         param['raweyes_sess2']           = op.join(param['path'], 'eyes', param['subid'], 'WMCS09b.asc')
         param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s09b_preprocessed.pickle')
         param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S09b_blinkchecked_preprocessed.csv')
+        
+        param['arraylocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
+        
         param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
         param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
         param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
         param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -292,12 +416,23 @@ def get_subject_info_wmConfidence(subject):
         param['cleanedeyes_sess1']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s10a_preprocessed.pickle')
         param['behaviour_blinkchecked'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S10_blinkchecked_preprocessed.csv')
 
-        
+        param['arraylocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
+        param['arraylocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-tfr.h5')
+        param['arraylocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_metadata.csv')
+        param['arraylocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked_lvsr-tfr.h5')
       
         param['cuelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-epo.fif')
         param['cuelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked-tfr.h5')
         param['cuelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_metadata.csv')
         param['cuelocked_tfr_lvsr']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_cuelocked_lvsr-tfr.h5')
+        
+        param['probelocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-epo.fif')
+        param['probelocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked-tfr.h5')
+        param['probelocked_tfr_meta']     = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_probelocked_metadata.csv')
+        
+        param['resplocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-epo.fif')
+        param['resplocked_tfr']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked-tfr.h5')
+        param['resplocked_tfr_meta']   = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_resplocked_metadata.csv')
 
         param['fblocked']              = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-epo.fif')
         param['fblocked_tfr']          = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_fblocked-tfr.h5')
@@ -464,3 +599,29 @@ def plot_AR(epochs, method = 'gesd', zthreshold = 1.5, p_out = .1, alpha = .05, 
     
     
     return axis, keep_idx 
+
+
+def toverparam(alldata):
+    import scipy as sp
+    import numpy as np
+    from scipy import stats
+    '''
+    function to conduct a t-test over all samples of multiple subject data, prevents repeating the same thing over and over again
+    
+    input data is a list of individual subject objects
+    
+    NB this doesn't really care whether it's betas or tstats, it just does shit
+    
+    output = the t stats over the parameter given (i..e goes from having a dimension of length nsubs to not having it as it runs across subs)
+    '''
+    
+    ndata = np.array(len(alldata))
+    indiv_data_shape = np.array(alldata[0].data.shape)
+    newshape = np.append(ndata, indiv_data_shape)
+    tmp = np.empty(shape = newshape)
+
+    for i in range(ndata):
+        tmp[i] = alldata[i].data
+    toverparam = sp.stats.ttest_1samp(tmp, popmean = 0, axis = 0)
+    
+    return toverparam[0]
