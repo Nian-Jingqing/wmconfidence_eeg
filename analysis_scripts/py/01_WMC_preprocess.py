@@ -24,8 +24,11 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10])
-subs = np.array([8, 9, 10])
+#subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+#subs = np.array([11, 12, 13, 14])
+#subs = np.array([11])
+subs = np.array([15])
+
 
 for i in subs:
     sub   = dict(loc = 'workstation', id = i)
@@ -73,7 +76,7 @@ for i in subs:
         raw.save(fname = param['rawcleaned_sess1'], fmt='double')
         
     else:
-        for part in [1, 2]:
+        for part in [1,2]:#[1, 2]:
             raw = mne.io.read_raw_eeglab(
                 input_fname=param['rawset_sess'+str(part)],
                 montage = 'easycap-M1',
@@ -81,15 +84,22 @@ for i in subs:
             raw.set_montage('easycap-M1')
             
             raw.filter(1, 40) #filter raw data
-            ica = mne.preprocessing.ICA(n_components = .99, method = 'infomax').fit(raw)
+#            if i == 11 and part == 2: 
+#                #for some reason it fails on this session because of some pca component, but setting a number of components works fine
+#                ica = mne.preprocessing.ICA(n_components = 60, method = 'infomax').fit(raw)
+#            else:
+#                ica = mne.preprocessing.ICA(n_components = .99, method = 'infomax').fit(raw)
+            ica = mne.preprocessing.ICA(n_components=60, method = 'infomax').fit(raw)
+            
             eog_epochs = mne.preprocessing.create_eog_epochs(raw)
-            eog_inds, eog_scores = ica.find_bads_eog(eog_epochs, threshold=1)
-            eog_inds
-            ica.plot_scores(eog_scores)
+            eog_inds, eog_scores = ica.find_bads_eog(eog_epochs)
+            print(eog_inds)
+            ica.plot_scores(eog_scores, eog_inds)
             
             ica.plot_components(inst=raw)
-            ica.exclude.extend(eog_inds[0:2])
+            ica.exclude.extend(eog_inds)#[0:2])
             ica.apply(inst=raw)
             
-            raw.save(fname = param['rawcleaned_sess'+str(part)], fmt='double')
+            raw.save(fname = param['rawcleaned_sess'+str(part)], fmt='double', overwrite = 'True')
 
+#%%  
