@@ -15,6 +15,9 @@ addpath([ '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts/toolbox' ])
 
 subs = [1 2 3 4 5 6 7];
 subs = [8 9 10];
+subs = [11]; %new data to convert
+subs = [12 13 14]; %newer data to convert to .set
+subs = [15];
 
 for i = 1:length(subs)
     sub = subs(i);
