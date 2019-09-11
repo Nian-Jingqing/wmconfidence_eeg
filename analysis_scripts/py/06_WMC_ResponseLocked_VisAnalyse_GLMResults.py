@@ -162,6 +162,7 @@ gave_gmean_t.plot_joint(
         )
 
 #run t over betas for grand mean
+gave_gmean = gave_gmean.apply_baseline((None,None))
 tmp = np.empty(shape = (len(alldata_gmean), 62, 39, 750))
 for i in range(len(subs)):
     tmp[i,:,:] = alldata_gmean[i].data
@@ -171,7 +172,7 @@ gave_gmean.data = tovert[0]
 #replot with the t over betas
 gave_gmean.plot_joint(
         title = ' average evoked response - t over betas' ,
-        topomap_args = dict(outlines = 'skirt', contours = 0),
+        topomap_args = dict(outlines = 'head', contours = 0),
         baseline = (None,None) #demean entire epoch
         )
 
