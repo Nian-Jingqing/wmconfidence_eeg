@@ -7,7 +7,7 @@ setwd(dir)
 datapath <- paste0(dir, '/data/datafiles')
 
 # only doing this for specific subjects really, for now at least
-sublist <- seq(1, 10, by = 1)
+sublist <- seq(1, 15, by = 1)
 for(sub in sublist){
   
   if(sub %in% c(1,2)){

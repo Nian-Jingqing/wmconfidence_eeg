@@ -7,8 +7,8 @@ setwd(dir)
 
 datapath <- paste0(dir, '/data/datafiles/preprocessed_data')
 
-sublist <- seq(1, 10, by = 1)
-sublist <- seq(8, 10, by = 1)
+sublist <- seq(1, 15, by = 1)
+#sublist <- seq(8, 10, by = 1)
 
 #this will collate all parts of the same subjects into one file per subject
 dataFiles = list(NULL)

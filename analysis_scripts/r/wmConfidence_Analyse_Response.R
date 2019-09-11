@@ -21,6 +21,7 @@ diffcol <- '#B2DF8A'
 se <- function(x) sd(x)/sqrt(length(x))
 
 wd <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
+wd <- '/home/sammirc/Desktop/DPhil/wmConfidence'
 setwd(wd)
 
 dpath <- paste0(wd, '/data') #path to folder with behavioural data
@@ -51,7 +52,7 @@ df %>%
 #subject 3 has one session of 8 blocks (256 trials)
 #subjects 4 onwards have 2 sessions of 8 blocks (512 trials in total)
 
-subs2use <- c(1,3,4,5,6,7)
+subs2use <- c(1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
 
 
 
@@ -161,7 +162,7 @@ df %>%
   geom_vline(xintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = 'response deviation (degrees)') +
-  facet_wrap(~subid,  nrow = 2, ncol = 3)
+  facet_wrap(~subid, ncol = 4)
 ggsave(filename = paste0(figpath, '/rdif_density.eps'), device = 'eps', dpi = 600, height = 10, width = 10)
 ggsave(filename = paste0(figpath, '/rdif_density.pdf'), device = 'pdf', dpi = 600, height = 10, width = 10)
 
