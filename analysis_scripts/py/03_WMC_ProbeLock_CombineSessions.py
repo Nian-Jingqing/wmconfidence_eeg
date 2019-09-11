@@ -33,7 +33,9 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10])
+subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,15])
+subs = np.array([11,12,13,14,15])
+subs = np.array([11, 15])
 #subs = np.array([5,6,7])
 for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
@@ -68,10 +70,10 @@ for i in subs:
                         'cued_right'    : 24} 
         events,_ = mne.events_from_annotations(raw, event_id = event_id)
         tmin, tmax = -1, 2.0
-        baseline = (None,0)
+        baseline = None
         
         probelocked   = mne.Epochs(raw, events, events_probe, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
-        bdata = pd.DataFrame.from_csv(path = param['behaviour_blinkchecked'], index_col=None)
+        bdata = pd.read_csv(param['behaviour_blinkchecked'], index_col=None)
         bdata['nexttrlconfdiff'] = bdata.confdiff.shift(1) #write down on each trial what the subsequent trials error awareness was (used in glm)
 
         probelocked.metadata = bdata
@@ -110,10 +112,10 @@ for i in subs:
                         'cued_right'    : 24} 
         events,_ = mne.events_from_annotations(raw, event_id = event_id)
         tmin, tmax = -1, 2.0
-        baseline = (None,0)
+        baseline = None
         
         probelocked   = mne.Epochs(raw, events, events_probe, tmin, tmax, baseline, reject_by_annotation=False, preload=True)      
-        bdata = pd.DataFrame.from_csv(path = param['behaviour_blinkchecked'], index_col=None)
+        bdata = pd.read_csv(param['behaviour_blinkchecked'], index_col=None)
         bdata['nexttrlconfdiff'] = bdata.confdiff.shift(1) #write down on each trial what the subsequent trials error awareness was (used in glm)
 
         probelocked.metadata = bdata
@@ -153,14 +155,14 @@ for i in subs:
         events1, _ = mne.events_from_annotations(raw1, event_id = event_id)
         events2, _ = mne.events_from_annotations(raw2, event_id = event_id)
         tmin, tmax = -1, 2.0
-        baseline = (None,0)
+        baseline = None
         
         probelocked1   = mne.Epochs(raw1, events1, events_probe, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
         probelocked2   = mne.Epochs(raw2, events2, events_probe, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
 
-        bdata1 = pd.DataFrame.from_csv(path = param['behaviour_blinkchecked1'], index_col=None)
+        bdata1 = pd.read_csv(param['behaviour_blinkchecked1'], index_col=None)
         bdata1['nexttrlconfdiff'] = bdata1.confdiff.shift(1)#write down on each trial what the subsequent trials error awareness was (used in glm)
-        bdata2 = pd.DataFrame.from_csv(path = param['behaviour_blinkchecked2'], index_col=None)
+        bdata2 = pd.read_csv(param['behaviour_blinkchecked2'], index_col=None)
         bdata2['nexttrlconfdiff'] = bdata2.confdiff.shift(1)#write down on each trial what the subsequent trials error awareness was (used in glm)
 
         probelocked1.metadata = bdata1
