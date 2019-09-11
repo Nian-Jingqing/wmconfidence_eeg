@@ -5,8 +5,6 @@ Created on Mon Jul  1 10:55:47 2019
 
 @author: sammirc
 """
-
-
 import numpy as np
 import scipy as sp
 import pandas as pd
@@ -30,6 +28,8 @@ os.chdir(wd)
 subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10])
 subs = np.array([5,6,7])
 subs = [8, 9, 10]
+subs = np.array([11, 12, 13, 14])
+subs = np.array([15])
 for i in subs:
     sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub)
@@ -46,9 +46,16 @@ for i in subs:
         #here it's important to specify a dictionary that assigns each trigger to its own integer value
         #mne.events_from_annotations will assign each trigger to an ordered integer, so e.g. trig11 will be 2, but epoching 11 will include another trigger
         #this solves it
-        event_id = {'1' : 1, '2':2,'11':11,'12':12,'13':13,'14':14,'21':21,'22':22,'23':23,'24':24,
-                    '31':31,'32':32,'33':33,'34':34,'41':41,'42':42,'43':43,'44':44,'51':51,'52':52,'53':53,'54':54,
-                    '61':61,'62':62,'63':63,'64':64,'71':71,'72':72,'73':73,'74':74,'76':76,'77':77,'78':78,'254':254,'255':255}
+        event_id = {'1' : 1, '2':2,                 #array
+                    '11':11,'12':12,'13':13,'14':14,#cue
+                    '21':21,'22':22,'23':23,'24':24,#probe
+                    '31':31,'32':32,'33':33,'34':34,#space
+                    '41':41,'42':42,'43':43,'44':44,#click
+                    '51':51,'52':52,'53':53,'54':54,#confprobe
+                    '61':61,'62':62,'63':63,'64':64,#space
+                    '71':71,'72':72,'73':73,'74':74,#click
+                    '76':76,'77':77,'78':78,'79':79, #feedback
+                    '254':254,'255':255}
         
         events_array = {'neutral':1, 'cued':2}
         events_cue = {'neutral/probeleft'  : 11,
@@ -100,9 +107,16 @@ for i in subs:
         #here it's important to specify a dictionary that assigns each trigger to its own integer value
         #mne.events_from_annotations will assign each trigger to an ordered integer, so e.g. trig11 will be 2, but epoching 11 will include another trigger
         #this solves it
-        event_id = {'1' : 1, '2':2,'11':11,'12':12,'13':13,'14':14,'21':21,'22':22,'23':23,'24':24,
-                    '31':31,'32':32,'33':33,'34':34,'41':41,'42':42,'43':43,'44':44,'51':51,'52':52,'53':53,'54':54,
-                    '61':61,'62':62,'63':63,'64':64,'71':71,'72':72,'73':73,'74':74,'76':76,'77':77,'78':78,'254':254,'255':255}
+        event_id = {'1' : 1, '2':2,                 #array
+                    '11':11,'12':12,'13':13,'14':14,#cue
+                    '21':21,'22':22,'23':23,'24':24,#probe
+                    '31':31,'32':32,'33':33,'34':34,#space
+                    '41':41,'42':42,'43':43,'44':44,#click
+                    '51':51,'52':52,'53':53,'54':54,#confprobe
+                    '61':61,'62':62,'63':63,'64':64,#space
+                    '71':71,'72':72,'73':73,'74':74,#click
+                    '76':76,'77':77,'78':78,'79':79, #feedback
+                    '254':254,'255':255}
         
         events_array = {'neutral':1, 'cued':2}
         events_cue = {'neutral/probeleft'  : 11,
@@ -150,7 +164,7 @@ for i in subs:
             if part == 'b':
                 session = '2'
                 
-            #we're going to read in the raw data, filter it, epoch it around the array/cue triggers and check to see if there are blinks nearby
+        #we're going to read in the raw data, filter it, epoch it around the array/cue triggers and check to see if there are blinks nearby
         raw = mne.io.read_raw_eeglab(input_fname = param['rawset_sess'+session], montage = 'easycap-M1', eog = ['VEOG', 'HEOG'], preload=True)
         raw.set_montage('easycap-M1')
         raw.filter(1,40, picks='eog')
@@ -159,10 +173,34 @@ for i in subs:
         #here it's important to specify a dictionary that assigns each trigger to its own integer value
         #mne.events_from_annotations will assign each trigger to an ordered integer, so e.g. trig11 will be 2, but epoching 11 will include another trigger
         #this solves it
-        event_id = {'1' : 1, '2':2,'11':11,'12':12,'13':13,'14':14,'21':21,'22':22,'23':23,'24':24,
-                    '31':31,'32':32,'33':33,'34':34,'41':41,'42':42,'43':43,'44':44,'51':51,'52':52,'53':53,'54':54,
-                    '61':61,'62':62,'63':63,'64':64,'71':71,'72':72,'73':73,'74':74,'76':76,'77':77,'78':78,'254':254,'255':255}
+        event_id = {'1' : 1, '2':2,                 #array
+                    '11':11,'12':12,'13':13,'14':14,#cue
+                    '21':21,'22':22,'23':23,'24':24,#probe
+                    '31':31,'32':32,'33':33,'34':34,#space
+                    '41':41,'42':42,'43':43,'44':44,#click
+                    '51':51,'52':52,'53':53,'54':54,#confprobe
+                    '61':61,'62':62,'63':63,'64':64,#space
+                    '71':71,'72':72,'73':73,'74':74,#click
+                    '76':76,'77':77,'78':78,'79':79, #feedback
+                    '254':254,'255':255}
         
+        #if you want to check instances of a trigger ...
+        print(np.unique(raw.annotations.description))
+        np.isin(raw.annotations.description, ['100007']).sum() #counts how many of them there are
+        np.isin(raw.annotations.description, ['100008']).sum()
+        np.isin(raw.annotations.description, np.array([1,2], dtype='str')).sum()
+        np.isin(raw.annotations.description, np.add(np.array([11,12,13,14]),65).astype('str')).sum()
+        
+        if i == 12 or np.logical_and(i==13, part=='b') or i==15: #in these sessions, one of the 255 (100007) triggers was read as 100008 in each session, so lets rename
+            trig2change = np.squeeze(np.where(raw.annotations.description=='100008'))
+            raw.annotations.description[trig2change] = '100007'
+        
+        if i >= 11:
+            #for some reason 255 trigger was read as '100007' in these subjects
+            event_id = {'1' : 1, '2':2,'11':11,'12':12,'13':13,'14':14,'21':21,'22':22,'23':23,'24':24,
+                        '31':31,'32':32,'33':33,'34':34,'41':41,'42':42,'43':43,'44':44,'51':51,'52':52,'53':53,'54':54,
+                        '61':61,'62':62,'63':63,'64':64,'71':71,'72':72,'73':73,'74':74,'76':76,'77':77,'78':78,'79':79,'254':254,'100007':255}
+            #this just relabels this 100007 trigger as 255 so it's aligned with other subjects
         events_array = {'neutral':1, 'cued':2}
         events_cue = {'neutral/probeleft'  : 11,
                       'neutral/proberight' : 12,
@@ -197,18 +235,10 @@ for i in subs:
         discard  = np.zeros(max(bdata.trialnum)).astype(int)
         discard[discards] = 1 #mark trials that should be thrown out with a 1
         
+        print('%d trial(s) had blinks near to the array or cue being presented'%discard.sum())
+        
         bdata['arraycueblink'] = discard
         
         #save the behavioural data back to csv, with column for if there was a blink by the array or cue presentation
         bdata.to_csv(param['behaviour_blinkchecked'+session], index=False) 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+       
