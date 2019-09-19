@@ -29,52 +29,44 @@ subs = np.array([1,       4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]) #subject 2 
 
 
 alldata_grandmean       = []
-alldata_neutral         = []
-alldata_cued            = []
-alldata_cuedside        = []
+alldata_cuedlvsr        = []
+alldata_cuedplsr        = []
 alldata_error           = []
 alldata_confidence      = []
 alldata_DT              = []
 alldata_errorxside      = []
 alldata_confidencexside = []
 alldata_DTxside         = []
-alldata_cvsn            = []
 
 alldata_grandmean_baselined       = []
-alldata_neutral_baselined         = []
-alldata_cued_baselined            = []
-alldata_cuedside_baselined        = []
+alldata_cuedlvsr_baselined        = []
+alldata_cuedplsr_baselined        = []
 alldata_error_baselined           = []
 alldata_confidence_baselined      = []
 alldata_DT_baselined              = []
 alldata_errorxside_baselined      = []
 alldata_confidencexside_baselined = []
 alldata_DTxside_baselined         = []
-alldata_cvsn_baselined            = []
 
 alldata_grandmean_t       = []
-alldata_neutral_t         = []
-alldata_cued_t            = []
-alldata_cuedside_t        = []
+alldata_cuedlvsr_t        = []
+alldata_cuedplsr_t        = []
 alldata_error_t           = []
 alldata_confidence_t      = []
 alldata_DT_t              = []
 alldata_errorxside_t      = []
 alldata_confidencexside_t = []
 alldata_DTxside_t         = []
-alldata_cvsn_t            = []
 
 alldata_grandmean_baselined_t       = []
-alldata_neutral_baselined_t         = []
-alldata_cued_baselined_t            = []
-alldata_cuedside_baselined_t        = []
+alldata_cuedlvsr_baselined_t        = []
+alldata_cuedplsr_baselined_t        = []
 alldata_error_baselined_t           = []
 alldata_confidence_baselined_t      = []
 alldata_DT_baselined_t              = []
 alldata_errorxside_baselined_t      = []
 alldata_confidencexside_baselined_t = []
 alldata_DTxside_baselined_t         = []
-alldata_cvsn_baselined_t            = []
 
 for i in subs:
     print('\n\ngetting subject ' + str(i) +'\n\n')
@@ -82,56 +74,48 @@ for i in subs:
     param = get_subject_info_wmConfidence(sub) #_baselined
     
     alldata_grandmean.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_grandmean_betas-tfr.h5'))[0])
-    alldata_neutral.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_neutral_betas-tfr.h5'))[0])
-    alldata_cued.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cued_betas-tfr.h5'))[0])
-    alldata_cuedside.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedside_betas-tfr.h5'))[0])
+    alldata_cuedlvsr.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedlvsr_betas-tfr.h5'))[0])
+    alldata_cuedplsr.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedlplusr_betas-tfr.h5'))[0])
     alldata_error.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_error_betas-tfr.h5'))[0])
     alldata_confidence.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_confidence_betas-tfr.h5'))[0])
     alldata_DT.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_DT_betas-tfr.h5'))[0])
     alldata_errorxside.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_errorxside_betas-tfr.h5'))[0])
     alldata_confidencexside.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_confidencexside_betas-tfr.h5'))[0])
     alldata_DTxside.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_DTxside_betas-tfr.h5'))[0])
-    alldata_cvsn.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedvsneutral_betas-tfr.h5'))[0])
     
     
     alldata_grandmean_baselined.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_grandmean_betas_baselined-tfr.h5'))[0])
-    alldata_neutral_baselined.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_neutral_betas_baselined-tfr.h5'))[0])
-    alldata_cued_baselined.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cued_betas_baselined-tfr.h5'))[0])
-    alldata_cuedside_baselined.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedside_betas_baselined-tfr.h5'))[0])
+    alldata_cuedlvsr_baselined.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedlvsr_betas_baselined-tfr.h5'))[0])
+    alldata_cuedplsr_baselined.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedlplusr_betas_baselined-tfr.h5'))[0])
     alldata_error_baselined.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_error_betas_baselined-tfr.h5'))[0])
     alldata_confidence_baselined.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_confidence_betas_baselined-tfr.h5'))[0])
     alldata_DT_baselined.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_DT_betas_baselined-tfr.h5'))[0])
     alldata_errorxside_baselined.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_errorxside_betas_baselined-tfr.h5'))[0])
     alldata_confidencexside_baselined.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_confidencexside_betas_baselined-tfr.h5'))[0])
     alldata_DTxside_baselined.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_DTxside_betas_baselined-tfr.h5'))[0])
-    alldata_cvsn_baselined.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedvsneutral_betas_baselined-tfr.h5'))[0])
     
     
     #tstats
     alldata_grandmean_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_grandmean_tstats-tfr.h5'))[0])
-    alldata_neutral_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_neutral_tstats-tfr.h5'))[0])
-    alldata_cued_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cued_tstats-tfr.h5'))[0])
-    alldata_cuedside_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedside_tstats-tfr.h5'))[0])
+    alldata_cuedlvsr_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedlvsr_tstats-tfr.h5'))[0])
+    alldata_cuedplsr_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedlplusr_tstats-tfr.h5'))[0])
     alldata_error_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_error_tstats-tfr.h5'))[0])
     alldata_confidence_t.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_confidence_tstats-tfr.h5'))[0])
     alldata_DT_t.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_DT_tstats-tfr.h5'))[0])
     alldata_errorxside_t.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_errorxside_tstats-tfr.h5'))[0])
     alldata_confidencexside_t.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_confidencexside_tstats-tfr.h5'))[0])
     alldata_DTxside_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_DTxside_tstats-tfr.h5'))[0])
-    alldata_cvsn_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedvsneutral_tstats-tfr.h5'))[0])
     
     
     alldata_grandmean_baselined_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_grandmean_tstats_baselined-tfr.h5'))[0])
-    alldata_neutral_baselined_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_neutral_tstats_baselined-tfr.h5'))[0])
-    alldata_cued_baselined_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cued_tstats_baselined-tfr.h5'))[0])
-    alldata_cuedside_baselined_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedside_tstats_baselined-tfr.h5'))[0])
+    alldata_cuedlvsr_baselined_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedlvsr_tstats_baselined-tfr.h5'))[0])
+    alldata_cuedplsr_baselined_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedlplusr_tstats_baselined-tfr.h5'))[0])
     alldata_error_baselined_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_error_tstats_baselined-tfr.h5'))[0])
     alldata_confidence_baselined_t.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_confidence_tstats_baselined-tfr.h5'))[0])
     alldata_DT_baselined_t.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_DT_tstats_baselined-tfr.h5'))[0])
     alldata_errorxside_baselined_t.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_errorxside_tstats_baselined-tfr.h5'))[0])
     alldata_confidencexside_baselined_t.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_confidencexside_tstats_baselined-tfr.h5'))[0])
     alldata_DTxside_baselined_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_DTxside_tstats_baselined-tfr.h5'))[0])
-    alldata_cvsn_baselined_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'cue_period', 'wmConfidence_' + param['subid'] + '_cuelocked_tfr_cuedvsneutral_tstats_baselined-tfr.h5'))[0])
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #visualise some regressors
@@ -239,76 +223,123 @@ gave_cvsn_t.plot_joint(title = 'cued vs neutral, t over tstats',
 #i.e. when there is a retrocue, there is (on average) some extra visual alpha suppression, compared to neutral trials
 #this is a coarse way of looking at it, so you need to look at just cued trials, and look at cued side effects
 
-gave_cuedside = mne.grand_average(alldata_cuedside); gave_cuedside.drop_channels(['RM'])
+gave_cuedside = mne.grand_average(alldata_cuedlvsr); gave_cuedside.drop_channels(['RM'])
 gave_cuedside.plot_joint(title = 'cued left vs right, average betas',
                          timefreqs = timefreqs_alpha,
                          topomap_args = dict(outlines = 'head', contours = 0))
 
-gave_cuedside = mne.grand_average(alldata_cuedside); gave_cuedside.data = toverparam(alldata_cuedside)
+gave_cuedside = mne.grand_average(alldata_cuedlvsr); gave_cuedside.data = toverparam(alldata_cuedlvsr)
 gave_cuedside.drop_channels(['RM'])
 gave_cuedside.plot_joint(title = 'cued left vs right, t over betas',
                          timefreqs = timefreqs_alpha,
                          topomap_args = dict(outlines = 'head', contours = 0, vmin = -2, vmax = 2),
                          vmin = -2, vmax = 2)
 
-gave_cuedside_t = mne.grand_average(alldata_cuedside_t); gave_cuedside_t.drop_channels(['RM'])
+gave_cuedside_t = mne.grand_average(alldata_cuedlvsr_t); gave_cuedside_t.drop_channels(['RM'])
 gave_cuedside_t.plot_joint(title = 'cued left vs right, average tstats',
                           timefreqs = timefreqs_alpha,
                           topomap_args = dict(outlines ='head', contours = 0, vmin = -1, vmax = 1),
                           vmin = -1, vmax = 1)
 
 
-gave_cuedside_t = mne.grand_average(alldata_cuedside_t); gave_cuedside_t.data = toverparam(alldata_cuedside_t)
+gave_cuedside_t = mne.grand_average(alldata_cuedlvsr_t); gave_cuedside_t.data = toverparam(alldata_cuedlvsr_t)
 gave_cuedside_t.drop_channels(['RM'])
 gave_cuedside_t.plot_joint(title = 'cued left vs right, t over tstats',
                           timefreqs = timefreqs_alpha,
                           topomap_args = dict(outlines ='head', contours = 0, vmin = -2, vmax = 2),
                           vmin = -2, vmax = 2)
+gave_cuedside_t.plot(picks = ['PO4', 'PO8', 'O2'], combine = 'mean', vmin = -2, vmax = 2, title = 'cued side, t over tstats, average over PO4,PO8,O2')
+gave_cuedside_t.plot(picks = ['PO4', 'PO8', 'O2'], vmin = -2, vmax = 2, title = 'cued side, t over tstats, average over PO4,PO8,O2')
 
+clvsr_norm = []
+for i in range(len(alldata_cuedlvsr_t)):
+    tmp_lvsr  = deepcopy(alldata_cuedlvsr[i])
+    tmp_lplsr = deepcopy(alldata_cuedplsr[i])
+    tmp_lvsr.data = np.multiply(np.divide(tmp_lvsr.data, tmp_lplsr.data),1)
+    clvsr_norm.append(tmp_lvsr)
 
-#can we do a spatiotemporal clustering on alpha here?
-tmp = deepcopy(alldata_cuedside_t)
-for i in tmp:
-    i = i.crop(fmin = 8, fmax = 12) #restrict to alpha frequencies only
-    i.drop_channels(['RM']) #and remove the right mastoid
+gave_lat_norm = mne.grand_average(clvsr_norm); gave_lat_norm.drop_channels(['RM'])
+gave_lat_norm.plot_joint(timefreqs = timefreqs_alpha,
+                         topomap_args = dict(outlines = 'head', contours = 0, vmin=-10,vmax=10),
+                         vmin=-10, vmax=10)
+#%%
+gave_lvsr = mne.grand_average(alldata_cuedlvsr); gave_lvsr.drop_channels(['RM'])
 
-temp = deepcopy(tmp)
-for i in temp:
-    i.data = np.nanmean(i.data, 1) #average across these frequencies now
-    #output data shape is now just (channels, time) as we've collapsed down to just alpha 8=12Hz
+chids =         np.array([             1,  2,  3,
+                                   4,  5,  6,  7,  8,
+                           9, 10, 11, 12, 13, 14, 15, 16, 17,
+                          18, 19, 20, 21, 22, 23, 24, 25, 26,
+                          27, 28, 29, 30, 31, 32, 33, 34, 35,
+                          36, 37, 38, 39, 40, 41, 42, 43, 44,
+                          45, 46, 47, 48, 49, 50, 51, 52, 53,
+                                  54, 55, 56, 57, 58,
+                                      59, 60, 61,
+                                          62
+                                          ])
+chids = np.subtract(chids,1)
+flipids =       np.array([             3,  2,  1,
+                                   8,  7,  6,  5,  4,
+                          17, 16, 15, 14, 13, 12, 11, 10,  9,
+                          26, 25, 24, 23, 22, 21, 20, 19, 18,
+                          35, 34, 33, 32, 31, 30, 29, 28, 27,
+                          44, 43, 42, 41, 40, 39, 38, 37, 36,
+                          53, 52, 51, 50, 49, 48, 47, 46, 45,
+                                  58, 57, 56, 55, 54,
+                                      61, 60, 59,
+                                          62
+                                          ])
+flipids = np.subtract(flipids,1)
+flipids = flipids[:61]
 
+lvsr_cvsi = []
 
-connectivity, ch_names = mne.channels.find_ch_connectivity(tmp[0].info, ch_type = 'eeg')
-#need to make an array that has (subjects, time, space) for the spatiotemporal clustering
-#first make the array anyways
-X = np.zeros(shape = (len(subs), temp[0].data.shape[0], temp[0].data.shape[1])) #create empty array to fill with data
-X.fill(np.nan) #nan it first. now we'll populate it
-for i in range(len(temp)):
-    X[i,:,:] = temp[i].data
+for i in range(len(subs)):
+    lvsr_cvsi.append(alldata_cuedlvsr[i])
     
-#now we need to switch around the dimensions to be (subjects, time, channels)
-X = np.transpose(X, [0,2,1])
-X_list = []
-for i in range(X.shape[0]):
-    X_list.append(np.squeeze(X[0,:,:]))
-#t_obs, clusters, cluster_pv, H0 = mne.stats.spatio_temporal_cluster_1samp_test(X, 
-#                                                                              connectivity = connectivity,
-#                                                                               n_permutations = 1000)
-#mask_alpha = np.asarray(clusters)[cluster_pv < 0.5]
-#good_clusters = np.where(cluster_pv < 0.5)[0]
-
-threshold = 10
-p_accept = .05
-t_obs, clusters, cluster_pv, H0 = mne.stats.spatio_temporal_cluster_test([X],
-                                                                         n_permutations = 1000,
-                                                                         threshold = threshold,
-                                                                         connectivity = connectivity)
-#I don't think this is the right way to set this up, i could really do with checking this out ... 
+for i in range(len(subs)):
+    tmp_lvsr = deepcopy(lvsr_cvsi[i]).drop_channels(['RM'])
+    tmp_flipped = deepcopy(lvsr_cvsi[i])
+    tmp_flipped.data = tmp_flipped.data[flipids,:,:]
+    tmp_lvsr.data = np.subtract(tmp_lvsr.data, tmp_flipped.data)
+    lvsr_cvsi[i] = tmp_lvsr
+    
+    
+gave_lvsr_cvsi = mne.grand_average(lvsr_cvsi); #gave_lvsr_cvsi.data = toverparam(lvsr_cvsi)
+gave_lvsr_cvsi.plot_joint(timefreqs = timefreqs_alpha, topomap_args = dict(outlines='head', contours=0))
+gave_lvsr_cvsi.plot(picks = ['PO8', 'PO4', 'O2'], combine = 'mean')
 
 
+#%% can we do some cluster on this?
+#take electrode selection down to the average of the left visual sensors
+#cluster perms
+#visualise any clusters?
 
+tmpdata = deepcopy(lvsr_cvsi)
+for i in tmpdata:
+    i = i.crop(tmin = None, tmax = None) #restrict time window for the clustering
+    i = i.pick_channels(['PO4', 'PO8', 'O2'])
+    
+times = tmpdata[0].times
 
+tmin, tmax = -0.5, 1.5
+X_lvsr_cvsi = np.empty(shape = (len(subs), gave_lvsr.freqs.size, gave_lvsr.crop(tmin = tmin, tmax = tmax).times.size))
+for i in range(len(lvsr_cvsi)):
+    tmp = deepcopy(lvsr_cvsi[i])
+    tmp.pick_channels(['PO4', 'PO8', 'O2'])
+    tmp.crop(tmin = tmin, tmax = tmax)
+    data = np.nanmean(tmp.data, axis=0)
+    X_lvsr_cvsi[i,:,:] = data
 
+np.random.seed(seed=1)
+t_lvsr_cvsi, clusters_lvsr_cvsi, cluster_pv_lvsr_cvsi, H0_lvsr_cvsi = mne.stats.permutation_cluster_1samp_test(X_lvsr_cvsi, out_type='indices')
+
+mask_lvsr_cvsi = np.squeeze(np.asarray(clusters_lvsr_cvsi)[cluster_pv_lvsr_cvsi<0.4])
+
+gave_lvsr.plot(picks = ['PO4', 'PO8', 'O2'], combine = 'mean',
+               mask = mask_lvsr_cvsi,
+               mask_style = 'both',
+               mask_cmap = 'RdBu_r',
+               mask_alpha=1)
 #%% Question 2 -- if there is selection (suggests there is), what are the behavioural implications?
 # is lateralisation associated with lower error? higher confidence? faster reaction times?
 
@@ -339,6 +370,21 @@ gave_errorcside_t.plot_joint(title = 'effect of error on selection (cued left vs
                              vmin = -2, vmax = 2)
 gave_errorcside_t.plot(picks = visleftchans, combine = 'mean', vmin = -2, vmax = 2,
                        title = 'TFR of visual left channels, error x cued side')
+
+#do cvsi on this? at the moment this regressor looks at differences in topography between the conditions but it doesn't look at lateralisation
+#this says what is the influence of error on cued left trials vs cued right trials
+#any lateralisation here is just the contrast of cued left vs cued right on that specific sensor
+#it doesn't look at lateralisation on that trial and how it relates to error
+#so we need to take cvsi of this errorxcside and plot that i think
+#or we possibly need to put in the contra vs ipsi data into the glm itself maybe
+
+
+
+
+
+
+
+
 #this isn't super convincing just yet
 #also need to understand this
 # its cued (1) vs neutral (-1)
