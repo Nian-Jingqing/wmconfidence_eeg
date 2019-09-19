@@ -24,9 +24,7 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-subs = np.array([11,12,13,14,15])
-subs = np.array([11, 15])
+subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
 for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)

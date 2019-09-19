@@ -5,8 +5,6 @@ Created on Thu Aug 15 12:21:01 2019
 
 @author: sammirc
 """
-
-
 import numpy as np
 import pandas as pd
 import mne
@@ -22,18 +20,14 @@ from wmConfidence_funcs import gesd, plot_AR
 wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'; #laptop wd
 wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
-
-
-subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-subs = np.array([11,12,13,14,15])
-subs = np.array([11, 15])
+subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
 for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub)
 
     resplocked = mne.epochs.read_epochs(fname = param['resplocked'], preload=True) #read raw data
-    resplocked.resample(250) #downsample to 250hz so don't overwork the workstation lols
+    resplocked.resample(100) #downsample to 250hz so don't overwork the workstation lols
 
 
     #will do an automated process of looking for trials with heightened variance (noise) and output which trials to keep

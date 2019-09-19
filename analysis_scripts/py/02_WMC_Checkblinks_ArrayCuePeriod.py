@@ -30,6 +30,8 @@ subs = np.array([5,6,7])
 subs = [8, 9, 10]
 subs = np.array([11, 12, 13, 14])
 subs = np.array([15])
+subs = np.array([16])
+
 for i in subs:
     sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub)
@@ -191,7 +193,7 @@ for i in subs:
         np.isin(raw.annotations.description, np.array([1,2], dtype='str')).sum()
         np.isin(raw.annotations.description, np.add(np.array([11,12,13,14]),65).astype('str')).sum()
         
-        if i == 12 or np.logical_and(i==13, part=='b') or i==15: #in these sessions, one of the 255 (100007) triggers was read as 100008 in each session, so lets rename
+        if i == 12 or np.logical_and(i==13, part=='b') or i==15 or i == 16: #in these sessions, one of the 255 (100007) triggers was read as 100008 in each session, so lets rename
             trig2change = np.squeeze(np.where(raw.annotations.description=='100008'))
             raw.annotations.description[trig2change] = '100007'
         
