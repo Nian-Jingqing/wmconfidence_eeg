@@ -11,7 +11,7 @@ outpath  <- paste0(wd, '/data/datafiles/preprocessed_data')
 
 
 # only doing this for specific subjects really, for now at least
-sublist <- seq(1, 15, by = 1)
+sublist <- seq(1, 16, by = 1)
 #sublist <- seq(8, 10, by = 1) #dont want to overwrite the older subjects
 for(sub in sublist){
   if(sub <= 3 | sub == 10){
