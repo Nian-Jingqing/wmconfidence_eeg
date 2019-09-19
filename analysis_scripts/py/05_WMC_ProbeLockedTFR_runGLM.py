@@ -29,6 +29,7 @@ os.chdir(wd)
 subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 subs = np.array([11,12,13,14])
 subs = np.array([11, 15])
+subs = np.array([16])
 #subs = np.array([10]) #encountered memory error in subject 7 so rerun from here
 #%% only needs running if Probelocked TFR glms not already present
 #subs = np.array([7])

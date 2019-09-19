@@ -5,24 +5,6 @@ Created on Tue Aug  6 14:37:29 2019
 
 @author: sammirc
 """
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug  6 11:06:09 2019
-
-@author: sammirc
-"""
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jul  5 11:54:35 2019
-
-@author: sammirc
-"""
-
-
 import numpy as np
 import scipy as sp
 import pandas as pd
@@ -47,6 +29,8 @@ os.chdir(wd)
 subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
 #subs = np.array([11,12,13,14])
 #subs = np.array([11, 15])
+subs = np.array([16])
+
 
 glms2run = 2 #1 with no baseline, one where tfr input data is baselined
 for i in subs:
@@ -92,9 +76,11 @@ for i in subs:
 
         regressors = list()
         regressors.append( glm.regressors.ParametricRegressor(name = 'trials', values = np.ones(glmdata.num_observations), preproc=None, num_observations = glmdata.num_observations))
-        regressors.append( glm.regressors.CategoricalRegressor(category_list = cues, codes = 0, name = 'neutral') )
-        regressors.append( glm.regressors.CategoricalRegressor(category_list = cues, codes = 1, name = 'cued') )
-        regressors.append( glm.regressors.ParametricRegressor(name = 'cuedside',          values = cuedside,                         preproc = None, num_observations = glmdata.num_observations) )
+        #regressors.append( glm.regressors.CategoricalRegressor(category_list = cues, codes = 0, name = 'neutral') )
+        #regressors.append( glm.regressors.CategoricalRegressor(category_list = cues, codes = 1, name = 'cued') )
+        regressors.append( glm.regressors.CategoricalRegressor(category_list = tfr.metadata.cuetrig.to_numpy(), codes = 14, name = 'cued right') )
+        regressors.append( glm.regressors.CategoricalRegressor(category_list = tfr.metadata.cuetrig.to_numpy(), codes = 13, name = 'cued left') )
+        #regressors.append( glm.regressors.ParametricRegressor(name = 'cuedside',          values = cuedside,                         preproc = None, num_observations = glmdata.num_observations) )
         regressors.append( glm.regressors.ParametricRegressor(name = 'error',             values = absrdif,                          preproc = 'z',  num_observations = glmdata.num_observations) )
         regressors.append( glm.regressors.ParametricRegressor(name = 'confidence',        values = conf,                        preproc = 'z',  num_observations = glmdata.num_observations) )
         regressors.append( glm.regressors.ParametricRegressor(name = 'DT',                values = DT,                               preproc = 'z',  num_observations = glmdata.num_observations) )
@@ -103,17 +89,17 @@ for i in subs:
         regressors.append( glm.regressors.ParametricRegressor(name = 'DT x side',         values = np.multiply(cuedside, DT),        preproc = 'z',  num_observations = glmdata.num_observations) )
 
         contrasts = list()
-        contrasts.append( glm.design.Contrast([1, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'grand mean') )
-        contrasts.append( glm.design.Contrast([0, 1, 0, 0, 0, 0, 0, 0, 0, 0], 'neutral') )
-        contrasts.append( glm.design.Contrast([0, 0, 1, 0, 0, 0, 0, 0, 0, 0], 'cued') )
-        contrasts.append( glm.design.Contrast([0, 0, 0, 1, 0, 0, 0, 0, 0, 0], 'cued side') )
-        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 1, 0, 0, 0, 0, 0], 'error') )
-        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 1, 0, 0, 0, 0], 'confidence') )
-        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 1, 0, 0, 0], 'DT') )
-        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 1, 0, 0], 'error x side') )
-        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 1, 0], 'confidence x side') )
-        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 'DT x side') )
-        contrasts.append( glm.design.Contrast([0,-1, 1, 0, 0, 0, 0, 0, 0, 0], 'cued vs neutral') )
+        contrasts.append( glm.design.Contrast([1, 0, 0, 0, 0, 0, 0, 0, 0], 'grand mean') )
+        contrasts.append( glm.design.Contrast([0, 1, 0, 0, 0, 0, 0, 0, 0], 'cued right') )
+        contrasts.append( glm.design.Contrast([0, 0, 1, 0, 0, 0, 0, 0, 0], 'cued left') )
+        contrasts.append( glm.design.Contrast([0,-1, 1, 0, 0, 0, 0, 0, 0], 'cued l vs r') )
+        contrasts.append( glm.design.Contrast([0, 1, 1, 0, 0, 0, 0, 0, 0], 'cued l plus r') )
+        contrasts.append( glm.design.Contrast([0, 0, 0, 1, 0, 0, 0, 0, 0], 'error') )
+        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 1, 0, 0, 0, 0], 'confidence') )
+        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 1, 0, 0, 0], 'DT') )
+        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 1, 0, 0], 'error x side') )
+        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 1, 0], 'confidence x side') )
+        contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 1], 'DT x side') )
 
 
         glmdes = glm.design.GLMDesign.initialise(regressors, contrasts)
@@ -137,9 +123,8 @@ for i in subs:
 
         for iname in range(len(glmdes.contrast_names)):
             name = glmdes.contrast_names[iname].replace(' ','') #remove whitespace in the contrast name
-            if iname == 1:
-                nave = neut_nave
-            elif iname in [2,3,7,8,9]:
+            
+            if iname in [1, 5,6,7]:
                 nave = cued_nave
             else:
                 nave = total_nave
