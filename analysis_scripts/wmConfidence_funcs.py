@@ -257,6 +257,24 @@ def get_subject_info_wmConfidence(subject):
         param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s15b_preprocessed.pickle')
         param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S15b_blinkchecked_preprocessed.csv')
         
+    if subject['id'] == 16:
+        param['subid']                   = 's16'
+        param['behaviour_sess1']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S16a_allData_preprocessed.csv')
+        param['rawdata_sess1']           = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s16a_16092019.cdt')
+        param['rawset_sess1']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s16a_16092019.set')
+        param['rawcleaned_sess1']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s16a_icacleaned_raw.fif')
+        param['raweyes_sess1']           = op.join(param['path'], 'eyes', param['subid'], 'WMCS16a.asc')
+        param['cleanedeyes_sess1']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s16a_preprocessed.pickle')
+        param['behaviour_blinkchecked1'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S16a_blinkchecked_preprocessed.csv')
+
+        param['behaviour_sess2']         = op.join(param['path'], 'datafiles/preprocessed_data/wmConfidence_S16b_allData_preprocessed.csv')
+        param['rawdata_sess2']           = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s16b_16092019.cdt')
+        param['rawset_sess2']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s16b_16092019.set')
+        param['rawcleaned_sess2']        = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_s16b_icacleaned_raw.fif')
+        param['raweyes_sess2']           = op.join(param['path'], 'eyes', param['subid'], 'WMCS16b.asc')
+        param['cleanedeyes_sess2']       = op.join(param['path'], 'eyes', param['subid'], 'wmConfidence_s16b_preprocessed.pickle')
+        param['behaviour_blinkchecked2'] = op.join(param['path'], 'datafiles/blinkchecked/wmConfidence_S16b_blinkchecked_preprocessed.csv')
+        
         
     #these are coded in a way that we don't have to vary across ppts (it's consistent) so we don't need to repeat per subject
     param['arraylocked']            = op.join(param['path'], 'eeg', param['subid'], 'wmConfidence_'+param['subid']+'_arraylocked-epo.fif')
