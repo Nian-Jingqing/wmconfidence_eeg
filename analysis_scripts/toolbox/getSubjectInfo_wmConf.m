@@ -69,6 +69,11 @@ elseif subj == 15;
     param.rawset   = '/eeg/s15/wmConfidence_s15a_09092019.set';
     param.rawdata2 = '/eeg/s15/wmConfidence_s15b_09092019.cdt';
     param.rawset2  = '/eeg/s15/wmConfidence_s15b_09092019.set';
+elseif subj == 16;
+    param.rawdata  = '/eeg/s16/wmConfidence_s16a_16092019.cdt';
+    param.rawset   = '/eeg/s16/wmConfidence_s16a_16092019.set';
+    param.rawdata2 = '/eeg/s16/wmConfidence_s16b_16092019.cdt';
+    param.rawset2  = '/eeg/s16/wmConfidence_s16b_16092019.set';
 
 end
 end

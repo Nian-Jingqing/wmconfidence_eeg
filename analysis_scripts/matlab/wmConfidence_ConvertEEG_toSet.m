@@ -18,6 +18,7 @@ subs = [8 9 10];
 subs = [11]; %new data to convert
 subs = [12 13 14]; %newer data to convert to .set
 subs = [15];
+subs = [16];
 
 for i = 1:length(subs)
     sub = subs(i);
