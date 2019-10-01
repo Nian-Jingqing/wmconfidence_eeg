@@ -37,23 +37,15 @@ contrasts = ['grandmean',
              'error_pleft_cvsn','error_pright_cvsn','error_neutral','error_cued','error_cued_lvsr',
              'conf_pleft_cvsn','conf_pright_cvsn','conf_neutral','conf_cued','conf_cued_lvsr',
              'plvsr_cvsn','plvsr_cued']
-        
-
-
-
-
 data = dict()
 data_baselined = dict()
 data_t = dict()
 data_baselined_t = dict()
-
 for i in contrasts:
     data[i] = []
     data_baselined[i] = []
     data_t[i] = []
     data_baselined_t[i] = []
-
-
 for i in subs:
     print('\n\ngetting subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)
@@ -78,12 +70,18 @@ timefreqs = {(.4, 10):(.4, 4),
 
 timefreqs_alpha ={(.4, 10):(.4, 4),
                   (.6, 10):(.4, 4),
-                  (.8, 10):(.4, 4),
-                  (1., 10):(.4, 4)}
+                  (.8, 10):(.4, 4)}
 timefreqs_cue = {(-1.2, 10):(.4, 4),
                  (-1.0, 10):(.4, 4),
                  (-0.8, 10):(.4, 4),
                  (-0.6, 10):(.4, 4)}
+
+
+timefreqs_cue_rel2cue = {
+        (.3, 10):(.4, 4),
+        (.5, 10):(.4, 4),
+        (.7, 10):(.5, 4),
+        (.9, 10):(.4, 4)}
 
 visleftchans  = ['PO3', 'PO7', 'O1']
 
@@ -94,6 +92,84 @@ motleftchans = ['C1', 'C3']   #channels contra to the right hand (mouse)
 
 topoargs = dict(outlines= 'head', contours = 0)
 topoargs_t = dict(outlines = 'head', contours = 0, vmin=-2, vmax = 2)
+
+
+
+#%%
+gave_gmean = mne.grand_average(data_baselined_t['grandmean']); gave_gmean.data = toverparam(data_baselined_t['grandmean']); gave_gmean.drop_channels(['RM'])
+gave_gmean.plot_joint(title = 'grandmean, t over tstats', timefreqs = timefreqs_alpha,
+                      topomap_args = dict(outlines = 'head', contours = 0, vmin = -5, vmax = 5))
+
+times = gave_gmean.times
+timesrel2cue = np.add(times, 1.5) #this sets zero to be the cue onset time
+allfreqs = gave_gmean.freqs
+
+#%%
+#for i in data_baselined_t['pleft_cued']:
+#    i.times = timesrel2cue
+
+gave_pleft_cued = mne.grand_average(data_baselined_t['pleft_cued']); gave_pleft_cued.data = toverparam(data_baselined_t['pleft_cued'])
+gave_pleft_cued.drop_channels(['RM'])
+gave_pleft_cued.times = timesrel2cue
+
+gave_pleft_cvsn = mne.grand_average(data_t['pleft_cvsn']); gave_pleft_cvsn.data = toverparam(data_t['pleft_cvsn'])
+gave_pleft_cvsn.times = timesrel2cue
+
+#contra vs ipsi should be done within subject and then averaged
+alldata_clvsn = np.empty(shape = (subs.size, allfreqs.size, timesrel2cue.size))
+for i in range(subs.size):
+    alldata_clvsn[i,:,:] = np.subtract(np.nanmean( deepcopy(data_t['pleft_cvsn'][i]).pick_channels(visrightchans).data,0),
+                                       np.nanmean( deepcopy(data_t['pleft_cvsn'][i]).pick_channels(visleftchans).data, 0))
+#ttest over this
+cvsi_clvsn = sp.stats.ttest_1samp(alldata_clvsn, popmean = 0, axis = 0)[0]
+
+
+#cvsi_clvsn = np.subtract(np.nanmean(deepcopy(gave_pleft_cvsn).pick_channels(visrightchans).data,0),
+#                         0)#np.nanmean(deepcopy(gave_pleft_cvsn).pick_channels(visleftchans).data, 0))
+
+pleft_pjoint = gave_pleft_cvsn.plot_joint(title = 'probed left item cued vs neutral, t over tstats', timefreqs = timefreqs_cue_rel2cue, vmin=-2,vmax=2,
+                      topomap_args = dict(outlines = 'head', contours = 0, vmin = -3, vmax = 3))
+#six axes in pleft_pjoint.axes
+axes = pleft_pjoint.axes
+#the first axis is the tfr image, so lets replace it with the actual image that we want (i.e. just the right visual channels)
+axes[0].clear()
+tfrplot = axes[0].imshow(cvsi_clvsn, cmap = 'RdBu_r', aspect = 'auto', vmin = -2, vmax = 2, interpolation = 'gaussian',
+                 origin = 'lower', extent = (np.min(timesrel2cue), np.max(timesrel2cue), np.min(allfreqs), np.max(allfreqs)))
+axes[0].set_xlabel('Time rel. to cue onset (s)')
+axes[0].set_ylabel('Frequency (Hz)')
+pleft_pjoint.colorbar(tfrplot, ax = axes[0])
+
+
+
+#%%
+
+#for i in data_baselined_t['pright_cued']:
+#    i.times = timesrel2cue
+    
+gave_pright_cued = mne.grand_average(data_baselined_t['pright_cued']); gave_pright_cued.data = toverparam(data_baselined_t['pright_cued'])
+gave_pright_cued.drop_channels(['RM'])
+gave_pright_cued.times = timesrel2cue
+
+gave_pright_cvsn = mne.grand_average(data_t['pright_cvsn']); gave_pright_cvsn.data = toverparam(data_t['pright_cvsn'])
+gave_pright_cvsn.times = timesrel2cue
+
+
+cvsi_crvsn = np.subtract(np.nanmean(deepcopy(gave_pright_cvsn).pick_channels(visleftchans).data,0),
+                         0)#np.nanmean(deepcopy(gave_pright_cvsn).pick_channels(visrightchans).data, 0))
+
+pright_pjoint = gave_pright_cvsn.plot_joint(title = 'probed right item cued vs neutral, t over tstats', timefreqs = timefreqs_cue_rel2cue, vmin=-2,vmax=2,
+                            topomap_args = dict(outlines = 'head', contours = 0, vmin = -3, vmax = 3))
+axes = pright_pjoint.axes
+axes[0].clear()
+axes[0].imshow(cvsi_crvsn, cmap = 'RdBu_r', aspect = 'auto', vmin = -2, vmax = 2, interpolation = 'gaussian',
+                 origin = 'lower', extent = (np.min(timesrel2cue), np.max(timesrel2cue), np.min(allfreqs), np.max(allfreqs)))
+axes[0].set_xlabel('Time rel. to cue onset (s)')
+axes[0].set_ylabel('Frequency (Hz)')
+pright_pjoint.colorbar(tfrplot, ax = axes[0], extend  = 'both')
+
+
+
+
 
 #%%
 
@@ -214,7 +290,7 @@ cvsi_errorlvsr = np.subtract(np.nanmean(deepcopy(gave_errorlvsr).pick_channels(v
 fig = plt.figure()
 ax = fig.add_subplot(111)
 contour = ax.imshow(cvsi_errorlvsr, cmap = 'RdBu_r', aspect = 'auto', vmin = -2, vmax = 2,
-                    interpolation = 'none', origin = 'lower', extent = (np.min(times), np.max(times), np.min(freqs), np.max(freqs)))
+                    interpolation = 'hanning', origin = 'lower', extent = (np.min(times), np.max(times), np.min(freqs), np.max(freqs)))
 ax.vlines([0, -1.5], linestyle = 'dashed', lw = .75, ymin=1, ymax = 39)
 ax.set_title('Error ~ contra - ipsi for cued left vs right')
 fig.colorbar(contour, ax = ax)
