@@ -31,6 +31,7 @@ subs = [8, 9, 10]
 subs = np.array([11, 12, 13, 14])
 subs = np.array([15])
 subs = np.array([16])
+subs = np.array([17, 18])
 
 for i in subs:
     sub = dict(loc = 'workstation', id = i)
@@ -169,7 +170,7 @@ for i in subs:
         #we're going to read in the raw data, filter it, epoch it around the array/cue triggers and check to see if there are blinks nearby
         raw = mne.io.read_raw_eeglab(input_fname = param['rawset_sess'+session], montage = 'easycap-M1', eog = ['VEOG', 'HEOG'], preload=True)
         raw.set_montage('easycap-M1')
-        raw.filter(1,40, picks='eog')
+        #raw.filter(1,40, picks='eog')
         
         #epoching
         #here it's important to specify a dictionary that assigns each trigger to its own integer value
@@ -193,7 +194,7 @@ for i in subs:
         np.isin(raw.annotations.description, np.array([1,2], dtype='str')).sum()
         np.isin(raw.annotations.description, np.add(np.array([11,12,13,14]),65).astype('str')).sum()
         
-        if i == 12 or np.logical_and(i==13, part=='b') or i==15 or i == 16: #in these sessions, one of the 255 (100007) triggers was read as 100008 in each session, so lets rename
+        if i == 12 or np.logical_and(i==13, part=='b') or i==15 or i == 16 or i == 17: #in these sessions, one of the 255 (100007) triggers was read as 100008 in each session, so lets rename
             trig2change = np.squeeze(np.where(raw.annotations.description=='100008'))
             raw.annotations.description[trig2change] = '100007'
         

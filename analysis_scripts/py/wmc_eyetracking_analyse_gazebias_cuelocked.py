@@ -15,25 +15,27 @@ import sys
 from matplotlib import pyplot as plt
 import pickle
 
-sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence/analysis_scripts')
-#sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence_eegfmri/analysis_scripts')
+#sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence/analysis_scripts')
+sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
 from wmConfidence_funcs import get_subject_info_wmConfidence
 
-sys.path.insert(0, '/Users/sammi/Desktop/Experiments/BCEyes')
-#sys.path.insert(0, '/home/sammirc/Desktop/DPhil/BCEyes')
+#sys.path.insert(0, '/Users/sammi/Desktop/Experiments/BCEyes')
+sys.path.insert(0, '/home/sammirc/Desktop/DPhil/BCEyes')
 import BCEyes as bce
 
 
 
 wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'; #laptop wd
+wd = '/home/sammirc/Desktop/DPhil/wmConfidence';
 os.chdir(wd)
 
 
-subs = np.array([4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16])
+subs = np.array([4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18])
+
 #%%
 
-downsample = True
-derivative = True
+downsample = False
+derivative = False
 resample_freq = 200
 tmin, tmax = -0.2, 1.5
 timerange = np.arange(tmin, tmax,.001)
@@ -58,7 +60,7 @@ if derivative and downsample:
 
 count = 0
 for i in subs:
-    sub = dict(loc = 'laptop', id = i)
+    sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub)
     
     #read from pickle here
@@ -183,11 +185,11 @@ ax.plot(gave_neutral_x  , timewin, lw = 1, label = 'gave neutral ave x')
 
 #ax.vlines(x = 960, ymin = -.499, ymax = 1.5, ls = 'dashed', color = '#bdbdbd')
 if derivative:
-    ax.hlines(y = [0, 1.5], xmin = -.2, xmax = .2, ls = 'dashed', color = '#bdbdbd')
+    ax.hlines(y = [0, 1.5], xmin = -.2, xmax = .2, linestyles = 'dashed', color = '#bdbdbd')
     ax.set_xlim([-2, 2])
 else:
-    ax.hlines(y = [0, 1.5], xmin = 940, xmax = 980, ls = 'dashed', color = '#bdbdbd') 
-    ax.vlines(x = 960, ymin = tmin, ymax = tmax, ls = 'dashed', color = '#bdbdbd')               
+    ax.hlines(y = [0, 1.5], xmin = 940, xmax = 980, linestyles = 'dashed', color = '#bdbdbd') 
+    ax.vlines(x = 960, ymin = tmin, ymax = tmax, linestyles = 'dashed', color = '#bdbdbd')               
 
 if not derivative:
     ax.set_xlabel('gaze coordinate x (pixels)')

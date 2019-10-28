@@ -24,7 +24,8 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
+subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18])
+subs = np.array([17, 18])
 for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)
@@ -35,12 +36,13 @@ for i in subs:
 
 
     #will do an automated process of looking for trials with heightened variance (noise) and output which trials to keep
-    _, keeps = plot_AR(probelocked, method = 'gesd', zthreshold = 1.5, p_out=.1, alpha = .05, outlier_side = 1)
-    keeps = keeps.flatten()
-
-    discards = np.ones(len(probelocked), dtype = 'bool')
-    discards[keeps] = False
-    probelocked = probelocked.drop(discards) #first we'll drop trials with excessive noise in the EEG
+    if i != 18:
+        _, keeps = plot_AR(probelocked, method = 'gesd', zthreshold = 1.5, p_out=.1, alpha = .05, outlier_side = 1) #this fails on subject 18 for some fking reason
+        keeps = keeps.flatten()
+    
+        discards = np.ones(len(probelocked), dtype = 'bool')
+        discards[keeps] = False
+        probelocked = probelocked.drop(discards) #first we'll drop trials with excessive noise in the EEG
 
     #now we'll drop trials with behaviour problems (reaction time +/- 2.5 SDs of mean, didn't click to report orientation)
     probelocked = probelocked['DTcheck == 0 and clickresp == 1 and arraycueblink == 0'] #also exclude trials where blinks happened in the array or cue period

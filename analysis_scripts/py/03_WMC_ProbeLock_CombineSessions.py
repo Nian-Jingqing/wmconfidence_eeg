@@ -33,8 +33,8 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
-
+subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18])
+subs = np.array([17, 18])
 for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)
@@ -67,7 +67,7 @@ for i in subs:
                         'cued_left'     : 23,
                         'cued_right'    : 24} 
         events,_ = mne.events_from_annotations(raw, event_id = event_id)
-        tmin, tmax = -1, 1.0
+        tmin, tmax = -2, 1.0
         baseline = None
         
         probelocked   = mne.Epochs(raw, events, events_probe, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        
@@ -109,7 +109,7 @@ for i in subs:
                         'cued_left'     : 23,
                         'cued_right'    : 24} 
         events,_ = mne.events_from_annotations(raw, event_id = event_id)
-        tmin, tmax = -1, 1.0
+        tmin, tmax = -2, 1.0
         baseline = None
         
         probelocked   = mne.Epochs(raw, events, events_probe, tmin, tmax, baseline, reject_by_annotation=False, preload=True)      
@@ -152,7 +152,7 @@ for i in subs:
                         'cued_right'    : 24} 
         events1, _ = mne.events_from_annotations(raw1, event_id = event_id)
         events2, _ = mne.events_from_annotations(raw2, event_id = event_id)
-        tmin, tmax = -1, 1.0
+        tmin, tmax = -2, 1.0
         baseline = None
         
         probelocked1   = mne.Epochs(raw1, events1, events_probe, tmin, tmax, baseline, reject_by_annotation=False, preload=True)        

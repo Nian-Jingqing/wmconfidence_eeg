@@ -21,8 +21,8 @@ from wmConfidence_funcs import gesd, plot_AR, toverparam
 wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
-subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-subs = np.array([1,       4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]) #subject 2 actually only has 72 trials in total, not really a lot so exclude atm
+subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
+subs = np.array([       4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16]) #subject 2 actually only has 72 trials in total, not really a lot so exclude atm
 
 
 alldata_grandmean       = []
@@ -32,13 +32,22 @@ alldata_psideneutral    = []
 alldata_psidecued       = []
 alldata_DT              = []
 alldata_error           = []
-alldata_pside           = []
-alldata_DTxpside        = []
-alldata_errorxpside     = []
 alldata_conf            = []
-alldata_confxpside      = []
-alldata_confneut        = []
-alldata_confcued        = []
+alldata_pside           = []
+alldata_psidexcvsn      = []
+alldata_error_cvsn      = []
+alldata_dt_cvsn         = []
+alldata_conf_cvsn       = []
+alldata_errorxpside_neut = []
+alldata_errorxpside_cued = []
+alldata_errorxpside_cvsn = []
+alldata_dtxpside_neut = []
+alldata_dtxpside_cued = []
+alldata_dtxpside_cvsn = []
+alldata_confxpside_neut = []
+alldata_confxpside_cued = []
+alldata_confxpside_cvsn = []
+
 
 alldata_grandmean_t       = []
 alldata_neutral_t         = []
@@ -47,13 +56,21 @@ alldata_psideneutral_t    = []
 alldata_psidecued_t       = []
 alldata_DT_t              = []
 alldata_error_t           = []
-alldata_pside_t           = []
-alldata_DTxpside_t        = []
-alldata_errorxpside_t     = []
 alldata_conf_t            = []
-alldata_confxpside_t      = []
-alldata_confneut_t        = []
-alldata_confcued_t        = []
+alldata_pside_t           = []
+alldata_psidexcvsn_t      = []
+alldata_error_cvsn_t      = []
+alldata_dt_cvsn_t         = []
+alldata_conf_cvsn_t       = []
+alldata_errorxpside_neut_t = []
+alldata_errorxpside_cued_t = []
+alldata_errorxpside_cvsn_t = []
+alldata_dtxpside_neut_t = []
+alldata_dtxpside_cued_t = []
+alldata_dtxpside_cvsn_t = []
+alldata_confxpside_neut_t = []
+alldata_confxpside_cued_t = []
+alldata_confxpside_cvsn_t = []
 
 alldata_grandmean_baselined       = []
 alldata_neutral_baselined         = []
@@ -62,13 +79,22 @@ alldata_psideneutral_baselined    = []
 alldata_psidecued_baselined       = []
 alldata_DT_baselined              = []
 alldata_error_baselined           = []
-alldata_pside_baselined           = []
-alldata_DTxpside_baselined        = []
-alldata_errorxpside_baselined     = []
 alldata_conf_baselined            = []
-alldata_confxpside_baselined      = []
-alldata_confneut_baselined        = []
-alldata_confcued_baselined        = []
+alldata_pside_baselined           = []
+alldata_psidexcvsn_baselined      = []
+alldata_error_cvsn_baselined      = []
+alldata_dt_cvsn_baselined         = []
+alldata_conf_cvsn_baselined       = []
+alldata_errorxpside_neut_baselined = []
+alldata_errorxpside_cued_baselined = []
+alldata_errorxpside_cvsn_baselined = []
+alldata_dtxpside_neut_baselined = []
+alldata_dtxpside_cued_baselined = []
+alldata_dtxpside_cvsn_baselined = []
+alldata_confxpside_neut_baselined = []
+alldata_confxpside_cued_baselined = []
+alldata_confxpside_cvsn_baselined = []
+
 
 alldata_grandmean_baselined_t       = []
 alldata_neutral_baselined_t         = []
@@ -77,82 +103,116 @@ alldata_psideneutral_baselined_t    = []
 alldata_psidecued_baselined_t       = []
 alldata_DT_baselined_t              = []
 alldata_error_baselined_t           = []
-alldata_pside_baselined_t           = []
-alldata_DTxpside_baselined_t        = []
-alldata_errorxpside_baselined_t     = []
 alldata_conf_baselined_t            = []
-alldata_confxpside_baselined_t      = []
-alldata_confneut_baselined_t        = []
-alldata_confcued_baselined_t        = []
-
-
+alldata_pside_baselined_t           = []
+alldata_psidexcvsn_baselined_t      = []
+alldata_error_cvsn_baselined_t      = []
+alldata_dt_cvsn_baselined_t         = []
+alldata_conf_cvsn_baselined_t       = []
+alldata_errorxpside_neut_baselined_t = []
+alldata_errorxpside_cued_baselined_t = []
+alldata_errorxpside_cvsn_baselined_t = []
+alldata_dtxpside_neut_baselined_t = []
+alldata_dtxpside_cued_baselined_t = []
+alldata_dtxpside_cvsn_baselined_t = []
+alldata_confxpside_neut_baselined_t = []
+alldata_confxpside_cued_baselined_t = []
+alldata_confxpside_cvsn_baselined_t = []
 
 for i in subs:
     print('\n\ngetting subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub) #_baselined
     
-    alldata_grandmean.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_grandmean_betas-tfr.h5'))[0])
-    alldata_neutral.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_neutral_betas-tfr.h5'))[0])
-    alldata_cued.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_cued_betas-tfr.h5'))[0])
-    alldata_psideneutral.append(mne.time_frequency.read_tfrs(fname      = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_psideneutral_betas-tfr.h5'))[0])
-    alldata_psidecued.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_psidecued_betas-tfr.h5'))[0])
-    alldata_DT.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_betas-tfr.h5'))[0])
-    alldata_error.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_error_betas-tfr.h5'))[0])
-    alldata_pside.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_pside_betas-tfr.h5'))[0])
-    alldata_DTxpside.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_betas-tfr.h5'))[0])
-    alldata_errorxpside.append(mne.time_frequency.read_tfrs(fname       = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_betas-tfr.h5'))[0])
-    alldata_conf.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidence_betas-tfr.h5'))[0])
-    alldata_confxpside.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidencexpside_betas-tfr.h5'))[0])
-    alldata_confneut.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidenceneutral_betas-tfr.h5'))[0])
-    alldata_confcued.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidencecued_betas-tfr.h5'))[0])
+#    alldata_grandmean.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_grandmean_betas-tfr.h5'))[0])
+#    alldata_neutral.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_neutral_betas-tfr.h5'))[0])
+#    alldata_cued.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_cued_betas-tfr.h5'))[0])
+#    alldata_psideneutral.append(mne.time_frequency.read_tfrs(fname      = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_psideneutral_betas-tfr.h5'))[0])
+#    alldata_psidecued.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_psidecued_betas-tfr.h5'))[0])
+#    alldata_DT.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_betas-tfr.h5'))[0])
+#    alldata_error.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_error_betas-tfr.h5'))[0])
+#    alldata_pside.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_pside_betas-tfr.h5'))[0])
+#    alldata_conf.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confidence_betas-tfr.h5'))[0])
+#    alldata_errorxpside_neut.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_neutral_betas-tfr.h5'))[0])
+#    alldata_errorxpside_cued.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_cued_betas-tfr.h5'))[0])
+#    alldata_errorxpside_cvsn.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpsidexcvsn_betas-tfr.h5'))[0])
+#    alldata_dtxpside_neut.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_neutral_betas-tfr.h5'))[0])
+#    alldata_dtxpside_cued.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_cued_betas-tfr.h5'))[0])
+#    alldata_dtxpside_cvsn.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpsidexcvsn_betas-tfr.h5'))[0])
+#    alldata_confxpside_neut.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpside_neutral_betas-tfr.h5'))[0])
+#    alldata_confxpside_cued.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpside_cued_betas-tfr.h5'))[0])
+#    alldata_confxpside_cvsn.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpsidexcvsn_betas-tfr.h5'))[0])
+#    alldata_error_cvsn.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_error_cvsn_betas-tfr.h5'))[0])
+#    alldata_dt_cvsn.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_cvsn_betas-tfr.h5'))[0])
+#    alldata_conf_cvsn.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_conf_cvsn_betas-tfr.h5'))[0])
     
-    alldata_grandmean_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_grandmean_tstats-tfr.h5'))[0])
-    alldata_neutral_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_neutral_tstats-tfr.h5'))[0])
-    alldata_cued_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_cued_tstats-tfr.h5'))[0])
-    alldata_psideneutral_t.append(mne.time_frequency.read_tfrs(fname      = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_psideneutral_tstats-tfr.h5'))[0])
-    alldata_psidecued_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_psidecued_tstats-tfr.h5'))[0])
-    alldata_DT_t.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_tstats-tfr.h5'))[0])
-    alldata_error_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_error_tstats-tfr.h5'))[0])
-    alldata_pside_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_pside_tstats-tfr.h5'))[0])
-    alldata_DTxpside_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_tstats-tfr.h5'))[0])
-    alldata_errorxpside_t.append(mne.time_frequency.read_tfrs(fname       = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_tstats-tfr.h5'))[0])
-    alldata_conf_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidence_tstats-tfr.h5'))[0])
-    alldata_confxpside_t.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidencexpside_tstats-tfr.h5'))[0])
-    alldata_confneut_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidenceneutral_tstats-tfr.h5'))[0])
-    alldata_confcued_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidencecued_tstats-tfr.h5'))[0])
+    alldata_grandmean_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_grandmean_tstats-tfr.h5'))[0])
+    alldata_neutral_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_neutral_tstats-tfr.h5'))[0])
+    alldata_cued_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_cued_tstats-tfr.h5'))[0])
+    alldata_psideneutral_t.append(mne.time_frequency.read_tfrs(fname      = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_psideneutral_tstats-tfr.h5'))[0])
+    alldata_psidecued_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_psidecued_tstats-tfr.h5'))[0])
+    alldata_DT_t.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_tstats-tfr.h5'))[0])
+    alldata_error_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_error_tstats-tfr.h5'))[0])
+    alldata_pside_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_pside_tstats-tfr.h5'))[0])
+    alldata_conf_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confidence_tstats-tfr.h5'))[0])
+    alldata_errorxpside_neut_t.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_neutral_tstats-tfr.h5'))[0])
+    alldata_errorxpside_cued_t.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_cued_tstats-tfr.h5'))[0])
+    alldata_errorxpside_cvsn_t.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpsidexcvsn_tstats-tfr.h5'))[0])
+    alldata_dtxpside_neut_t.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_neutral_tstats-tfr.h5'))[0])
+    alldata_dtxpside_cued_t.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_cued_tstats-tfr.h5'))[0])
+    alldata_dtxpside_cvsn_t.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpsidexcvsn_tstats-tfr.h5'))[0])
+    alldata_confxpside_neut_t.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpside_neutral_tstats-tfr.h5'))[0])
+    alldata_confxpside_cued_t.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpside_cued_tstats-tfr.h5'))[0])
+    alldata_confxpside_cvsn_t.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpsidexcvsn_tstats-tfr.h5'))[0])
+    alldata_error_cvsn_t.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_error_cvsn_tstats-tfr.h5'))[0])
+    alldata_dt_cvsn_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_cvsn_tstats-tfr.h5'))[0])
+    alldata_conf_cvsn_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_conf_cvsn_tstats-tfr.h5'))[0])
     
     
-    #and the baselined versions ...
-    alldata_grandmean_baselined.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_grandmean_betas_baselined-tfr.h5'))[0])
-    alldata_neutral_baselined.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_neutral_betas_baselined-tfr.h5'))[0])
-    alldata_cued_baselined.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_cued_betas_baselined-tfr.h5'))[0])
-    alldata_psideneutral_baselined.append(mne.time_frequency.read_tfrs(fname      = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_psideneutral_betas_baselined-tfr.h5'))[0])
-    alldata_psidecued_baselined.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_psidecued_betas_baselined-tfr.h5'))[0])
-    alldata_DT_baselined.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_betas_baselined-tfr.h5'))[0])
-    alldata_error_baselined.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_error_betas_baselined-tfr.h5'))[0])
-    alldata_pside_baselined.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_pside_betas_baselined-tfr.h5'))[0])
-    alldata_DTxpside_baselined.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_betas_baselined-tfr.h5'))[0])
-    alldata_errorxpside_baselined.append(mne.time_frequency.read_tfrs(fname       = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_betas_baselined-tfr.h5'))[0])
-    alldata_conf_baselined.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidence_betas_baselined-tfr.h5'))[0])
-    alldata_confxpside_baselined.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidencexpside_betas_baselined-tfr.h5'))[0])
-    alldata_confneut_baselined.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidenceneutral_betas_baselined-tfr.h5'))[0])
-    alldata_confcued_baselined.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidencecued_betas_baselined-tfr.h5'))[0])
+#    alldata_grandmean_baselined.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_grandmean_betas_baselined-tfr.h5'))[0])
+#    alldata_neutral_baselined.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_neutral_betas_baselined-tfr.h5'))[0])
+#    alldata_cued_baselined.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_cued_betas_baselined-tfr.h5'))[0])
+#    alldata_psideneutral_baselined.append(mne.time_frequency.read_tfrs(fname      = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_psideneutral_betas_baselined-tfr.h5'))[0])
+#    alldata_psidecued_baselined.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_psidecued_betas_baselined-tfr.h5'))[0])
+#    alldata_DT_baselined.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_betas_baselined-tfr.h5'))[0])
+#    alldata_error_baselined.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_error_betas_baselined-tfr.h5'))[0])
+#    alldata_pside_baselined.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_pside_betas_baselined-tfr.h5'))[0])
+#    alldata_conf_baselined.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confidence_betas_baselined-tfr.h5'))[0])
+#    alldata_errorxpside_neut_baselined.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_neutral_betas_baselined-tfr.h5'))[0])
+#    alldata_errorxpside_cued_baselined.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_cued_betas_baselined-tfr.h5'))[0])
+#    alldata_errorxpside_cvsn_baselined.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpsidexcvsn_betas_baselined-tfr.h5'))[0])
+#    alldata_dtxpside_neut_baselined.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_neutral_betas_baselined-tfr.h5'))[0])
+#    alldata_dtxpside_cued_baselined.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_cued_betas_baselined-tfr.h5'))[0])
+#    alldata_dtxpside_cvsn_baselined.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpsidexcvsn_betas_baselined-tfr.h5'))[0])
+#    alldata_confxpside_neut_baselined.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpside_neutral_betas_baselined-tfr.h5'))[0])
+#    alldata_confxpside_cued_baselined.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpside_cued_betas_baselined-tfr.h5'))[0])
+#    alldata_confxpside_cvsn_baselined.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpsidexcvsn_betas_baselined-tfr.h5'))[0])
+#    alldata_error_cvsn_baselined.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_error_cvsn_betas_baselined-tfr.h5'))[0])
+#    alldata_dt_cvsn_baselined.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_cvsn_betas_baselined-tfr.h5'))[0])
+#    alldata_conf_cvsn_baselined.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_conf_cvsn_betas_baselined-tfr.h5'))[0])
     
-    alldata_grandmean_baselined_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_grandmean_tstats_baselined-tfr.h5'))[0])
-    alldata_neutral_baselined_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_neutral_tstats_baselined-tfr.h5'))[0])
-    alldata_cued_baselined_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_cued_tstats_baselined-tfr.h5'))[0])
-    alldata_psideneutral_baselined_t.append(mne.time_frequency.read_tfrs(fname      = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_psideneutral_tstats_baselined-tfr.h5'))[0])
-    alldata_psidecued_baselined_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_psidecued_tstats_baselined-tfr.h5'))[0])
-    alldata_DT_baselined_t.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_tstats_baselined-tfr.h5'))[0])
-    alldata_error_baselined_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_error_tstats_baselined-tfr.h5'))[0])
-    alldata_pside_baselined_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_pside_tstats_baselined-tfr.h5'))[0])
-    alldata_DTxpside_baselined_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_tstats_baselined-tfr.h5'))[0])
-    alldata_errorxpside_baselined_t.append(mne.time_frequency.read_tfrs(fname       = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_tstats_baselined-tfr.h5'))[0])
-    alldata_conf_baselined_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidence_tstats_baselined-tfr.h5'))[0])
-    alldata_confxpside_baselined_t.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidencexpside_tstats_baselined-tfr.h5'))[0])
-    alldata_confneut_baselined_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidenceneutral_tstats_baselined-tfr.h5'))[0])
-    alldata_confcued_baselined_t.append(mne.time_frequency.read_tfrs(fname          = op.join(param['path'], 'glms', 'probe', 'wmConfidence_' + param['subid'] + '_probelocked_tfr_confidencecued_tstats_baselined-tfr.h5'))[0])
+    alldata_grandmean_baselined_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_grandmean_tstats_baselined-tfr.h5'))[0])
+    alldata_neutral_baselined_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_neutral_tstats_baselined-tfr.h5'))[0])
+    alldata_cued_baselined_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_cued_tstats_baselined-tfr.h5'))[0])
+    alldata_psideneutral_baselined_t.append(mne.time_frequency.read_tfrs(fname      = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_psideneutral_tstats_baselined-tfr.h5'))[0])
+    alldata_psidecued_baselined_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_psidecued_tstats_baselined-tfr.h5'))[0])
+    alldata_DT_baselined_t.append(mne.time_frequency.read_tfrs(fname                = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_tstats_baselined-tfr.h5'))[0])
+    alldata_error_baselined_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_error_tstats_baselined-tfr.h5'))[0])
+    alldata_pside_baselined_t.append(mne.time_frequency.read_tfrs(fname             = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_pside_tstats_baselined-tfr.h5'))[0])
+    alldata_conf_baselined_t.append(mne.time_frequency.read_tfrs(fname              = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confidence_tstats_baselined-tfr.h5'))[0])
+    alldata_errorxpside_neut_baselined_t.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_neutral_tstats_baselined-tfr.h5'))[0])
+    alldata_errorxpside_cued_baselined_t.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpside_cued_tstats_baselined-tfr.h5'))[0])
+    alldata_errorxpside_cvsn_baselined_t.append(mne.time_frequency.read_tfrs(fname  = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_errorxpsidexcvsn_tstats_baselined-tfr.h5'))[0])
+    alldata_dtxpside_neut_baselined_t.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_neutral_tstats_baselined-tfr.h5'))[0])
+    alldata_dtxpside_cued_baselined_t.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpside_cued_tstats_baselined-tfr.h5'))[0])
+    alldata_dtxpside_cvsn_baselined_t.append(mne.time_frequency.read_tfrs(fname     = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DTxpsidexcvsn_tstats_baselined-tfr.h5'))[0])
+    alldata_confxpside_neut_baselined_t.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpside_neutral_tstats_baselined-tfr.h5'))[0])
+    alldata_confxpside_cued_baselined_t.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpside_cued_tstats_baselined-tfr.h5'))[0])
+    alldata_confxpside_cvsn_baselined_t.append(mne.time_frequency.read_tfrs(fname   = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_confxpsidexcvsn_tstats_baselined-tfr.h5'))[0])
+    alldata_error_cvsn_baselined_t.append(mne.time_frequency.read_tfrs(fname        = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_error_cvsn_tstats_baselined-tfr.h5'))[0])
+    alldata_dt_cvsn_baselined_t.append(mne.time_frequency.read_tfrs(fname           = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_DT_cvsn_tstats_baselined-tfr.h5'))[0])
+    alldata_conf_cvsn_baselined_t.append(mne.time_frequency.read_tfrs(fname         = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_conf_cvsn_tstats_baselined-tfr.h5'))[0])
+    
     
     
     
@@ -161,6 +221,7 @@ for i in subs:
 #visualise some regressors
 #we're not going to plot the grandmean, this shouldn't be in the glm as it doesnt make sense anyways.
 #we will visualise the regressors for neutral and cued trials though as these should be different (no lateralisation in in neutral trials)
+from copy import deepcopy
 timefreqs_all = {(.4, 10):(.4, 4),
                  (.6, 10):(.4, 4),
                  (.8, 10):(.4, 4),
@@ -170,8 +231,228 @@ timefreqs_all = {(.4, 10):(.4, 4),
 
 timefreqs_alpha = {(.4, 10):(.4, 4),
                    (.6, 10):(.4, 4),
-                   (.8, 10):(.4, 4)} 
+                   (.8, 10):(.4, 4)}
 
+timefreqs_cue = {(-1.5, 10):(.4, 4),
+                 (-1.3, 10):(.4, 4),
+                 (-1.1, 10):(.4, 4),
+                 (-0.9, 10):(.4, 4),
+                 (-0.7, 10):(.4, 4),
+                 (-0.5, 10):(.4, 4),
+                 (-.3, 10):(.4, 4)}
+
+
+vischans = np.array(['PO4', 'PO8', 'O2', 'O1', 'PO3', 'PO7'])
+visrightchans = np.array(['PO4', 'PO8', 'O2'])
+visleftchans  = np.array(['PO3', 'PO7', 'O1'])
+
+motrightchans= ['C4', 'C2']
+motleftchans = ['C3', 'C5']
+#%%
+#get some behavioural data that we should probably plot to make some sense of things
+allbdata = []
+for i in subs:
+    sub = dict(loc = 'workstation', id = i)
+    param = get_subject_info_wmConfidence(sub)
+    bdata = pd.read_csv(param['probelocked_tfr_meta'], index_col = None, header = 0) #read the metadata associated with this subject
+    allbdata.append(bdata)
+
+DTs = []
+DTs_neut = []
+DTs_cued = []
+for i in allbdata:
+    DTs.append(np.nanmean(i.DT))
+    DTs_cued.append(np.nanmean(i.query('cond == \'cued\'').DT))
+    DTs_neut.append(np.nanmean(i.query('cond == \'neutral\'').DT))
+gave_mean_dt = np.nanmean(DTs)
+gave_mean_dt_neut = np.nanmean(DTs_neut)
+gave_mean_dt_cued = np.nanmean(DTs_cued)
+
+#%%
+#%%
+
+#in this, probed side is left vs right, and cue is just cued or not
+# so cued trials should have an evoked lateralisation, and neutral trials shouldn't.
+# probed side cvsn is the difference in lateralisation due to cue vs random
+alldata_pside_cvsn_t = []
+for i in subs:
+    print('\n\ngetting subject ' + str(i) +'\n\n')
+    sub = dict(loc = 'workstation', id = i)
+    param = get_subject_info_wmConfidence(sub) #_baselined
+    alldata_pside_cvsn_t.append(mne.time_frequency.read_tfrs(fname = op.join(param['path'], 'glms', 'probe', 'tfr_glm','wmConfidence_' + param['subid'] + '_probelocked_tfr_psidexcvsn_tstats-tfr.h5'))[0])
+
+gave_psidecvsn = mne.grand_average(alldata_pside_cvsn_t); gave_psidecvsn.data = toverparam(alldata_pside_cvsn_t); gave_psidecvsn.drop_channels(['RM'])
+gave_pside = mne.grand_average(alldata_pside_t); gave_pside.data = toverparam(alldata_pside_t); gave_pside.drop_channels(['RM'])
+
+gave_pside.plot_joint(timefreqs = timefreqs_cue, topomap_args = dict(outlines='head', contours=0, vmin=-2, vmax=2))
+gave_psidecvsn.plot_joint(timefreqs = timefreqs_cue, topomap_args = dict(outlines='head', contours=0, vmin=-2, vmax=2))
+
+#%%
+
+#global state effects on error?
+
+gave_error = mne.grand_average(alldata_error_baselined_t); gave_error.data = toverparam(alldata_error_baselined_t); gave_error.drop_channels(['RM'])
+gave_error.plot_joint(timefreqs=timefreqs_cue, topomap_args = dict(outlines='head', contours=0, vmin=-2, vmax=2), vmin=-2, vmax=2)
+
+times, freqs = gave_error.times, gave_error.freqs
+
+fig = plt.figure()
+ax = fig.subplots(1,1)
+ax.contourf(times, freqs, np.nanmean(deepcopy(gave_error).pick_channels(vischans).data, 0), vmin=-2, vmax=2, levels=100, cmap ='RdBu_r', antialiased=False)
+ax.vlines([-1.5, 0], linestyle='--', lw=.75, ymin=1, ymax=39)
+
+x_error_vis = np.empty(shape = (subs.size, freqs.size, times.size))
+for i in range(subs.size):
+    x_error_vis[i,:,:] = np.nanmean(deepcopy(alldata_error_baselined_t[i]).pick_channels(vischans).data,0)
+
+t_error_vis, clusters_error_vis, clusters_pv_error_vis, _ = mne.stats.permutation_cluster_1samp_test(x_error_vis, n_permutations='all')
+
+
+#same for decision time?
+gave_dt = mne.grand_average(alldata_DT_baselined_t); gave_dt.data = toverparam(alldata_DT_baselined_t); gave_dt.drop_channels(['RM'])
+gave_dt.plot_joint(timefreqs=timefreqs_cue, topomap_args = dict(outlines='head', contours=0, vmin=-2, vmax=2), vmin=-2, vmax=2)
+
+times, freqs = gave_dt.times, gave_dt.freqs
+
+fig = plt.figure()
+ax = fig.subplots(1,1)
+ax.contourf(times, freqs, np.nanmean(deepcopy(gave_dt).pick_channels(vischans).data, 0), vmin=-2, vmax=2, levels=100, cmap ='RdBu_r', antialiased=False)
+ax.vlines([-1.5, 0], linestyle='--', lw=.75, ymin=1, ymax=39)
+
+x_dt_vis = np.empty(shape = (subs.size, freqs.size, times.size))
+for i in range(subs.size):
+    x_dt_vis[i,:,:] = np.nanmean(deepcopy(alldata_DT_baselined_t[i]).pick_channels(vischans).data,0)
+
+t_dt_vis, clusters_dt_vis, clusters_pv_dt_vis, _ = mne.stats.permutation_cluster_1samp_test(x_dt_vis, n_permutations='all')
+masks_dt_vis = np.asarray(clusters_dt_vis)[clusters_pv_dt_vis <0.05]
+
+fig = plt.figure()
+ax = fig.subplots(1,1)
+ax.contourf(times, freqs, np.nanmean(deepcopy(gave_dt).pick_channels(vischans).data, 0), vmin=-2, vmax=2, levels=100, cmap ='RdBu_r', antialiased=False)
+ax.vlines([-1.5, 0, gave_mean_dt], linestyle='--', lw=1, ymin=1, ymax=39)
+ax.set_ylabel('Frequency (Hz)')
+ax.set_xlabel('Time relative to probe onset (s)')
+for mask in masks_dt_vis:
+    bigmask = np.kron(mask, np.ones((10,10)))
+    ax.contour(bigmask, colors='black', lw=.75, extent = (np.min(times), np.max(times), np.min(freqs), np.max(freqs)), antialiased=False)
+
+
+
+#same for confidence?
+gave_conf = mne.grand_average(alldata_conf_baselined_t); gave_conf.data = toverparam(alldata_conf_baselined_t); gave_conf.drop_channels(['RM'])
+
+tmin, tmax = None, None
+gave_conf.crop(tmin=tmin, tmax = tmax)
+gave_conf.plot_joint(timefreqs=timefreqs_cue, topomap_args = dict(outlines='head', contours=0, vmin=-2, vmax=2), vmin=-2, vmax=2)
+
+times, freqs = gave_conf.times, gave_conf.freqs
+
+fig = plt.figure()
+ax = fig.subplots(1,1)
+ax.contourf(times, freqs, np.nanmean(deepcopy(gave_conf).pick_channels(vischans).data, 0), vmin=-2, vmax=2, levels=100, cmap ='RdBu_r', antialiased=False)
+ax.vlines([0, gave_mean_dt], linestyle='--', lw=.75, ymin=1, ymax=39)
+
+x_conf_vis = np.empty(shape = (subs.size, freqs.size, times.size))
+for i in range(subs.size):
+    x_conf_vis[i,:,:] = np.nanmean(deepcopy(alldata_conf_baselined_t[i]).crop(tmin=tmin,tmax=tmax).pick_channels(vischans).data,0)
+
+t_conf_vis, clusters_conf_vis, clusters_pv_conf_vis, _ = mne.stats.permutation_cluster_1samp_test(x_conf_vis, n_permutations='all')
+masks_conf_vis = np.asarray(clusters_conf_vis)[clusters_pv_conf_vis <0.05]
+
+fig = plt.figure()
+ax = fig.subplots(1,1)
+ax.contourf(times, freqs, np.nanmean(deepcopy(gave_conf).pick_channels(vischans).data, 0), vmin=-2, vmax=2, levels=100, cmap ='RdBu_r', antialiased=False)
+ax.vlines([-1.5, 0, gave_mean_dt], linestyle='--', lw=1, ymin=1, ymax=39)
+ax.set_ylabel('Frequency (Hz)')
+ax.set_xlabel('Time relative to probe onset (s)')
+for mask in masks_conf_vis:
+    bigmask = np.kron(mask, np.ones((10,10)))
+    ax.contour(bigmask, colors='black', lw=.75, extent = (np.min(times), np.max(times), np.min(freqs), np.max(freqs)), antialiased=False)
+
+#%%
+ 
+gave_errorpside_cued = mne.grand_average(alldata_errorxpside_cued_t); gave_errorpside_cued.data = toverparam(alldata_errorxpside_cued_t)
+gave_errorpside_cued.drop_channels(['RM'])
+gave_errorpside_cued.plot_joint(timefreqs=timefreqs_cue, topomap_args = dict(outlines='head', contours=0, vmin=-2, vmax=2), vmin=-2, vmax=2)
+
+gave_errorpside_cued.plot(picks = ['PO4', 'PO8', 'O2', 'P8', 'P6', 'P4','P2'], combine='mean', vmin=-2, vmax=2)
+
+fig = plt.figure()
+ax = fig.subplots(1,1)
+ax.contourf(times, freqs, np.nanmean(deepcopy(gave_errorpside_cued).pick_channels(['PO4', 'PO8', 'O2', 'P8', 'P6', 'P4','P2']).data, 0), vmin=-2, vmax=2, levels=100, cmap ='RdBu_r', antialiased=False)
+ax.vlines([-1.5, 0, gave_mean_dt], linestyle='--', lw=1, ymin=1, ymax=39)
+ax.set_ylabel('Frequency (Hz)')
+ax.set_xlabel('Time relative to probe onset (s)')
+
+x_errorpside_cued = np.empty(shape = (subs.size, freqs.size, times.size))
+for i in range(subs.size):
+    x_errorpside_cued[i,:,:] = np.nanmean(deepcopy(alldata_errorxpside_cued_t[i]).pick_channels(['PO4', 'PO8', 'O2', 'P8', 'P6', 'P4','P2']).data,0)
+
+t_errorpside_cued_vis, clusters_errorpside_cued_vis, clusters_pv_errorpside_cued_vis, _ = mne.stats.permutation_cluster_1samp_test(x_errorpside_cued, n_permutations='all')
+masks_errorpside_cued_vis = np.asarray(clusters_errorpside_cued_vis)[clusters_pv_errorpside_cued_vis <0.05]
+
+fig = plt.figure()
+ax = fig.subplots(1,1)
+ax.contourf(times, freqs, np.nanmean(deepcopy(gave_errorpside_cued).pick_channels(vischans).data, 0), vmin=-2, vmax=2, levels=100, cmap ='RdBu_r', antialiased=False)
+ax.vlines([-1.5, 0, gave_mean_dt], linestyle='--', lw=1, ymin=1, ymax=39)
+ax.set_ylabel('Frequency (Hz)')
+ax.set_xlabel('Time relative to probe onset (s)')
+for mask in masks_errorpside_cued_vis:
+    bigmask = np.kron(mask, np.ones((10,10)))
+    ax.contour(bigmask, colors='black', lw=.75, extent = (np.min(times), np.max(times), np.min(freqs), np.max(freqs)), antialiased=False)
+
+
+
+#DT and cued side, rel to left hand (right motor channels needed)
+gave_dtpside_cued = mne.grand_average(alldata_dtxpside_cued_t); gave_dtpside_cued.data = toverparam(alldata_dtxpside_cued_t)
+gave_dtpside_cued.drop_channels(['RM'])
+gave_dtpside_cued.plot_joint(timefreqs=timefreqs_cue, topomap_args = dict(outlines='head', contours=0, vmin=-2, vmax=2), vmin=-2, vmax=2)
+
+motleftchans = ['C3', 'C1']
+
+fig = plt.figure()
+ax = fig.subplots(1,1)
+ax.contourf(times, freqs, np.nanmean(deepcopy(gave_dtpside_cued).pick_channels(motleftchans).data, 0), vmin=-2, vmax=2, levels=100, cmap ='RdBu_r', antialiased=False)
+ax.vlines([-1.5, 0, gave_mean_dt], linestyle='--', lw=1, ymin=1, ymax=39)
+ax.set_ylabel('Frequency (Hz)')
+ax.set_xlabel('Time relative to probe onset (s)')
+
+x_errorpside_cued = np.empty(shape = (subs.size, freqs.size, times.size))
+for i in range(subs.size):
+    x_errorpside_cued[i,:,:] = np.nanmean(deepcopy(alldata_errorxpside_cued_t[i]).pick_channels(['PO4', 'PO8', 'O2', 'P8', 'P6', 'P4','P2']).data,0)
+
+t_errorpside_cued_vis, clusters_errorpside_cued_vis, clusters_pv_errorpside_cued_vis, _ = mne.stats.permutation_cluster_1samp_test(x_errorpside_cued, n_permutations='all')
+masks_errorpside_cued_vis = np.asarray(clusters_errorpside_cued_vis)[clusters_pv_errorpside_cued_vis <0.05]
+
+fig = plt.figure()
+ax = fig.subplots(1,1)
+ax.contourf(times, freqs, np.nanmean(deepcopy(gave_errorpside_cued).pick_channels(vischans).data, 0), vmin=-2, vmax=2, levels=100, cmap ='RdBu_r', antialiased=False)
+ax.vlines([-1.5, 0, gave_mean_dt], linestyle='--', lw=1, ymin=1, ymax=39)
+ax.set_ylabel('Frequency (Hz)')
+ax.set_xlabel('Time relative to probe onset (s)')
+for mask in masks_errorpside_cued_vis:
+    bigmask = np.kron(mask, np.ones((10,10)))
+    ax.contour(bigmask, colors='black', lw=.75, extent = (np.min(times), np.max(times), np.min(freqs), np.max(freqs)), antialiased=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#%%
 gave_gmean = mne.grand_average(alldata_grandmean_baselined); gave_gmean.drop_channels(['RM'])
 gave_gmean.plot_joint(title = 'all trials, preglm baseline, average betas', timefreqs = timefreqs_alpha,
                       topomap_args = dict(outlines = 'head', contours = 0))

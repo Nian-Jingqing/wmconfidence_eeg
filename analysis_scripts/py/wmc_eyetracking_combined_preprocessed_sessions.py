@@ -5,7 +5,6 @@ Created on Wed Oct 16 13:50:08 2019
 
 @author: sammi
 """
-
 import numpy as np
 import scipy as sp
 import pandas as pd
@@ -16,24 +15,25 @@ import sys
 from matplotlib import pyplot as plt
 import pickle
 
-sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence/analysis_scripts')
-#sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence_eegfmri/analysis_scripts')
+#sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence/analysis_scripts')
+sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
 from wmConfidence_funcs import get_subject_info_wmConfidence
 
-sys.path.insert(0, '/Users/sammi/Desktop/Experiments/BCEyes')
-#sys.path.insert(0, '/home/sammirc/Desktop/DPhil/BCEyes')
+#sys.path.insert(0, '/Users/sammi/Desktop/Experiments/BCEyes')
+sys.path.insert(0, '/home/sammirc/Desktop/DPhil/BCEyes')
 import BCEyes as bce
 
 
 
 wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'; #laptop wd
+wd = '/home/sammirc/Desktop/DPhil/wmConfidence';
 os.chdir(wd)
 
 
-subs = np.array([4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16])
+subs = np.array([4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18])
 
 for i in subs:
-    sub = dict(loc = 'laptop', id = i)
+    sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub)
     print('-- working on subject %d --\n'%(i))
     

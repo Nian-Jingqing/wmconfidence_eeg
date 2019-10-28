@@ -35,9 +35,10 @@ import glmtools as glm
 
 wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
-subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
-subs = np.array([        4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16])
-subs = np.array([15, 16])
+#subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
+subs = np.array([        4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16, 17, 18])
+subs = np.array([15, 16, 17, 18])
+#subs = np.array([17, 18])
 
 #subs = np.array([10]) #encountered memory error in subject 7 so rerun from here
 #%% only needs running if Probelocked TFR glms not already present
@@ -206,10 +207,10 @@ for i in subs:
         contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], 'error_pleft_cued')      )
         contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], 'error_pright_neutral')  )
         contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], 'error_pright_cued')     )
-        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0,0 , 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], 'conf_pleft_neutral'))
-        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0,0 , 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], 'conf_pleft_cued'))
-        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0,0 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], 'conf_pright_neutral'))
-        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0,0 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 'conf_pright_cued'))      #16
+        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], 'conf_pleft_neutral'))
+        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], 'conf_pleft_cued'))
+        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], 'conf_pright_neutral'))
+        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 'conf_pright_cued'))      #16
         contrasts.append(glm.design.Contrast([ 0,-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'pleft_cvsn')            )#17
         contrasts.append(glm.design.Contrast([ 0, 0, 0,-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'pright_cvsn')           )#18
         contrasts.append(glm.design.Contrast([ 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'neutral')               )#19
@@ -231,6 +232,10 @@ for i in subs:
         contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0], 'conf_neutral')          )#35
         contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1], 'conf_cued')             )#36
         contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,-1], 'conf_cued_lvsr')        )#37
+        contrasts.append(glm.design.Contrast([ 0,-1, 1,-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'cued vs neutral')       )#38
+        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0,-1, 1,-1, 1, 0, 0, 0, 0, 0, 0, 0, 0], 'dt_cued vs neutral')    )#39
+        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 1,-1, 1, 0, 0, 0, 0], 'error_cued vs neutral') )#40
+        contrasts.append(glm.design.Contrast([ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 1,-1, 1], 'conf_cued vs neutral')  )#41
 
         glmdes = glm.design.GLMDesign.initialise(regressors, contrasts); #designs.append(glmdes)
         #if iglm == 0:
@@ -307,158 +312,3 @@ for i in subs:
         del(glmdes)
         del(model)
 #%%
-#
-#tmp = np.nanmean(deepcopy(tfr_tstats).pick_channels(['PO7','PO3', 'POZ', 'PO4', 'PO8', 'O1', 'OZ', 'O2']).data,0) #ave across all visual electrodes
-#
-#fig = plt.figure()
-#ax = fig.add_subplot(111)
-#ax.contourf(tfr_tstats.times, tfr_tstats.freqs, tmp, levels = 100, cmap='RdBu_r', vmin = -4, vmax = 4,antialiased = False)
-#ax.vlines([-1.5, 0], lw = .5, linestyle = 'dashed', ymin = 1, ymax = 39)
-#
-
-
-
-##
-##        neuttrls = np.where(cues == 0, 1, 0)
-##        neutrallat =
-##
-##
-##        cuedleft = np.where(np.logical_and(cues == 1, pside == 1), 1, 0)
-##        cuedleft = np.where(np.logical_and(cues == 0, pside == 1), -1, cuedleft)
-##
-##        cuedright = np.where(np.logical_and(cues == 1, pside == -1), 1, 0)
-##        cuedright = np.where(np.logical_and(cues == 0, pside == -1), -1, cuedright)
-##
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'prbleft cued vs neutral', values = cuedleft, preproc = None, num_observations = nobs))
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'prbright cued vs neutral', values = cuedright, preproc = None, num_observations = nobs))
-##
-##        #set up a regressor for probed side only on neutral trials (e.g. any post-probe lateralisation in just neutral trials)
-##        neuttrls    = np.where(cues==0,1,0) #where no cue, set to 1 (neutral trial)
-##        cuedtrls    = cues                  #same as cues (where a cue was presented, set to 1)
-##        neutrallat  = np.multiply(pside, np.where(cues==0,1,0)) #set cued trials to 0, neutral to one (i.e. take out of model)
-##        cuedlat     = np.multiply(pside, cues) #cued trials == 1, neutral trials set to 0, so taken out of the average
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'pside-neutral',      values = neutrallat,      preproc = None, num_observations = glmdata.num_observations))
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'pside-cued',         values = cuedlat,         preproc = None, num_observations = glmdata.num_observations))
-##np.divide(np.subtract(err_cued, np.nanmean(err_cued)), np.nanstd(err_cued))
-##
-##        DT          = tfr.metadata.DT.to_numpy()
-##        error       = tfr.metadata.absrdif.to_numpy()
-#
-#
-##        dt_bc = sp.stats.boxcox(DT)
-##        fig = plt.figure()
-##        sns.distplot(DT, bins=60, hist = True, norm_hist = True, ax = fig.add_subplot(311))
-##        sns.distplot(np.log(DT), bins = 60, hist = True, norm_hist = True, ax = fig.add_subplot(323), axlabel = 'log DT')
-##        sns.distplot(dt_bc[0], bins = 60, hist = True, norm_hist = True, ax = fig.add_subplot(325), axlabel = 'boxcox DT')
-##
-##        sns.distplot(sp.stats.zscore(np.log(DT)), bins = 60, hist = True, norm_hist = True, ax = fig.add_subplot(324), axlabel = 'zscore(log(DT))')
-##        sns.distplot(sp.stats.zscore(dt_bc[0]), bins = 60, hist = True, norm_hist = True, ax = fig.add_subplot(326), axlabel = 'zscore(boxcox(DT))')
-#
-#        err = np.where(error==0, 0.1, error)
-##        error_bc = sp.stats.boxcox(err)
-##        fig = plt.figure()
-##        sns.distplot(err, bins=60, hist = True, norm_hist = True, ax = fig.add_subplot(321))
-##        sns.distplot(sp.stats.zscore(err), bins = 60, hist = True, norm_hist = True, ax = fig.add_subplot(322), axlabel = 'zscore(error)')
-##        sns.distplot(np.log(err), bins = 60, hist = True, norm_hist = True, ax = fig.add_subplot(323), axlabel = 'log error')
-##        sns.distplot(error_bc[0], bins = 60, hist = True, norm_hist = True, ax = fig.add_subplot(325), axlabel = 'boxcox error')
-##
-##        sns.distplot(sp.stats.zscore(np.log(err)), bins = 60, hist = True, norm_hist = True, ax = fig.add_subplot(324), axlabel = 'zscore(log(error))')
-##        sns.distplot(sp.stats.zscore(error_bc[0]), bins = 60, hist = True, norm_hist = True, ax = fig.add_subplot(326), axlabel = 'zscore(boxcox(error))')
-#
-#        #contstruct regressor for error on cued trials
-
-
-
-##        err_neut = np.where(cues==0, error, np.nan)
-##        err_cued = np.where(cues==1, error, np.nan)
-##        #zscore ignoring the nans
-##        err_neut = np.divide(np.subtract(err_neut, np.nanmean(err_neut)), np.nanstd(err_neut))
-##        err_cued = np.divide(np.subtract(err_cued, np.nanmean(err_cued)), np.nanstd(err_cued))
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'error-neutral', values = err_neut, preproc = None, num_observations = glmdata.num_observations))
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'error-cued',    values = err_cued, preproc = None, num_observations = glmdata.num_observations))
-##
-#        err_cvsn = np.multiply(error, np.where(cues==0,-1,cues))
-#        regressors.append(glm.regressors.ParametricRegressor(name = 'error-cvsn', values = err_cvsn, preproc = 'z', num_observations = glmdata.num_observations))
-#
-#        dt_cvsn = np.multiply(DT, np.where(cues==0,-1,cues))
-#        regressors.append(glm.regressors.ParametricRegressor(name = 'dt-cvsn', values = dt_cvsn, preproc = 'z', num_observations = glmdata.num_observations))
-#
-#        cw_cvsn = np.multiply(confwidth, np.where(cues==0,-1,cues))
-#        regressors.append(glm.regressors.ParametricRegressor(name = 'cw-cvsn', values = cw_cvsn, preproc = 'z', num_observations = glmdata.num_observations))
-#
-#
-##        dt_neut = np.where(cues==0, DT, np.nan)
-##        dt_cued = np.where(cues==1, DT, np.nan)
-##        #zscore ignoring the nans
-##        dt_neut = np.divide(np.subtract(dt_neut, np.nanmean(dt_neut)), np.nanstd(dt_neut))
-##        dt_cued = np.divide(np.subtract(dt_cued, np.nanmean(dt_cued)), np.nanstd(dt_cued))
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'DT-neutral', values = dt_neut, preproc = None, num_observations = glmdata.num_observations))
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'DT-cued',    values = dt_cued, preproc = None, num_observations = glmdata.num_observations))
-##
-##
-##        cw_neut = np.where(cues==0, confwidth, np.nan)
-##        cw_cued = np.where(cues==1, confwidth, np.nan)
-##        #zscore ignoring the nans
-##        cw_neut = np.divide(np.subtract(cw_neut, np.nanmean(cw_neut)), np.nanstd(cw_neut))
-##        cw_cued = np.divide(np.subtract(cw_cued, np.nanmean(cw_cued)), np.nanstd(cw_cued))
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'conf-neutral', values = cw_neut, preproc = None, num_observations = glmdata.num_observations))
-##        regressors.append( glm.regressors.ParametricRegressor(name = 'conf-cued',    values = cw_cued, preproc = None, num_observations = glmdata.num_observations))
-#
-#
-#
-#
-#        cued = np.where(cues==0,-1,cues)
-#        DTxpside    = np.multiply(DT, pside)
-#        errorxpside = np.multiply(tfr.metadata.absrdif.to_numpy(), pside)
-#        confwidthxpside = np.multiply(confwidth, pside)
-#        confneut    = np.multiply(confwidth, neuttrls)
-#        confcued    = np.multiply(confwidth, cuedtrls)
-#
-#
-#        #get error on subset of trials
-#        error_neut = np.where(cues==0, error, np.nan) #and nan the rest
-#        error_cued = np.where(cues==1, error, np.nan)
-#        #multiply by pside to implicitly code the probed side interaction
-#        error_neut = np.multiply(error_neut, pside)
-#        error_cued = np.multiply(error_cued, pside)
-#        #zscore while ignoring the nans
-#        error_neut = np.divide(np.subtract(error_neut, np.nanmean(error_neut)), np.nanstd(error_neut))
-#        error_cued = np.divide(np.subtract(error_cued, np.nanmean(error_cued)), np.nanstd(error_cued))
-#        #now set the nan values to 0 to take them from the model
-#        error_neut = np.where(np.isnan(error_neut), 0, error_neut)
-#        error_cued = np.where(np.isnan(error_cued), 0, error_cued)
-#        #add these regressors into the glm. main effect across trials can be done at contrast level
-#        regressors.append( glm.regressors.ParametricRegressor(name = 'errorxpside-neutral', values = error_neut, preproc = None, num_observations = glmdata.num_observations))
-#        regressors.append( glm.regressors.ParametricRegressor(name = 'errorxpside-cued',    values = error_cued, preproc = None, num_observations = glmdata.num_observations))
-#
-#        #get DT on subset of trials
-#        DT_neut = np.where(cues==0, DT, np.nan) #and nan the rest
-#        DT_cued = np.where(cues==1, DT, np.nan)
-#        #multiply by pside to implicitly code the probed side interaction
-#        DT_neut = np.multiply(DT_neut, pside)
-#        DT_cued = np.multiply(DT_cued, pside)
-#        #zscore while ignoring the nans
-#        DT_neut = np.divide(np.subtract(DT_neut, np.nanmean(DT_neut)), np.nanstd(DT_neut))
-#        DT_cued = np.divide(np.subtract(DT_cued, np.nanmean(DT_cued)), np.nanstd(DT_cued))
-#        #now set the nan values to 0 to take them from the model
-#        DT_neut = np.where(np.isnan(DT_neut), 0, DT_neut)
-#        DT_cued = np.where(np.isnan(DT_cued), 0, DT_cued)
-#        #add these regressors into the glm. main effect across trials can be done at contrast level
-#        regressors.append( glm.regressors.ParametricRegressor(name = 'DTxpside-neutral', values = DT_neut, preproc = None, num_observations = glmdata.num_observations))
-#        regressors.append( glm.regressors.ParametricRegressor(name = 'DTxpside-cued',    values = DT_cued, preproc = None, num_observations = glmdata.num_observations))
-#
-#        #get confidence width on subset of trials
-#        conf_neut = np.where(cues==0, confwidth, np.nan) #and nan the rest
-#        conf_cued = np.where(cues==1, confwidth, np.nan)
-#        #multiply by pside to implicitly code the probed side interaction
-#        conf_neut = np.multiply(conf_neut, pside)
-#        conf_cued = np.multiply(conf_cued, pside)
-#        #zscore while ignoring the nans
-#        conf_neut = np.divide(np.subtract(conf_neut, np.nanmean(conf_neut)), np.nanstd(conf_neut))
-#        conf_cued = np.divide(np.subtract(conf_cued, np.nanmean(conf_cued)), np.nanstd(conf_cued))
-#        #now set the nan values to 0 to take them from the model
-#        conf_neut = np.where(np.isnan(conf_neut), 0, conf_neut)
-#        conf_cued = np.where(np.isnan(conf_cued), 0, conf_cued)
-#        #add these regressors into the glm. main effect across trials can be done at contrast level
-#        regressors.append( glm.regressors.ParametricRegressor(name = 'confxpside-neutral', values = conf_neut, preproc = None, num_observations = glmdata.num_observations))
-#        regressors.append( glm.regressors.ParametricRegressor(name = 'confxpside-cued',    values = conf_cued, preproc = None, num_observations = glmdata.num_observations))

@@ -13,7 +13,9 @@ from copy import deepcopy
 import os
 import os.path as op
 import sys
+import seaborn as sns
 from matplotlib import pyplot as plt
+from scipy import stats
 
 sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
 from wmConfidence_funcs import get_subject_info_wmConfidence
@@ -26,10 +28,10 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+subs = np.array([1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
 #subs = np.array([11,12,13,14])
 #subs = np.array([11, 15])
-subs = np.array([16])
+#subs = np.array([16])
 
 
 glms2run = 2 #1 with no baseline, one where tfr input data is baselined
@@ -70,9 +72,32 @@ for i in subs:
         cues      = tfr.metadata.cue.to_numpy() #cue condition for trials
         absrdif   = tfr.metadata.absrdif.to_numpy() #response error on trial (lower is better)
         confwidth = tfr.metadata.confwidth.to_numpy() #confidence width in degrees, higher = less confident
-        conf = np.radians(np.multiply(confwidth, -1)) #reverse the sign so higher (less negative) = more confident, then convert to radians so same scale as error
+        #conf      = np.log(confwidth) #log transform this, as in the behavioural experiment analyses
+        #conf = np.radians(np.multiply(confwidth, -1)) #reverse the sign so higher (less negative) = more confident, then convert to radians so same scale as error
         cuedside  = np.where(tfr.metadata.cuetrig==14, -1, cues) #cued left trials = 1, cued right = -1 (we implicitly code lateralisation in this regressor by flipping signs)
         DT        = tfr.metadata.DT.to_numpy() #decision time (time until pressing space to start response phase) on each trial
+
+        cw = np.where(confwidth == 0, 0.0001, confwidth)
+        bcox = sp.stats.boxcox(cw);
+#        fig = plt.figure()
+#        ax = fig.add_subplot(111)
+#        ax.vlines(ymin=0, ymax=1, x=bcox[1], linestyle='--')
+#        sp.stats.boxcox_normplot(cw, -2, 2, plot = ax)
+#        
+#        fig = plt.figure(); ax = fig.add_subplot(111)
+#        sp.stats.probplot(bcox[0], plot = ax)
+        
+        conf      = np.log(cw) #log transform this, as in the behavioural experiment analyses
+        
+        fig = plt.figure()
+        ax = fig.subplots(3,1)
+        sns.distplot(confwidth, bins = 60, hist = True, norm_hist = True, ax = ax[0])
+        sns.distplot(conf, bins = 60, hist = True, norm_hist = True, ax = ax[1])
+        sns.distplot(bcox[0], bins=60, hist =True, norm_hist = True, ax = ax[2])
+        ax[0].set_title('raw confidence values')
+        ax[1].set_title('log transformed confidence values')
+        ax[2].set_title('boxcox transformed confidence values')
+        
 
         regressors = list()
         regressors.append( glm.regressors.ParametricRegressor(name = 'trials', values = np.ones(glmdata.num_observations), preproc=None, num_observations = glmdata.num_observations))
