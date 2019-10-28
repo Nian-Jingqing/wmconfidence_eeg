@@ -1,13 +1,13 @@
 library(dplyr)
 getwd()
 dir <- '/home/sammirc/Desktop/DPhil/wmConfidence'
-#dir <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
+dir <- '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'
 setwd(dir)
 
 datapath <- paste0(dir, '/data/datafiles')
 
 # only doing this for specific subjects really, for now at least
-sublist <- seq(1, 16, by = 1)
+sublist <- seq(1, 21, by = 1)
 for(sub in sublist){
   
   if(sub %in% c(1,2)){
@@ -26,7 +26,7 @@ for(sub in sublist){
   write.csv(df, file = fname, eol = '\n',col.names = T)
   }
   
-  if(sub %in% c(3,10)){
+  if(sub %in% c(3,10, 19)){
     subpath <- paste0(datapath, sprintf('/s%02d/', sub))
     fileList  <- sort(list.files(path = subpath, pattern = sprintf('wmConfidence_s%02da_', sub))) #.csv))
     dataFiles <- list(NULL)
@@ -43,7 +43,7 @@ for(sub in sublist){
     write.csv(df, file = fname, eol = '\n',col.names = T)
   }
   
-  if(sub > 3 & sub != 10){
+  if(sub > 3 & sub != 10 & sub != 19){
     for(part in c('a', 'b')){
       subpath <- paste0(datapath, sprintf('/s%02d/%s', sub,part))
       fileList  <- sort(list.files(path = subpath, pattern = sprintf('wmConfidence_s%02d%s_', sub,part))) #.csv))
