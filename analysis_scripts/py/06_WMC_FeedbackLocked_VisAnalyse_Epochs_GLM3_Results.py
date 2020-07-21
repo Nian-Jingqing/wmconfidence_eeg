@@ -20,263 +20,276 @@ from copy import deepcopy
 
 sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
 from wmConfidence_funcs import get_subject_info_wmConfidence
-from wmConfidence_funcs import gesd, plot_AR, toverparam, smooth
+from wmConfidence_funcs import gesd, plot_AR, toverparam, smooth, runclustertest_epochs
 
 wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
-subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-subs = np.array([1,       4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]) #subject 2 actually only has 72 trials in total, not really a lot so exclude atm
-subs = np.array([1,       4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-subs = np.array([         4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16])
+figpath = op.join(wd,'figures', 'eeg_figs', 'feedbacklocked', 'epochs_glm3')
 
-alldata_grandmean       = []
-alldata_neutral         = []
-alldata_cued            = []
-alldata_errorcorr       = []
-alldata_errorincorr     = []
-alldata_confcorr        = []
-alldata_confincorr      = []
-alldata_incorrvscorr    = []
 
-alldata_grandmean_t       = []
-alldata_neutral_t         = []
-alldata_cued_t            = []
-alldata_errorcorr_t       = []
-alldata_errorincorr_t     = []
-alldata_confcorr_t        = []
-alldata_confincorr_t      = []
-alldata_incorrvscorr_t    = []
+subs = np.array([4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22,24, 25, 26])
+
+contrasts = ['correct', 'incorrect', 'errorcorrect', 'errorincorrect', 'confcorrect', 'confincorrect', 'pside',
+             'incorrvscorr', 'errorincorrvscorr', 'confincorrvscorr',
+             'grandmean', 'error', 'conf']
+             
+data = dict()
+data_t = dict()
+for i in contrasts:
+    data[i] = []
+    data_t[i] = []
 
 for i in subs:
     print('\n\ngetting subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub) #_baselined
     
-    alldata_grandmean.append(mne.read_evokeds(fname     = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_grandmean_betas-ave.fif'))[0])
-    alldata_neutral.append(mne.read_evokeds(fname       = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_neutral_betas-ave.fif'))[0])
-    alldata_cued.append(mne.read_evokeds(fname          = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_cued_betas-ave.fif'))[0])
-    alldata_errorcorr.append(mne.read_evokeds(fname     = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_errorcorrect_betas-ave.fif'))[0])
-    alldata_errorincorr.append(mne.read_evokeds(fname   = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_errorincorrect_betas-ave.fif'))[0])
-    alldata_confcorr.append(mne.read_evokeds(fname      = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_confcorrect_betas-ave.fif'))[0])
-    alldata_confincorr.append(mne.read_evokeds(fname    = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_confincorrect_betas-ave.fif'))[0])
-    alldata_incorrvscorr.append(mne.read_evokeds(fname  = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_incorrvscorr_betas-ave.fif'))[0])
+    for name in contrasts:
+        data[name].append( mne.read_evokeds( fname = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_' + name + '_betas-ave.fif'))[0])        
+        data_t[name].append( mne.read_evokeds(fname = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_' + name + '_tstats-ave.fif'))[0])        
 
+for name in contrasts:
+    for i in range(subs.size):
+        data[name][i].drop_channels(['RM'])
+        data_t[name][i].drop_channels(['RM'])
 
-    alldata_grandmean_t.append(mne.read_evokeds(fname     = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_grandmean_tstats-ave.fif'))[0])
-    alldata_neutral_t.append(mne.read_evokeds(fname       = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_neutral_tstats-ave.fif'))[0])
-    alldata_cued_t.append(mne.read_evokeds(fname          = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_cued_tstats-ave.fif'))[0])
-    alldata_errorcorr_t.append(mne.read_evokeds(fname     = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_errorcorrect_tstats-ave.fif'))[0])
-    alldata_errorincorr_t.append(mne.read_evokeds(fname   = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_errorincorrect_tstats-ave.fif'))[0])
-    alldata_confcorr_t.append(mne.read_evokeds(fname      = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_confcorrect_tstats-ave.fif'))[0])
-    alldata_confincorr_t.append(mne.read_evokeds(fname    = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_confincorrect_tstats-ave.fif'))[0])
-    alldata_incorrvscorr_t.append(mne.read_evokeds(fname  = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_incorrvscorr_tstats-ave.fif'))[0])
     
 #%%
 #ERN difference
-gave_incorrvscorr = mne.grand_average(alldata_incorrvscorr_t); gave_incorrvscorr.drop_channels(['RM'])
-#gave_incorrvscorr.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0))
+gave = mne.grand_average(data['grandmean']); times = gave.times; del(gave)      
 
-#mne.viz.plot_compare_evokeds(
-#        evokeds = dict(
-#                grand_mean = alldata_grandmean,
-#                incorrvscorr = alldata_incorrvscorr),
-#        colors = dict(
-#                grand_mean = '#252525',
-#                incorrvscorr = '#4292c6'),
-#        show_legend = 'upper right', picks = 'FCZ',
-#        ci = .68, show_sensors = False,
-#        truncate_xaxis = False,
-#        )
-#plt.title('grand mean and difference wave between incorrect and incorrect trials at FCz')
+for channel in ['FCZ', 'CZ', 'CPZ', 'PZ']:
+    mne.viz.plot_compare_evokeds(
+            evokeds = dict(
+                    corr   = data['correct'],
+                    incorr = data['incorrect'],
+                    diff   = data['incorrvscorr']
+                    ),
+            colors = dict(
+                    corr   = '#66c2a5',
+                    incorr = '#fc8d62',
+                    diff   = '#8da0cb'),
+            show_legend = 'upper right', picks = channel,
+            ci = .68, show_sensors = False, title = 'electrode ' + channel,
+            truncate_xaxis=False
+            )
+gave = mne.grand_average(data['incorrvscorr'])
 
-#nonpara cluster t test to see where diff is significant
-tmin, tmax = 0.0, 1.0 #specify time window for the cluster test to work
-X_diff = np.empty(shape = (len(subs), 1, gave_incorrvscorr.crop(tmin=tmin, tmax=tmax).times.size))
-for i in range(len(alldata_incorrvscorr_t)):
-    tmp = deepcopy(alldata_incorrvscorr_t[i])
-    tmp.pick_channels(['FCZ'])
-    tmp.crop(tmin = tmin, tmax = tmax) #take only first 600ms for cluster test, time window for ERN and PE components
-    X_diff[i,:,:] = tmp.data
-
-
-
-np.random.seed(seed=1)
-t_diff, clusters_diff, cluster_pv_diff, H0_diff = mne.stats.permutation_cluster_1samp_test(X_diff, out_type = 'indices')
-mask_diff_05 = np.asarray(clusters_diff)[cluster_pv_diff<0.05]
-
-fig = plt.figure()
-ax = plt.axes()
-times = gave_incorrvscorr.times
-
-mne.viz.plot_compare_evokeds(
-        evokeds = dict(
-                grand_mean = alldata_grandmean,
-                incorrvscorr = alldata_incorrvscorr),
-        colors = dict(
-                grand_mean = '#252525',
-                incorrvscorr = '#4292c6'),
-        show_legend = 'upper right', picks = 'FCZ',
-        ci = .68, show_sensors = False,
-        truncate_xaxis = False, ylim = dict(eeg=[-3,8]),
-        vlines = [0, 1],
-        axes = ax
-        )
+deepcopy(gave).plot_joint(times = np.arange(0.1,0.7,.1),
+                title = 'incorr vs corr - RM reference',
+                picks='eeg')
         
-ax.set_title('feedback evoked response at electrode FCz')
-ax.set_ylabel('average beta (AU)')
-for mask in range(len(mask_diff_05)):
-    #x =  times[mask_diff_05[mask][1]]
-    #y = np.zeros(len(x)); y.fill(-5.3)
-    #ax.scatter(x, y, color = '#998ec3', alpha = .5, marker='s')
-    ax.hlines(y = -2.5,
-              xmin = np.min(times[mask_diff_05[mask][1]]),
-              xmax = np.max(times[mask_diff_05[mask][1]]),
-              lw=5, color = '#4292c6', alpha = .5) #plot significance timepoints for difference effect
+
+tmin, tmax = 0, 1
+for channel in ['FCZ', 'CZ', 'CPZ', 'PZ']:
+    t_ern, clu_ern, clupv_ern, h0_ern = runclustertest_epochs(data = data,
+                                                              contrast_name = 'incorrvscorr',
+                                                              channels = [channel],
+                                                              tmin = tmin,
+                                                              tmax = tmax,
+                                                              gauss_smoothing = None,
+                                                              out_type = 'indices', n_permutations = 'Default'
+                                                              )
+    clutimes = deepcopy(data['grandmean'][0]).crop(tmin = tmin, tmax = tmax).times
+    masks_ern = np.asarray(clu_ern)[clupv_ern < 0.05]
+            
+    
+    fig = plt.figure()
+    ax = plt.axes()
+    mne.viz.plot_compare_evokeds(
+        evokeds = dict(
+                corr   = data['correct'],
+                incorr = data['incorrect'],
+                diff   = data['incorrvscorr']
+                ),
+        colors = dict(
+                corr   = '#66c2a5',
+                incorr = '#fc8d62',
+                diff   = '#8da0cb'),
+        show_legend = 'upper right', picks = channel,
+        ci = .68, show_sensors = False, title = 'electrode ' + channel,
+        truncate_xaxis=False, axes = ax,
+        vlines = [0, 0.5]
+        )
+            
+    ax.set_title('feedback evoked response at electrode '+ channel)
+    ax.set_ylabel('average beta (AU)')
+    for mask in range(len(masks_ern)):
+        ax.hlines(y = -2.5,
+                  xmin = np.min(clutimes[masks_ern[mask][1]]),
+                  xmax = np.max(clutimes[masks_ern[mask][1]]),
+                  lw=5, color = '#4292c6', alpha = .5) #plot significance timepoints for difference effect
               
               
 #this will plot these significant times as an overlay onto the plot_joint image
 #requires finding the right axis within the subplot thats drawn in order to draw them on properly              
-gave_incorrvscorr = mne.grand_average(alldata_incorrvscorr_t); gave_incorrvscorr.drop_channels(['RM'])
-fig1 = gave_incorrvscorr.plot_joint(picks = 'eeg', topomap_args = dict(contours=0, outlines='head', vmin = -2e6, vmax=2e6))
+fig1 = gave.plot_joint(picks = 'eeg', topomap_args = dict(contours=0, outlines='head', vmin = -4, vmax = 4),
+                       times = np.arange(0.1, 0.7, .1))
 ax1 = fig1.axes[0]
-for mask in range(len(mask_diff_05)):
-    #x =  times[mask_diff_05[mask][1]]
-    #y = np.zeros(len(x)); y.fill(-5.3)
-    #ax.scatter(x, y, color = '#998ec3', alpha = .5, marker='s')
-    ax1.hlines(y = -3.5e6,
-              xmin = np.min(times[mask_diff_05[mask][1]]),
-              xmax = np.max(times[mask_diff_05[mask][1]]),
-              lw=5, color = '#4292c6', alpha = .5) #plot significance timepoints for difference effect
-#%%
-gave_gmean = mne.grand_average(alldata_grandmean_t); gave_gmean.data = toverparam(alldata_grandmean_t);gave_gmean.drop_channels(['RM'])
-gave_badvsgood = mne.grand_average(alldata_incorrvscorr_t);  gave_badvsgood.data = toverparam(alldata_incorrvscorr_t) ; gave_badvsgood.drop_channels(['RM'])
-
-
-fig = plt.figure()
-ax = plt.axes()
-mne.viz.plot_compare_evokeds(
-        evokeds = dict(grand_mean = gave_gmean,
-                       difference = gave_badvsgood,
-                       correct    = mne.combine_evoked(all_evoked = [gave_gmean, -gave_badvsgood], weights = 'equal'),
-                       incorrect  = mne.combine_evoked(all_evoked = [gave_gmean, gave_badvsgood], weights = 'equal')
-                       ),
-        colors = dict(
-                grand_mean = 'black',
-                difference = 'blue',
-                correct = 'green',
-                incorrect = 'red'
-                ),
-        show_legend = 'upper right',
-        show_sensors = False,
-        picks = 'FCZ', ci = .68#, axes = ax
-)
-
-
-fig = plt.figure()
-ax = fig.subplots(1)
-times2 = gave_gmean.times
-ax.plot(times2, np.squeeze(deepcopy(gave_badvsgood).pick_channels(['FCZ']).data), label = 'difference', lw = 1.5, color = '#8da0cb')
-ax.plot(times2, np.squeeze(mne.combine_evoked(all_evoked = [gave_gmean, -gave_badvsgood], weights = 'equal').pick_channels(['FCZ']).data), label = 'correct', lw = 1.5, color = '#66c2a5')
-ax.plot(times2, np.squeeze(mne.combine_evoked(all_evoked = [gave_gmean, gave_badvsgood], weights = 'equal').pick_channels(['FCZ']).data), label = 'incorrect', lw = 1.5, color = '#fc8d62')
-ax.hlines(0, xmin=np.min(times2), xmax = np.max(times2), lw = .75, linestyle='dashed')
-ax.vlines(0, ymin=-6, ymax=6, lw=.75, linestyle='--')
-ax.legend(loc='upper right')
-        
-ax.set_ylabel('Time rel to feedback onset (s)')
-for mask in range(len(mask_diff_05)):
-    #x =  times[mask_diff_05[mask][1]]
-    #y = np.zeros(len(x)); y.fill(-5.3)
-    #ax.scatter(x, y, color = '#998ec3', alpha = .5, marker='s')
-    ax.hlines(y = -6.5,
-              xmin = np.min(times[mask_diff_05[mask][1]]),
-              xmax = np.max(times[mask_diff_05[mask][1]]),
+for mask in range(len(masks_ern)):
+    ax1.hlines(y = -3.5,
+              xmin = np.min(clutimes[masks_ern[mask][1]]),
+              xmax = np.max(clutimes[masks_ern[mask][1]]),
               lw=5, color = '#4292c6', alpha = .5) #plot significance timepoints for difference effect
 
-
-
-
 #%%
-gave_errorcorr = mne.grand_average(alldata_errorcorr); gave_errorcorr.drop_channels(['RM'])
-gave_errorcorr.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0),
+gave_errorcorr = mne.grand_average(data['errorcorrect']); gave_errorcorr.data = toverparam(data['errorcorrect'])
+gave_errorcorr.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0), times = np.arange(0.1,0.7,0.05), ts_args=dict(scalings = dict(eeg = 1)),
                           title = 'error regressor correct trials')
 
-gave_errorincorr = mne.grand_average(alldata_errorincorr); gave_errorincorr.drop_channels(['RM'])
-gave_errorincorr.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0),
+gave_errorincorr = mne.grand_average(data['errorincorrect']);  gave_errorincorr.data = toverparam(data['errorincorrect'])
+gave_errorincorr.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0), times = np.arange(0.1,0.7,0.05), ts_args=dict(scalings = dict(eeg = 1)),
                             title = 'error regressor incorrect trials')
 
-gave_confcorr = mne.grand_average(alldata_confcorr); gave_confcorr.drop_channels(['RM'])
-gave_confcorr.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0),
-                         title = 'confidence regressor correct trials')
+gave_errorivsc = mne.grand_average(data['errorincorrvscorr']); gave_errorivsc.data = toverparam(data['errorincorrvscorr'])
+gave_errorivsc.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0), times = np.arange(0.1,0.7,0.05), ts_args=dict(scalings = dict(eeg = 1)),
+                            title = 'error regressor incorrect vs correct trials')
+
 
 
 #%%
-#show FCz for error main effect in correct and incorrect trials
-mne.viz.plot_compare_evokeds(
-        evokeds = dict(
-                errorcorr = alldata_errorcorr,
-                errorincorr = alldata_errorincorr),
-        colors = dict(
-                errorcorr   = '#2171b5',
-                errorincorr = '#41ab5d'),
-        linestyles = dict(errorincorr = '--'),
-        picks = 'FCZ',
-        show_sensors   = False,
-        show_legend    = 'upper right',
-        truncate_xaxis = False,
-        ci             = .68
-        )
-plt.title('error regressor for correct and incorrect trials at electrode FCz')
+gave_confcorr   = mne.grand_average(data['confcorrect']);   gave_confcorr.data = toverparam(data['confcorrect'])
+gave_confcorr.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0), times = np.arange(0.1,0.7,0.05), ts_args=dict(scalings = dict(eeg = 1)),
+                          title = 'confidence regressor correct trials')
 
-#show FCz for confidence main effect in correct and incorrect trials
-mne.viz.plot_compare_evokeds(
-        evokeds = dict(
-                confcorr = alldata_confcorr,
-                confincorr = alldata_confincorr
-                ),
-        colors = dict(
-                confcorr    = '#2171b5',
-                confincorr  = '#41ab5d'
-                ),
-        linestyles = dict(confincorr  = '--'),
-        picks = 'FCZ',
-        show_sensors   = False,
-        show_legend    = 'upper right',
-        truncate_xaxis = False,
-        ci             = .68
-        )
-plt.title('confidence regressor for correct and incorrect trials at electrode FCz')
+
+gave_confincorr = mne.grand_average(data['confincorrect']); gave_confincorr.data = toverparam(data['confincorrect'])
+gave_confincorr.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0), times = np.arange(0.1,0.7,0.05), ts_args=dict(scalings = dict(eeg = 1)),
+                          title = 'confidence regressor incorrect trials')
+
+
+gave_confincorrvscorr = mne.grand_average(data['confincorrvscorr']); gave_confincorrvscorr.data = toverparam(data['confincorrvscorr'])
+gave_confincorrvscorr.plot_joint(picks = 'eeg', topomap_args = dict(outlines = 'head', contours = 0), times = np.arange(0.1,0.7,0.05), ts_args=dict(scalings = dict(eeg = 1)),
+                          title = 'confidence regressor incorrect vs correct trials')
 
 #%%
 
-gave_errorcorr_t = mne.grand_average(alldata_errorcorr_t); gave_errorcorr_t.data = toverparam(alldata_errorcorr_t); gave_errorcorr_t.drop_channels(['RM'])
-gave_errorincorr_t = mne.grand_average(alldata_errorcorr_t); gave_errorincorr_t.data = toverparam(alldata_errorincorr_t); gave_errorincorr_t.drop_channels(['RM'])
+np.random.seed(seed=1)
+tmin, tmax = 0, 1.0
+smooth_sigma = None
+betas = True
+alltimes = mne.grand_average(data['grandmean']).times
+for channel in ['FCZ', 'CZ', 'CPZ', 'PZ']:
+    if betas:
+        dat2use = deepcopy(data)
+        errcorr = mne.grand_average(dat2use['errorcorrect']); errcorr.data = toverparam(dat2use['errorcorrect'])
+        confcorr = mne.grand_average(dat2use['confcorrect']); confcorr.data = toverparam(dat2use['confcorrect'])
+        
+        errincorr = mne.grand_average(dat2use['errorincorrect']); errincorr.data = toverparam(dat2use['errorincorrect'])
+        confincorr = mne.grand_average(dat2use['confincorrect']); confincorr.data = toverparam(dat2use['confincorrect'])
+        
+        errivsc = mne.grand_average(dat2use['errorincorrvscorr']); errivsc.data = toverparam(dat2use['errorincorrvscorr'])
+        confivsc = mne.grand_average(dat2use['confincorrvscorr']); confivsc.data = toverparam(dat2use['confincorrvscorr'])
+        
+        err = mne.grand_average(dat2use['error']); err.data = toverparam(dat2use['error'])
+        conf = mne.grand_average(dat2use['conf']); conf.data = toverparam(dat2use['conf'])
+    else:
+        dat2use = deepcopy(data)
+        errcorr = mne.grand_average(dat2use['errorcorrect']); errcorr.data = toverparam(dat2use['errorcorrect'])
+        confcorr = mne.grand_average(dat2use['confcorrect']); confcorr.data = toverparam(dat2use['confcorrect'])
+        
+        errincorr = mne.grand_average(dat2use['errorincorrect']); errincorr.data = toverparam(dat2use['errorincorrect'])
+        confincorr = mne.grand_average(dat2use['confincorrect']); confincorr.data = toverparam(dat2use['confincorrect'])
+        
+        errivsc = mne.grand_average(dat2use['errorincorrvscorr']); errivsc.data = toverparam(dat2use['errorincorrvscorr'])
+        confivsc = mne.grand_average(dat2use['confincorrvscorr']); confivsc.data = toverparam(dat2use['confincorrvscorr'])
+        
+        err = mne.grand_average(dat2use['error']); err.data = toverparam(dat2use['error'])
+        conf = mne.grand_average(dat2use['conf']); conf.data = toverparam(dat2use['conf'])
+    
+    t_errcorr, clusters_errcorr, clusters_pv_errcorr, _          = runclustertest_epochs(data = dat2use, contrast_name = 'errorcorrect', channels = [channel], tmin = tmin, tmax = tmax, gauss_smoothing = smooth_sigma) 
+    masks_errcorr = np.asarray(clusters_errcorr)[clusters_pv_errcorr < 0.05]
+    
+    t_confcorr, clusters_confcorr, clusters_pv_confcorr, _       = runclustertest_epochs(data = dat2use, contrast_name = 'confcorrect', channels = [channel], tmin = tmin, tmax = tmax, gauss_smoothing = smooth_sigma) 
+    masks_confcorr = np.asarray(clusters_confcorr)[clusters_pv_confcorr < 0.05]
+    
+    
+    t_errincorr, clusters_errincorr, clusters_pv_errincorr, _    = runclustertest_epochs(data = dat2use, contrast_name = 'errorincorrect', channels = [channel], tmin = tmin, tmax = tmax, gauss_smoothing = smooth_sigma) 
+    masks_errincorr = np.asarray(clusters_errincorr)[clusters_pv_errincorr < 0.05]
+    
+    t_confincorr, clusters_confincorr, clusters_pv_confincorr, _ = runclustertest_epochs(data = dat2use, contrast_name = 'confincorrect', channels = [channel], tmin = tmin, tmax = tmax, gauss_smoothing = smooth_sigma) 
+    masks_confincorr = np.asarray(clusters_confincorr)[clusters_pv_confincorr < 0.05]
+    
+    t_errivsc, clusters_errivsc, clusters_pv_errivsc, _          = runclustertest_epochs(data = dat2use, contrast_name = 'errorincorrvscorr', channels = [channel], tmin = tmin, tmax = tmax, gauss_smoothing = smooth_sigma) 
+    masks_errivsc = np.asarray(clusters_errivsc)[clusters_pv_errivsc < 0.05]
+    
+    t_confivsc, clusters_confivsc, clusters_pv_confivsc, _       = runclustertest_epochs(data = dat2use, contrast_name = 'confincorrvscorr', channels = [channel], tmin = tmin, tmax = tmax, gauss_smoothing = smooth_sigma) 
+    masks_confivsc = np.asarray(clusters_confivsc)[clusters_pv_confivsc < 0.05]
+    
+    t_err, clusters_err, clusters_pv_err, _                 = runclustertest_epochs(data = dat2use, contrast_name = 'error', channels = [channel], tmin = tmin, tmax = tmax, gauss_smoothing = smooth_sigma) 
+    masks_err = np.asarray(clusters_err)[clusters_pv_err < 0.05]
+    
+    t_conf, clusters_conf, clusters_pv_conf, _              = runclustertest_epochs(data = dat2use, contrast_name = 'conf', channels = [channel], tmin = tmin, tmax = tmax, gauss_smoothing = smooth_sigma) 
+    masks_conf = np.asarray(clusters_conf)[clusters_pv_conf < 0.05]
+    
+    clutimes = deepcopy(data['grandmean'][0]).crop(tmin = tmin, tmax = tmax).times
+    
+    fig = plt.figure(figsize = (10,7))
+    fig.suptitle('channel '+channel)
+    ax  = fig.add_subplot(411)
+    ax.set_title('correct trials', loc = 'left')
+    ax.plot(alltimes, deepcopy(errcorr).pick_channels([channel]).data[0], label = 'error', color = '#d7191c', lw = 1)
+    ax.plot(alltimes, deepcopy(confcorr).pick_channels([channel]).data[0],  label = 'confidence', color = '#2c7bb6', lw = 1)
+    ax.hlines(y = 0, xmin = alltimes.min(), xmax = alltimes.max(), lw = .75, linestyles = 'dashed', color = '#000000')
+    ax.vlines(x = 0, ymin = -5, ymax = 6, linestyles = 'dashed', color = '#000000', lw = .75)
+    ax.set_ylabel('t-value')
+    ax.set_ylim([-6,6])
+    for mask in masks_errcorr:
+        start, stop = clutimes[mask[1]].min(), clutimes[mask[1]].max()
+        ax.hlines(y = -5, xmin=start, xmax=stop, lw = 3, alpha=.5, color = '#d7191c')
+    for mask in masks_confcorr:
+        start, stop = clutimes[mask[1]].min(), clutimes[mask[1]].max()
+        ax.hlines(y = -5, xmin=start, xmax=stop, lw = 3, alpha=.5, color = '#2c7bb6')
+    
+    ax2 = fig.add_subplot(412)
+    ax2.set_title('incorrect trials', loc = 'left')
+    ax2.plot(alltimes, deepcopy(errincorr).pick_channels([channel]).data[0], color = '#d7191c', lw = 1)
+    ax2.plot(alltimes, deepcopy(confincorr).pick_channels([channel]).data[0], color = '#2c7bb6', lw = 1)
+    ax2.hlines(y = 0, xmin = alltimes.min(), xmax = alltimes.max(), lw = .75, linestyles = 'dashed', color = '#000000')
+    ax2.vlines(x = 0, ymin = -5, ymax = 6, linestyles = 'dashed', color = '#000000', lw = .75)
+    ax2.set_ylabel('t-value')
+    ax2.set_ylim([-6,6])
+    for mask in masks_errincorr:
+        start, stop = clutimes[mask[1]].min(), clutimes[mask[1]].max()
+        ax2.hlines(y = -5, xmin=start, xmax=stop, lw = 3, alpha=.5, color = '#d7191c')
+    for mask in masks_confincorr:
+        start, stop = clutimes[mask[1]].min(), clutimes[mask[1]].max()
+        ax2.hlines(y = -5, xmin=start, xmax=stop, lw = 3, alpha=.5, color = '#2c7bb6')
+    
+    ax3 = fig.add_subplot(413)
+    ax3.set_title('incorrect-correct trials', loc = 'left')
+    ax3.plot(alltimes, deepcopy(errivsc).pick_channels([channel]).data[0], color = '#d7191c', lw = 1)
+    ax3.plot(alltimes, deepcopy(confivsc).pick_channels([channel]).data[0], color = '#2c7bb6', lw = 1)
+    ax3.hlines(y = 0, xmin = alltimes.min(), xmax = alltimes.max(), lw = .75, linestyles = 'dashed', color = '#000000')
+    ax3.vlines(x = 0, ymin = -5, ymax = 6, linestyles = 'dashed', color = '#000000', lw = .75)
+    ax3.set_ylabel('t-value')
+    ax3.set_ylim([-6,6])
+    ax3.set_xlabel('Time relative to feedback onset (s)')
+    for mask in masks_errivsc:
+        start, stop = clutimes[mask[1]].min(), clutimes[mask[1]].max()
+        ax3.hlines(y = -5, xmin=start, xmax=stop, lw = 3, alpha=.5, color = '#d7191c')
+    for mask in masks_confivsc:
+        start, stop = clutimes[mask[1]].min(), clutimes[mask[1]].max()
+        ax3.hlines(y = -5, xmin=start, xmax=stop, lw = 3, alpha=.5, color = '#2c7bb6')
+                   
+    ax4 = fig.add_subplot(414)
+    ax4.set_title('all trials', loc = 'left')
+    ax4.plot(alltimes, deepcopy(err).pick_channels([channel]).data[0], color = '#d7191c', lw = 1)
+    ax4.plot(alltimes, deepcopy(conf).pick_channels([channel]).data[0], color = '#2c7bb6', lw = 1)
+    ax4.hlines(y = 0, xmin = alltimes.min(), xmax = alltimes.max(), lw = .75, linestyles = 'dashed', color = '#000000')
+    ax4.vlines(x = 0, ymin = -5, ymax = 6, linestyles = 'dashed', color = '#000000', lw = .75)
+    ax4.set_ylabel('t-value')
+    ax4.set_ylim([-6,6])
+    ax4.set_xlabel('Time relative to feedback onset (s)')
+    for mask in masks_err:
+        start, stop = clutimes[mask[1]].min(), clutimes[mask[1]].max()
+        ax4.hlines(y = -5, xmin=start, xmax=stop, lw = 3, alpha=.5, color = '#d7191c')
+    for mask in masks_conf:
+        start, stop = clutimes[mask[1]].min(), clutimes[mask[1]].max()
+        ax4.hlines(y = -5, xmin=start, xmax=stop, lw = 3, alpha=.5, color = '#2c7bb6')
+    
+    fig.legend(loc = 'upper left')
+    plt.tight_layout()
 
-
-gave_confcorr_t = mne.grand_average(alldata_confcorr_t); gave_confcorr_t.data = toverparam(alldata_confcorr_t); gave_confcorr_t.drop_channels(['RM'])
-gave_confincorr_t = mne.grand_average(alldata_confincorr_t); gave_confincorr_t.data = toverparam(alldata_confincorr_t); gave_confincorr_t.drop_channels(['RM'])
-
-times3 = gave_errorcorr_t.times
-
-fig = plt.figure()
-fig.suptitle('FCz - effect of error')
-ax = fig.subplots(1)
-ax.plot(times3, np.squeeze(deepcopy(gave_errorcorr_t).pick_channels(['FCZ']).data), label = 'error - correct trials', lw = 1.5, color = '#2171b5')
-ax.plot(times3, np.squeeze(deepcopy(gave_errorincorr_t).pick_channels(['FCZ']).data), label = 'error - incorrect trials', lw = 1.5, color = '#2171b5', linestyle = 'dashed')
-ax.legend()
-ax.hlines(y=0, linestyle='--', color='k', lw=.75, xmin=np.min(times3), xmax = np.max(times3))
-ax.vlines(x=0, linestyle='--', color='k', lw=.75, ymin=-6, ymax = 4)
-ax.set_ylabel('t value');
-ax.set_xlabel('time relative to feedback onset (s)')
-
-
-fig = plt.figure()
-fig.suptitle('FCz - effect of confidence')
-ax = fig.subplots(1)
-ax.plot(times3, np.squeeze(deepcopy(gave_confcorr_t).pick_channels(['FCZ']).data), label = 'confidence - correct trials', lw = 1.5, color = '#41ab5d')
-ax.plot(times3, np.squeeze(deepcopy(gave_confincorr_t).pick_channels(['FCZ']).data), label = 'confidence - incorrect trials', lw = 1.5, color = '#41ab5d', linestyle = 'dashed')
-ax.legend()
-ax.hlines(y=0, linestyle='--', color='k', lw=.75, xmin=np.min(times3), xmax = np.max(times3))
-ax.vlines(x=0, linestyle='--', color='k', lw=.75, ymin=-6, ymax = 4)
-ax.set_ylabel('t value');
-ax.set_xlabel('time relative to feedback onset (s)')
+#%%

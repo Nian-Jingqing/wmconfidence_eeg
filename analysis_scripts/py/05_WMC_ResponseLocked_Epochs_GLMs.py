@@ -14,6 +14,17 @@ import os
 import os.path as op
 import sys
 from matplotlib import pyplot as plt
+from scipy import ndimage
+
+#stuff for the machine learning
+
+from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold
+from sklearn.preprocessing import StandardScaler
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+from sklearn.pipeline import make_pipeline
+import sklearn as skl
 
 #sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri/analysis_scripts')
 sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
@@ -27,17 +38,13 @@ import glmtools as glm
 wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'; #laptop wd
 wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
-
-
-subs = np.array([1, 2, 4, 5, 6, 7, 8, 9, 10])
-#subs = np.array([1,2,4,5,6])
-#subs = np.array([7,8,9,10])
-#subs = np.array([8, 9, 10]) #memory error on subject 8 so need to re run
+subs = np.array([         4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16, 17, 18,     20, 21, 22,     24, 25, 26])
 #%% only needs running if cuelocked TFR glms not already present
 
 alldata_left  = []; alldata_left_t  = []
 alldata_right = []; alldata_right_t = []
 alldata_lvsr  = []; alldata_lvsr_t  = []
+laplacian = True
 
 for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
@@ -63,7 +70,12 @@ for i in subs:
     epoch.resample(500) #resample
     epoch = epoch.pick('eeg') #subsample to only eeg electrodes
     
-    glmdata = glm.data.TrialGLMData(data = epoch.get_data(),
+    
+    if laplacian:
+        epoch2 = mne.preprocessing.compute_current_source_density(epoch);
+        
+    
+    glmdata = glm.data.TrialGLMData(data = epoch2.get_data(),
                                     time_dim=2,
                                     sample_rate=500)
     
@@ -98,8 +110,8 @@ for i in subs:
     #grand mean
     tl_betas_grandmean = mne.EvokedArray(data = np.squeeze(model.copes[0,:,:]),
                                        info = epoch.info, tmin = epoch.tmin, nave = epoch.average().nave)
-    #tl_betas_grandmean.apply_baseline((None, None)).plot_joint(times='auto', picks='eeg', topomap_args=dict(outlines='head', contours=0)) #this baseline demeans the entire epoch
-    #tl_betas_grandmean.plot_joint(times='auto', topomap_args=dict(outlines='head', contours=0)) #can add picks=['C3', 'C4', 'C5', 'C6'] to look at lateralised motor electrodes
+    tl_betas_grandmean.apply_baseline((None, None)).plot_joint(picks='eeg', times= np.arange(0,0.5,0.1),topomap_args=dict(outlines='head', contours=0)) #this baseline demeans the entire epoch
+    tl_betas_grandmean.plot_joint(times=np.arange(0,0.5,0.1), topomap_args=dict(outlines='head', contours=0)) #can add picks=['C3', 'C4', 'C5', 'C6'] to look at lateralised motor electrodes
     tl_betas_grandmean.save(fname=op.join(param['path'], 'glms', 'response', 'wmConfidence_'+param['subid']+'_resplocked_tl_grandmean_betas-ave.fif'))
     del(tl_betas_grandmean)
     
@@ -142,7 +154,7 @@ for i in subs:
     #cued
     tl_betas_cued = mne.EvokedArray(data = np.squeeze(model.copes[2,:,:]),
                                        info = epoch.info, tmin = epoch.tmin, nave = epoch['cue==1'].average().nave)
-    #tl_betas_cued.apply_baseline((None, None)).plot_joint(times='auto', picks='eeg', topomap_args=dict(outlines='head', contours=0)) #this baseline demeans the entire epoch
+    tl_betas_cued.apply_baseline((None, None)).plot_joint(times='auto', picks='eeg', topomap_args=dict(outlines='head', contours=0)) #this baseline demeans the entire epoch
     #tl_betas_cued.plot_joint(times='auto', topomap_args=dict(outlines='head', contours=0)) #can add picks=['C3', 'C4', 'C5', 'C6'] to look at lateralised motor electrodes
     tl_betas_cued.save(fname=op.join(param['path'], 'glms', 'response', 'wmConfidence_'+param['subid']+'_resplocked_tl_cued_betas-ave.fif'))
     del(tl_betas_cued)

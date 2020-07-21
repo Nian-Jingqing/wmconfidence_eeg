@@ -1,0 +1,400 @@
+
+
+working on subject 4
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s04/wmConfidence_s04_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+386 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 04 has 386 trials
+
+
+running glm
+
+
+
+working on subject 5
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s05/wmConfidence_s05_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+475 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 05 has 475 trials
+
+
+running glm
+
+
+
+working on subject 6
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s06/wmConfidence_s06_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+465 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 06 has 465 trials
+
+
+running glm
+
+
+
+working on subject 7
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s07/wmConfidence_s07_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+447 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 07 has 447 trials
+
+
+running glm
+
+
+
+working on subject 8
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s08/wmConfidence_s08_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+440 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 08 has 440 trials
+
+
+running glm
+
+
+
+working on subject 9
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s09/wmConfidence_s09_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+466 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 09 has 466 trials
+
+
+running glm
+
+
+
+working on subject 11
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s11/wmConfidence_s11_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+471 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 11 has 471 trials
+
+
+running glm
+
+
+
+working on subject 12
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s12/wmConfidence_s12_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+474 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 12 has 474 trials
+
+
+running glm
+
+
+
+working on subject 13
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s13/wmConfidence_s13_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+455 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 13 has 455 trials
+
+
+running glm
+
+
+
+working on subject 14
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s14/wmConfidence_s14_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+425 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 14 has 425 trials
+
+
+running glm
+
+
+
+working on subject 15
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s15/wmConfidence_s15_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+461 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 15 has 461 trials
+
+
+running glm
+
+
+
+working on subject 16
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s16/wmConfidence_s16_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+412 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 16 has 412 trials
+
+
+running glm
+
+
+
+working on subject 17
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s17/wmConfidence_s17_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+471 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 17 has 471 trials
+
+
+running glm
+
+
+
+working on subject 18
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s18/wmConfidence_s18_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+417 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 18 has 417 trials
+
+
+running glm
+
+
+
+working on subject 20
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s20/wmConfidence_s20_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+468 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 20 has 468 trials
+
+
+running glm
+
+
+
+working on subject 21
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s21/wmConfidence_s21_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+470 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 21 has 470 trials
+
+
+running glm
+
+
+
+working on subject 22
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s22/wmConfidence_s22_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+451 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 22 has 451 trials
+
+
+running glm
+
+
+
+working on subject 24
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s24/wmConfidence_s24_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+467 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 24 has 467 trials
+
+
+running glm
+
+
+
+working on subject 25
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s25/wmConfidence_s25_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+472 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 25 has 472 trials
+
+
+running glm
+
+
+
+working on subject 26
+
+
+Reading /home/sammirc/Desktop/DPhil/wmConfidence/data/eeg/s26/wmConfidence_s26_fblocked-epo.fif ...
+    Found the data of interest:
+        t =    -500.00 ...    1500.00 ms
+        0 CTF compensation matrices available
+455 matching events found
+No baseline correction applied
+Adding metadata with 47 columns
+0 projection items activated
+Applying baseline correction (mode: mean)
+
+Subject 26 has 455 trials
+
+
+running glm
+

@@ -5,8 +5,6 @@ Created on Mon Aug  13 14:00:10 2019
 
 @author: sammirc
 """
-
-
 import numpy as np
 import pandas as pd
 import mne
@@ -24,8 +22,10 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18])
-subs = np.array([17, 18])
+subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25])
+subs = np.array([         4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16, 17, 18,     20, 21, 22,     24, 25])
+subs = np.array([24,25])
+
 for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)
@@ -49,7 +49,7 @@ for i in subs:
     probelocked.set_eeg_reference(ref_channels=['RM']) #re-reference to average of the two mastoids
 
     # set up params for TF decomp
-    freqs = np.arange(1, 40, 1)  # frequencies from 2-35Hz
+    freqs = np.arange(1, 41, 1)  # frequencies from 2-35Hz
     n_cycles = freqs *.3  # 300ms timewindow for estimation
 
     print('\nrunning TF decomposition\n')

@@ -28,15 +28,15 @@ os.chdir(wd)
 figpath = op.join(wd, 'figures', 'eeg_figs', 'feedbacklocked', 'epochs_glm4')
 
 subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
-subs = np.array([         4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16, 17, 18]) #subject 2 actually only has 72 trials in total, not really a lot so exclude atm
+subs = np.array([         4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22]) #subject 2 actually only has 72 trials in total, not really a lot so exclude atm
 
 
 
-contrasts = ['grandmean', 'neutral', 'cued', 'cuedvsneutral', 'pside',
-             'incorrvscorr', 'error', 'conferror', 'confidence',
+contrasts = ['grandmean', 'neutral', 'cued', 'cuedvsneutral', #'pside',
+             'incorrvscorr', 'error', 'confidence',
              'error_corr', 'error_incorr', 'error_incorrvscorr',
-             'conferr_corr', 'conferr_incorr', 'conferror_incorrvscorr',
-             'confidence_corr', 'confidence_incorr', 'confidence_incorrvscorr']
+             'conf_corr', 'conf_incorr', 'confidence_incorrvscorr',
+             'confupdate', 'confupdate_corr', 'confupdate_incorr', 'confupdate_incorrvscorr']
 
 data = dict()
 data_b = dict()
@@ -50,27 +50,35 @@ for i in subs:
     for name in contrasts:
         data[name].append(   mne.time_frequency.read_tfrs(fname = op.join(param['path'], 'glms', 'feedback', 'tfr_glm4', 'wmc_' + param['subid'] + '_fblocked_tfr_'+ name + '_tstats-tfr.h5'))[0])
         data_b[name].append( mne.time_frequency.read_tfrs(fname = op.join(param['path'], 'glms', 'feedback', 'tfr_glm4', 'wmc_' + param['subid'] + '_fblocked_tfr_'+ name + '_tstats_baselined-tfr.h5'))[0])
+
+for cope in contrasts:
+    for i in range(subs.size):
+        data[cope][i] = data[cope][i].drop_channels(['RM'])
+        data_b[cope][i] = data_b[cope][i].drop_channels(['RM'])
+
 #%%#visualise some regressors
 #we're not going to plot the grandmean, this shouldn't be in the glm as it doesnt make sense anyways.
 #we will visualise the regressors for neutral and cued trials though as these should be different (no lateralisation in in neutral trials)
 contrasts = data.keys()
 
-timefreqs = {(.4, 12):(.4, 6),
-             (.6, 12):(.4, 6),
-             (.8, 12):(.4, 6),
-             (.4, 6):(.4, 4),
-             (.6, 6):(.4, 4),
-             (.8, 6):(.4, 4)}
 
-timefreqs_alpha = {(.4, 12):(.4, 6), #set alpha to 9-15Hz
-                   (.6, 12):(.4, 6),
-                   (.8, 12):(.4, 6)}
+
+timefreqs = {(.4, 11):(.4, 6),
+             (.6, 11):(.4, 6),
+             (.8, 11):(.4, 6),
+             (.4, 6):(.4, 3),
+             (.6, 6):(.4, 3),
+             (.8, 6):(.4, 3)}
+
+timefreqs_alpha = {(.4, 11):(.4, 6), #set alpha to 9-15Hz
+                   (.6, 11):(.4, 6),
+                   (.8, 11):(.4, 6)}
 timefreqs_beta  = {(.4, 22):(.4, 14), #set alpha to 9-15Hz
                    (.6, 22):(.4, 14),
                    (.8, 22):(.4, 14)}
-timefreqs_theta = {(.4, 6):(.4, 4),
-                   (.6, 6):(.4, 4),
-                   (.8, 6):(.4, 4)}
+timefreqs_theta = {(.4, 6):(.4, 3),
+                   (.6, 6):(.4, 3),
+                   (.8, 6):(.4, 3)}
 
 visleftchans  = ['PO3', 'PO7', 'O1']
 visrightchans = ['PO4','PO8','O2']
@@ -82,7 +90,7 @@ ftheta_chans  = ['FPZ','AFZ','FZ','AF3','AF4']
 topoargs = dict(outlines= 'head', contours = 0)
 topoargs_t = dict(outlines = 'head', contours = 0, vmin=-2, vmax = 2)
 #%%
-gave_gmean = mne.grand_average(data['grandmean']); gave_gmean.data = toverparam(data['grandmean']); gave_gmean.drop_channels(['RM'])
+gave_gmean = mne.grand_average(data['grandmean']); gave_gmean.data = toverparam(data['grandmean'])
 #gave_gmean.plot_joint(title = 'grandmean, t over tstats', timefreqs = timefreqs_cue,
 #                      topomap_args = dict(outlines = 'head', contours = 0, vmin = -5, vmax = 5))
 
@@ -90,22 +98,10 @@ times = gave_gmean.times
 allfreqs = gave_gmean.freqs
 del(gave_gmean)
 
-#%%
-
-for cope in contrasts:
-    for i in range(subs.size):
-        data[cope][i].drop_channels(['RM'])
-        data_b[cope][i].drop_channels(['RM'])
-
-#%%
-        
+#%%        
 #is there anything lateralised in the visual response, relative to the location of the probed item?
-
-gave_pside = mne.grand_average(data['pside']); gave_pside.data = toverparam(data['pside'])
-gave_pside.plot_joint(title = 'probed item left vs right', timefreqs = timefreqs, topomap_args = topoargs_t, picks = 'eeg')
-
-
-
+#gave_pside = mne.grand_average(data['pside']); gave_pside.data = toverparam(data['pside'])
+#gave_pside.plot_joint(title = 'probed item left vs right', timefreqs = timefreqs, topomap_args = topoargs_t, picks = 'eeg')
 #%%
 #firstly lets just visualise the ERN if we can: this is incorr vs corr
 #this is a contrast so we can take the non-baselined data
@@ -113,14 +109,12 @@ gave_pside.plot_joint(title = 'probed item left vs right', timefreqs = timefreqs
 gave_ern = mne.grand_average(data['incorrvscorr']); gave_ern.data = toverparam(data['incorrvscorr']); #gave_ern.drop_channels(['RM'])
 
 gave_ern.plot_joint(title = 'incorrect vs correct', picks = 'eeg',
-                    topomap_args = topoargs_t, timefreqs = timefreqs)
+                    topomap_args = topoargs_t, timefreqs = timefreqs_alpha)
 
 #lets plot just FCz now, as we know thats where we get the ERN effect
 
 fcz_ern = deepcopy(gave_ern).pick_channels(['FCZ']).data[0]
 fcz_ern = deepcopy(gave_ern).pick_channels(frontal_chans).data[0]
-
-
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -220,7 +214,7 @@ gave_neut = mne.grand_average(data_b['neutral']); gave_neut.data = toverparam(da
 gave_neut.plot_joint(title = 'neutral trials', picks = 'eeg', timefreqs = timefreqs, topomap_args = topoargs_t)
 
 gave_cvsn = mne.grand_average(data['cuedvsneutral']); gave_cvsn.data = toverparam(data['cuedvsneutral'])
-gave_cvsn.plot_joint(title = 'cued vs neutral trials', picks = 'eeg', fmin=None, fmax=None, timefreqs = timefreqs_theta, topomap_args = topoargs_t)
+gave_cvsn.plot_joint(title = 'cued vs neutral trials', picks = 'eeg', fmin=None, fmax=None, timefreqs = timefreqs, topomap_args = topoargs_t)
 
 #%%
 gave_confcorr = mne.grand_average(data_b['confidence_corr']); gave_confcorr.data = toverparam(data_b['confidence_corr']); #gave_errorcorr.drop_channels(['RM'])
@@ -282,19 +276,27 @@ cbaxes = fig.add_axes([.95, .15, .02, .35])
 fig.colorbar(tfplot, cax = cbaxes)
 
 
-gave_error = mne.grand_average(data_b['confidence']); gave_error.data = toverparam(data_b['confidence'])
-gave_error.plot_joint(title = 'main effect confidence', picks = 'eeg', timefreqs=timefreqs, topomap_args = topoargs_t)
+gave_conf = mne.grand_average(data_b['confidence']); gave_conf.data = toverparam(data_b['confidence'])
+gave_conf.plot_joint(title = 'main effect confidence', picks = 'eeg', timefreqs=timefreqs, topomap_args = topoargs_t)
 
-fcz_error = deepcopy(gave_error).pick_channels(['FCZ']).data[0]
-fcz_error = deepcopy(gave_error).pick_channels(frontal_chans).data[0]
+fcz_conf = deepcopy(gave_conf).pick_channels(['FCZ']).data[0]
+fcz_conf = deepcopy(gave_conf).pick_channels(frontal_chans).data[0]
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-tfplot = ax.imshow(fcz_error, cmap = 'RdBu_r', aspect = 'auto', vmin=-2, vmax=2, interpolation = 'gaussian',
+tfplot = ax.imshow(fcz_conf, cmap = 'RdBu_r', aspect = 'auto', vmin=-2, vmax=2, interpolation = 'gaussian',
           origin = 'lower', extent = (times.min(), times.max(), allfreqs.min(), allfreqs.max()))
 ax.set_xlabel('Time rel. to feedback onset (s)')
 ax.set_ylabel('Frequency (Hz)')
 ax.vlines([0], linestyles = 'dashed', lw = 2, color = '#000000', ymin = 1, ymax = 39)
 cbaxes = fig.add_axes([.95, .15, .02, .35])
 fig.colorbar(tfplot, cax = cbaxes)
+#%%
+
+gave_confupdate = mne.grand_average(data_b['confupdate']); gave_confupdate.data = toverparam(data_b['confupdate'])
+gave_confupdate.plot_joint(title = 'regressor of confidence update', picks = 'eeg', timefreqs = timefreqs, topomap_args = topoargs_t)
+
+
+
+
 

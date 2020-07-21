@@ -37,8 +37,8 @@ wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
-subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18])
-subs = np.array([         4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16, 17, 18])
+subs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26])
+subs = np.array([         4, 5, 6, 7, 8, 9,     11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26])
 
 #%% only needs running if cuelocked TFR glms not already present
 for i in subs:
@@ -49,9 +49,16 @@ for i in subs:
     #get the epoched data
     epochs = mne.read_epochs(fname = param['fblocked'], preload = True) #this is loaded in with the metadata
     epochs.set_eeg_reference(['RM'])
-    epochs.apply_baseline((-.25, 0)) #baseline 250ms prior to feedback
+    epochs.apply_baseline((-.250, 0)) #baseline 250ms prior to feedback
     epochs.resample(500) #resample to 500Hz
     ntrials = len(epochs)
+    
+    #before we reject trials, lets just get a couple of things into the metadata that we'll use in the glm
+    bdata = epochs.metadata
+    bdata['nxttrlcw'] = bdata.shift(-1).confwidth #get the confidence width of the next trial
+    bdata['nxttrlcwadj'] = bdata.nxttrlcw - bdata.confwidth
+    epochs.metadata = bdata
+    
     
     #will do an automated process of looking for trials with heightened variance (noise) and output which trials to keep
     _, keeps = plot_AR(epochs, method = 'gesd', zthreshold = 1.5, p_out=.1, alpha = .05, outlier_side = 1)
@@ -62,7 +69,7 @@ for i in subs:
     discards[keeps] = False
     epochs = epochs.drop(discards) #first we'll drop trials with excessive noise in the EEG
     
-    epochs = epochs['DTcheck == 0 and clickresp == 1']
+    epochs = epochs['DTcheck == 0 and clickresp == 1 and trialnum != 256'] #the last trial of the session doesn't have a following trial!
     print('a total of %d trials have been dropped for this subjects'%(ntrials-len(epochs)))
 
     glmdata         = glm.data.TrialGLMData(data = epochs.get_data(), time_dim = 2, sample_rate = 500)
@@ -79,6 +86,7 @@ for i in subs:
     confwidth = epochs.metadata.confwidth.to_numpy() #confidence width in degrees, higher = less confident
     conf = np.radians(np.multiply(confwidth, -1)) #reverse the sign so higher (less negative) = more confident, then convert to radians so same scale as error
     confdiff = epochs.metadata.confdiff.to_numpy() #error awareness (metacognition) on that trial (or prediction error)
+    confupdate = epochs.metadata.nxttrlcwadj.to_numpy()
     neutral = np.where(cues == 0, 1, 0)
     
     targinconf = np.less_equal(confdiff,0)
@@ -105,50 +113,56 @@ for i in subs:
     confcorr    = np.where(np.isnan(confcorr), 0, confcorr)
     confincorr  = np.where(np.isnan(confincorr), 0, confincorr)
     
-    confdiff_corr = np.where(targinconf == 1, confdiff, np.nan)
-    confdiff_corr = np.multiply(confdiff_corr, -1) #flip the sign of underconfident trials
-    #previously, lower values (more negative) relate to more confidence error
-    #flipping the sign of this makes lower numbers = lower confidence error (better calibration on a trial)
-    confdiff_corr = np.divide(np.subtract(confdiff_corr, np.nanmean(confdiff_corr)), np.nanstd(confdiff_corr))
-    confdiff_corr = np.where(np.isnan(confdiff_corr), 0, confdiff_corr) #set nans to 0 to take out of model
+    confupdate_corr   = np.where(targinconf == 1, confupdate, np.nan)
+    confupdate_incorr = np.where(targoutsideconf == 1, confupdate, np.nan)
     
-    confdiff_incorr = np.where(targinconf == 0, confdiff, np.nan)
-    #this is set up where larger numbers indicate larger confidence error, so leave this as it is
-    confdiff_incorr = np.divide(np.subtract(confdiff_incorr, np.nanmean(confdiff_incorr)), np.nanstd(confdiff_incorr))
-    confdiff_incorr = np.where(np.isnan(confdiff_incorr), 0, confdiff_incorr) #set nans to 0 to take out of model
+    confupdate_corr   = np.divide(np.subtract(confupdate_corr,   np.nanmean(confupdate_corr)),   np.nanstd(confupdate_corr))
+    confupdate_incorr = np.divide(np.subtract(confupdate_incorr, np.nanmean(confupdate_incorr)), np.nanstd(confupdate_incorr))   
+    
+    confupdate_corr   = np.where(np.isnan(confupdate_corr), 0, confupdate_corr)
+    confupdate_incorr = np.where(np.isnan(confupdate_incorr), 0, confupdate_incorr)
+                                 
+    
+    
     
     regressors.append( glm.regressors.ParametricRegressor(name = 'grand mean', values = alltrials, preproc = None, num_observations = nobs))
     regressors.append( glm.regressors.CategoricalRegressor(category_list = cues, codes = 0, name = 'neutral'))
     regressors.append( glm.regressors.CategoricalRegressor(category_list = cues, codes = 1, name = 'cued'))
     
     #regressors to look at here
-    regressors.append( glm.regressors.ParametricRegressor(name = 'incorr vs corr', values = incorrvscorr,    preproc = None, num_observations = nobs))
-    regressors.append( glm.regressors.ParametricRegressor(name = 'error-corr',     values = errorcorr,       preproc = None, num_observations = nobs))
-    regressors.append( glm.regressors.ParametricRegressor(name = 'error-incorr',   values = errorincorr,     preproc = None, num_observations = nobs))
-    regressors.append( glm.regressors.ParametricRegressor(name = 'conferr-corr',   values = confdiff_corr,   preproc = None, num_observations = nobs))
-    regressors.append( glm.regressors.ParametricRegressor(name = 'conferr-incorr', values = confdiff_incorr, preproc = None, num_observations = nobs))
-    #regressors.append( glm.regressors.ParametricRegressor(name = 'pside',          values = pside,           preproc = None, num_observations = nobs))
+    regressors.append( glm.regressors.CategoricalRegressor(category_list = incorrvscorr, codes = 1, name = 'incorr'))
+    regressors.append( glm.regressors.CategoricalRegressor(category_list = incorrvscorr, codes = -1, name = 'corr'))
+    #regressors.append( glm.regressors.ParametricRegressor(name = 'incorr vs corr',      values = incorrvscorr,      preproc = None, num_observations = nobs))
+    regressors.append( glm.regressors.ParametricRegressor(name = 'error-corr',          values = errorcorr,         preproc = None, num_observations = nobs))
+    regressors.append( glm.regressors.ParametricRegressor(name = 'error-incorr',        values = errorincorr,       preproc = None, num_observations = nobs))
+    regressors.append( glm.regressors.ParametricRegressor(name = 'conf-corr',           values = confcorr,          preproc = None, num_observations = nobs))
+    regressors.append( glm.regressors.ParametricRegressor(name = 'conf-incorr',         values = confincorr,        preproc = None, num_observations = nobs))
+    regressors.append( glm.regressors.ParametricRegressor(name = 'pside',               values = pside,             preproc = None, num_observations = nobs))
+    regressors.append( glm.regressors.ParametricRegressor(name = 'confupdate_corr',     values = confupdate_corr,   preproc = None, num_observations = nobs))
+    regressors.append( glm.regressors.ParametricRegressor(name = 'confupdate_incorr',   values = confupdate_incorr, preproc = None, num_observations = nobs))
 
     contrasts = list()
     
-    contrasts.append( glm.design.Contrast([1, 0, 0, 0, 0, 0, 0, 0], 'grand mean'))
-    contrasts.append( glm.design.Contrast([0, 1, 0, 0, 0, 0, 0, 0], 'neutral'))
-    contrasts.append( glm.design.Contrast([0, 0, 1, 0, 0, 0, 0, 0], 'cued'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 1, 0, 0, 0, 0], 'incorr vs corr'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 1, 0, 0, 0], 'error_corr'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 1, 0, 0], 'error_incorr'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 1, 0], 'conferr_corr'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 1], 'conferr_incorr'))
-    contrasts.append( glm.design.Contrast([0,-1, 1, 0, 0, 0, 0, 0], 'cued vs neutral'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 1, 1, 0, 0], 'error'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 1, 1], 'conferror'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 1, 0, 1, 0], 'confidence_corr'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 1, 0,-1], 'confidence_incorr'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 1, 1, 1,-1], 'confidence'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0,-1, 1, 0, 0], 'error_incorrvscorr'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0,-1, 1], 'conferror_incorrvscorr'))
-    contrasts.append( glm.design.Contrast([0, 0, 0, 0,-1, 1,-1,-1], 'confidence_incorrvscorr'))
-  # contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 1], 'pside'))
+    contrasts.append( glm.design.Contrast([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'grand mean'))
+    contrasts.append( glm.design.Contrast([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'neutral'))
+    contrasts.append( glm.design.Contrast([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'cued'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], 'incorr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], 'corr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], 'error_corr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], 'error_incorr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], 'conf_corr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], 'conf_incorr'))
+    contrasts.append( glm.design.Contrast([0,-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'cued vs neutral'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 1,-1, 0, 0, 0, 0, 0, 0, 0], 'incorr vs corr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0], 'error'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0], 'confidence'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0,-1, 1, 0, 0, 0, 0, 0], 'error_incorrvscorr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0,-1, 1, 0, 0, 0], 'confidence_incorrvscorr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], 'pside'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], 'confupdate_corr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 'confupdate_incorr'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], 'confupdate'))
+    contrasts.append( glm.design.Contrast([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,-1], 'confupdate_incorrvscorr'))
 
     
     
@@ -159,6 +173,8 @@ for i in subs:
     total_nave = len(epochs)
     neut_nave  = len(epochs['cue==0'])
     cued_nave  = len(epochs['cue==1'])
+    pleft_nave     = len(pside==1)
+    pright_nave    = len(pside==-1)
     underconf_nave = targinconf.sum()
     overconf_nave  = targoutsideconf.sum()
     tmin = epochs.tmin
@@ -177,9 +193,9 @@ for i in subs:
             nave = neut_nave
         elif iname == 2:
             nave = cued_nave
-        elif iname in [4, 6, 11]:
+        elif iname in [4, 6, 14]:
             nave = underconf_nave
-        elif iname in [5, 7, 12]:
+        elif iname in [5, 7, 15]:
             nave = overconf_nave
         else:
             nave = total_nave
