@@ -11,12 +11,15 @@ outpath  <- paste0(wd, '/data/datafiles/preprocessed_data')
 
 
 # only doing this for specific subjects really, for now at least
-sublist <- seq(1, 21, by = 1)
-#sublist <- seq(8, 10, by = 1) #dont want to overwrite the older subjects
+sublist <- seq( 1, 26, by = 1)
+#sublist <- seq(23, 25, by = 1)
+
 for(sub in sublist){
   if(sub <= 3 | sub == 10 | sub == 19){
     fpath <- paste0(datapath, sprintf('/wmConfidence_S%02d_allData.csv', sub))
-    df <- read.csv(fpath, header = T, as.is = T, sep = ',') %>% select(-X)
+    df <- read.csv(fpath, header = T, as.is = T, sep = ',') 
+    if('X' %in% colnames(df)){ df <- df %>% dplyr::select(-starts_with('X')) }
+    
     
     df %<>%
       dplyr::mutate(cond = ifelse(cue == 0, 'neutral', 'cued')) %>%
@@ -39,7 +42,10 @@ for(sub in sublist){
     df %<>%
       dplyr::mutate(confwidth = abs(wrap90(confang-resp))) %>% #get width of confidence interval
       dplyr::mutate(absrdif = abs(rdif)) %>% #get absolute deviation
-      dplyr::mutate(confdiff = abs(rdif) - confwidth) #get the difference between confidence width, and response deviation (i.e. whether target inside or outside confidence interval)
+      dplyr::mutate(confdiff = abs(rdif) - confwidth) %>% #get the difference between confidence width, and response deviation (i.e. whether target inside or outside confidence interval)
+      dplyr::mutate(prevtrlconfdiff = lag(confdiff)) %>% #get previous trial confidence error
+      dplyr::mutate(prevtrlcw       = lag(confwidth)) %>% #get previous trial confidence width
+      dplyr::mutate(prevtrlabsrdif  = lag(absrdif)) #get previous trial error
     
     detach("package:circular", unload=TRUE)
     
@@ -49,7 +55,8 @@ for(sub in sublist){
   if(sub > 3 & sub != 10 & sub != 19){
     for(part in c('a', 'b')){
       fpath <- paste0(datapath, sprintf('/wmConfidence_S%02d%s_allData.csv', sub, part))
-      df <- read.csv(fpath, header = T, as.is = T, sep = ',') %>% select(-X)
+      df <- read.csv(fpath, header = T, as.is = T, sep = ',')# %>% select(-X)
+      if('X' %in% colnames(df)){ df <- df %>% dplyr::select(-starts_with('X')) }
       
       df %<>%
         dplyr::mutate(cond = ifelse(cue == 0, 'neutral', 'cued')) %>%
@@ -71,7 +78,10 @@ for(sub in sublist){
       df %<>%
         dplyr::mutate(confwidth = abs(wrap90(confang-resp))) %>% #get width of confidence interval
         dplyr::mutate(absrdif = abs(rdif)) %>% #get absolute deviation
-        dplyr::mutate(confdiff = abs(rdif) - confwidth) #get the difference between confidence width, and response deviation (i.e. whether target inside or outside confidence interval)
+        dplyr::mutate(confdiff = abs(rdif) - confwidth)  %>% #get the difference between confidence width, and response deviation (i.e. whether target inside or outside confidence interval)
+        dplyr::mutate(prevtrlconfdiff = lag(confdiff)) %>% #get previous trial confidence error
+        dplyr::mutate(prevtrlcw       = lag(confwidth)) %>% #get previous trial confidence width
+        dplyr::mutate(prevtrlabsrdif  = lag(absrdif)) #get previous trial error
       
       detach("package:circular", unload=TRUE)
       
