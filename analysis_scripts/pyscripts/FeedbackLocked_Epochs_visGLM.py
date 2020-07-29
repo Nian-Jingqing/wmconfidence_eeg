@@ -17,11 +17,16 @@ from matplotlib import pyplot as plt
 from copy import deepcopy
 from scipy import stats
 
-sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
-from wmConfidence_funcs import get_subject_info_wmConfidence
-from wmConfidence_funcs import gesd, plot_AR, toverparam, smooth, runclustertest_epochs
+# sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
+# from wmConfidence_funcs import get_subject_info_wmConfidence
+# from wmConfidence_funcs import gesd, plot_AR, toverparam, smooth, runclustertest_epochs
+sys.path.insert(0, 'C:\\Users\\sammi\\Desktop\\Experiments\\DPhil\\wmConfidence\\analysis_scripts')#because working from laptop to make this script
+from wmconfidence_funcs import get_subject_info_wmConfidence
+from wmconfidence_funcs import gesd, plot_AR, toverparam, smooth, runclustertest_epochs
 
-wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
+# wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
+wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'; #laptop wd
+
 os.chdir(wd)
 figpath = op.join(wd,'figures', 'eeg_figs', 'fblocked', 'epochs_glm3')
 
@@ -49,6 +54,11 @@ for i in subs:
     print('\n\ngetting subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub) #_baselined
+    
+    param = {}
+    param['path'] = 'C:/Users/sammi/Desktop/Experiments/DPhil/wmConfidence/data'
+    param['subid'] = 's%02d'%(i)
+    sub = dict(loc = 'windows', id = i)
     
     for name in contrasts:
         data[name].append(   mne.read_evokeds(fname = op.join(param['path'], 'glms', 'feedback', 'epochs_glm3', 'wmConfidence_' + param['subid'] + '_feedbacklocked_tl_' + lapstr + name + '_betas-ave.fif'))[0])        

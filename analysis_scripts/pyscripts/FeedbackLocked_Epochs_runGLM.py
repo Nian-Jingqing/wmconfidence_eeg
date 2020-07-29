@@ -17,16 +17,18 @@ import sys
 from matplotlib import pyplot as plt
 
 #sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence_eegfmri/analysis_scripts')
-sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
-from wmConfidence_funcs import get_subject_info_wmConfidence
-from wmConfidence_funcs import gesd, plot_AR, nanzscore
+# sys.path.insert(0, '/home/sammirc/Desktop/DPhil/wmConfidence/analysis_scripts')
+sys.path.insert(0, 'C:\\Users\\sammi\\Desktop\\Experiments\\DPhil\\wmConfidence\\analysis_scripts')#because working from laptop to make this script
+
+from wmconfidence_funcs import get_subject_info_wmConfidence
+from wmconfidence_funcs import gesd, plot_AR, nanzscore
 
 #sys.path.insert(0, '/Users/sammi/Desktop/Experiments/DPhil/glm')
 sys.path.insert(0, '/home/sammirc/Desktop/DPhil/glm')
 import glmtools as glm
 
 wd = '/Users/sammi/Desktop/Experiments/DPhil/wmConfidence'; #laptop wd
-wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
+# wd = '/home/sammirc/Desktop/DPhil/wmConfidence' #workstation wd
 os.chdir(wd)
 
 
@@ -39,9 +41,19 @@ for i in subs:
     print('\n\nworking on subject ' + str(i) +'\n\n')
     sub = dict(loc = 'workstation', id = i)
     param = get_subject_info_wmConfidence(sub)
+    
+    param = {}
+    param['path'] = 'C:/Users/sammi/Desktop/Experiments/DPhil/wmConfidence/data'
+    param['subid'] = 's%02d'%(i)
+    sub = dict(loc = 'windows', id = i)
+    
+    
     for laplacian in [True, False]:
+        fname = op.join(param['path'], 'eeg', 'wmConfidence_%s_fblocked-epo.fif'%(param['subid']))
+        
         #get the epoched data
-        epochs = mne.read_epochs(fname = param['fblocked'], preload = True) #this is loaded in with the metadata
+        # epochs = mne.read_epochs(fname = param['fblocked'], preload = True) #this is loaded in with the metadata
+        epochs = mne.read_epochs(fname = fname, preload = True)
     #    epochs.set_eeg_reference(['RM']) #don't need this as the re-referencing is done in the combine session script, after concatenation and before trial rejection
         
         #based on photodiode testing, there is a 25ms delay from trigger onset to maximal photodiode onset, so lets adjust times here
@@ -50,7 +62,7 @@ for i in subs:
         epochs.apply_baseline((-.25, 0)) #baseline 250ms prior to feedback
         epochs.resample(500) #resample to 500Hz
         if laplacian:
-            epochs = mne.preprocessing.compute_current_source_density(epochs, stiffness=4)
+            epochs = mne.preprocessing.compute_current_source_density(epochs)
             lapstr = 'laplacian_'
         else:
             lapstr = ''
