@@ -85,6 +85,7 @@ for(sub in sublist){
       
       detach("package:circular", unload=TRUE)
       
+      
       fname <- paste0(outpath, sprintf('/wmConfidence_S%02d%s_allData_preprocessed.csv', sub,part))
       write.csv(df, file = fname, eol = '\n', col.names = T)
 

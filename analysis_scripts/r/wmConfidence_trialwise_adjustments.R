@@ -5,11 +5,11 @@ library(afex)      # anovas etc
 library(RePsychLing)
 library(MASS)
 
-loadfonts = F
+loadfonts = T
 if(loadfonts){
   library(extrafont)
   font_import() #yes to this
-  font_import(paths='/home/sammirc/Desktop/fonts')
+  # font_import(paths='/home/sammirc/Desktop/fonts')
   fonts()
   loadfonts(device = "pdf");
   loadfonts(device = 'postscript')
@@ -73,7 +73,7 @@ df %<>% dplyr::filter(subid %in% subs2use) %>% #keep only subjects safe to use b
   dplyr::filter(DTcheck == 0) #hard code this now
 #trials excluded if didn't click to confirm response or confidence judgement, and DT outside a couple sd's of mean per subject and condition
 
-dim(df) #9488 x 47
+dim(df) #9488 x 47 ## actualy 9517 x 47 ??
 
 tmp <- df
 # df <- tmp
@@ -96,17 +96,17 @@ df %>%
   geom_bar(stat = 'identity', aes(fill = prevtrlcorr), width = .7, position = position_dodge(.3)) +
   geom_errorbar(inherit.aes = F, aes(x = prevtrlcorr, ymin = mean-se, ymax = mean+se), position = position_dodge(.3), width = .3, size=1) +
   labs(x = 'previous trial correctness',
-       y = 'average decision time (s)') + theme(legend.position = 'none')
+       y = 'average decision time (s)\nfor current trial') + theme(legend.position = 'none')
 
 #bar chart not overwhelming, but its about binary correctness and not necessarily error
 #check as geom_point to view all the data
 
 df %>%
   dplyr::mutate(currTrlCorr = ifelse(confdiff<=0, 'correct', 'incorrect')) %>% dplyr::mutate(currTrlCorr = as.factor(currTrlCorr)) %>%
-  ggplot(aes(x = prevtrlabsrdif, y = log(DT), color = currTrlCorr)) +
+  ggplot(aes(x = prevtrlabsrdif, y = log(DT))) +#, color = currTrlCorr)) +
   geom_point(alpha=.5, size=.5) +
   geom_smooth(formula = y ~ x, method = 'lm', alpha = .5, se = T, size=1) +
-  facet_wrap(~subid)
+  facet_wrap(~subid) + labs(x = 'previous trial error (degrees)', y = 'log Decision Time (s)')
 
 
 #can look at other things changing after an incorrect trial too though (confidence width or error?)
@@ -171,11 +171,10 @@ lmm.posterr.confwidth <- lme4::lmer(data = lmm.posterr.conf,
 summary(lmm.posterr.confwidth)
 
 
-
-lmm.trladjerr.data <- df %>%
+lmm.trladjcw.data <- df %>%
   dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%
   dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-  dplyr::mutate(trladj = absrdif - prevtrlabsrdif) %>% # difference in current trials confidence compared to the previous trial
+  dplyr::mutate(trladj = confwidth - prevtrlcw) %>% # difference in current trials confidence compared to the previous trial
   dplyr::filter(trialnum != 1) %>% #exclude first trial of each session as no prev trial for it (these vals would be NA anyway)
   dplyr::filter(!is.na(prevtrlconfdiff))
 
@@ -193,6 +192,8 @@ lmm.trladjcw.full <- lme4::lmer(data = lmm.trladjcw.data,
                                 trladj ~ prevtrlconfdiff + prevtrlcw +
                                   (1 + prevtrlconfdiff + prevtrlcw | subid))
 summary(lmm.trladjcw.full)
+
+library(remef)
 
 fit.trladjcw <- keepef(lmm.trladjcw.full, fix = c('prevtrlconfdiff', 'prevtrlcw'), grouping=T)
 lmm.trladjcw.data$fitted <- fit.trladjcw
@@ -261,10 +262,97 @@ lmm.trladjcw.data %>%
        x = 'previous trial confidence error')#only add theme_bw if changing the device from cairo to normal to export into sketch
 
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+fpath <- paste0(dpath, '/datafiles/wmConfidence_BehaviouralData_All.csv')
+dat <- read.csv(fpath, header = T, as.is = T, sep = ',') 
+dat %>% group_by(subid) %>% count() %>% as.data.frame() # see how many trials per participant 
+dat %<>% dplyr::filter(subid %in% subs2use) #remove some subjects who are rly bad or dont have full datasets
 
 
 
+#one thing we also want to do for a specific analysis is to get the last 'relevant' confidence report
+#i.e we want to know what the last confidence report for a cued trial was, and what the last neutral trial confidence was
+#to see if people "multi-task" and treat cued/neutral trials as different tasks and so update their confidence (independently) for the two trial types
+#so we will get the original data (without having removed any trials) and get this info
+
+newdat <- list(NULL)
+count <- 1
+for(sub in subs2use){
+  tmp <- dplyr::filter(dat, subid == sub) #get single subject data
+  ntrials <- dim(tmp)[1]
+  
+  tmp %<>% dplyr::mutate(lastNeutralConf = NaN, lastCuedConf = NaN)
+  for(trial in seq(1,ntrials-1,by=1)){
+    curTrialConf <- tmp$confwidth[trial]
+    curTrialType <- tmp$cond[trial]
+    
+    tmp$lastNeutralConf[trial+1] <- ifelse(curTrialType=='neutral', curTrialConf, tmp$lastNeutralConf[trial])
+    tmp$lastCuedConf[trial+1]    <- ifelse(curTrialType=='cued',    curTrialConf, tmp$lastCuedConf[trial])
+    }
+  
+  newdat[[count]] <- tmp
+  count <- count + 1
+  
+}
+
+dat <- do.call('rbind', newdat)
+dat %<>% dplyr::mutate(lastRelevConf = NaN) %>%
+  dplyr::mutate(lastRelevConf = ifelse(cond == 'cued', lastCuedConf, lastNeutralConf))
 
 
+dat %<>% dplyr::mutate(trladjustRelev = ifelse(cond=='cued', confwidth - lastCuedConf, confwidth - lastNeutralConf)) %>%
+  dplyr::mutate(trladjust = confwidth - prevtrlcw)
 
 
+lmmdat <- dat %>%
+          dplyr::filter(!is.na(trladjust)) %>% #cant have nans in the glm
+          dplyr::filter(!is.na(lastRelevConf)) %>% #still cant have nans in the data
+          dplyr::filter(clickresp == 1) %>%    #only take trials where they clicked to respond
+          dplyr::filter(confclicked == 1) %>%  # only take trials where they confirmed their confidence judgement
+          dplyr::filter(DTcheck == 0)    #and remove trials that are outliers based on primary response reaction time
+
+
+for(sub in subs2use){
+  glmdat <- dplyr::filter(lmmdat, subid == sub)
+  
+  model <- glm(glmdat, trladjust ~ confwidth + prevtrlcw)
+}
+
+lmmdat %<>% dplyr::group_by(subid) %>%
+  dplyr::mutate(zLastRelevConf = scale(lastRelevConf) ) %>% ungroup()
+
+lmmdat %<>% dplyr::mutate(confwidth = ifelse(confwidth ==0, 0.0001, confwidth))
+
+lambdaList <- boxcox(confwidth~1, data=lmmdat)
+(lambda <- lambdaList$x[which.max(lambdaList$y)])
+
+model <- lme4::lmer(data = lmmdat, log(confwidth) ~ prevtrlcw + lastRelevConf + trialnum + (1 + prevtrlcw + lastRelevConf + trialnum |subid))
+summary(model)
+
+
+lmmdat %>%
+  ggplot(aes(x = lastRelevConf, y = confwidth)) +
+  geom_point(size = .5) + geom_smooth(method = 'lm', size = .7, se = T, alpha = .5) +
+  facet_wrap(~subid)
+
+lmmdat %>%
+  ggplot(aes(x = prevtrlcw, y = confwidth)) +
+  geom_point(size = .5) + geom_smooth(method = 'lm', size = .7, se = T, alpha = .5) +
+  facet_wrap(~subid)
+
+lmmdat %>%
+  ggplot(aes(x = prevtrlcw, y = lastRelevConf)) +
+  geom_point(size=.5) + geom_smooth(method='lm', size = .7, alpha = .5, se = T) +
+  facet_wrap(~subid)
+
+
+# - - - - - - - - - - - - - - - - - - - - - - 
+fullmodel_log <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond +
+                              (1 + absrdif + cond + absrdif:cond|subid))
+summary(rePCA(fullmodel_log))#check if model is degenerate
+minmodel_log  <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond  + (1|subid))
+summary(rePCA(minmodel_log))
+anova(fullmodel_log, minmodel_log)

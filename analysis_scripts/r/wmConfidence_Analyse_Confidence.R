@@ -5,11 +5,11 @@ library(afex)      # anovas etc
 library(RePsychLing)
 library(MASS)
 
-loadfonts = F
+loadfonts = T
 if(loadfonts){
   library(extrafont)
   font_import() #yes to this
-  font_import(paths='/home/sammirc/Desktop/fonts')
+  # font_import(paths='/home/sammirc/Desktop/fonts')
   fonts()
   loadfonts(device = "pdf");
   loadfonts(device = 'postscript')
@@ -73,20 +73,17 @@ df %<>% dplyr::filter(subid %in% subs2use) %>% #keep only subjects safe to use b
   dplyr::filter(DTcheck == 0) #hard code this now
 #trials excluded if didn't click to confirm response or confidence judgement, and DT outside a couple sd's of mean per subject and condition
 
-dim(df) #9488 x 47
+dim(df) #9517 x 47
 
 df %>%
-  dplyr::filter(clickresp == 1) %>% dplyr::filter(confclicked==1) %>% dplyr::filter(DTcheck == 0) %>%
   ggplot(aes(x = confwidth, fill = NULL, color = cond)) +
-  geom_density(alpha = .5, adjust = 1, size=1.2) +
+  geom_density(alpha = .5, adjust = 1, size=1.2, outline.type = 'upper') +
   scale_color_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = 'confidence report width') +
   facet_wrap(~subid)
 
-
+#this is also a bit of a shit figure to be honest
 df %>%
-  dplyr::filter(clickresp == 1) %>%
-  filter(DTcheck == 0) %>%
   ggplot(aes(x = confwidth, fill = cond)) +
   geom_histogram(stat = 'bin', binwidth = 3) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
@@ -99,9 +96,8 @@ ggsave(filename = paste0(figpath, '/confwidth_hist_20subs.pdf'), device = cairo_
 ggsave(filename = paste0(figpath, '/confwidth_hist_20subs.eps'), device =  cairo_ps, dpi = 600, height = 10, width = 10)
 
 df %>%
-  dplyr::filter(clickresp == 1, confclicked == 1) %>% filter(DTcheck == 0) %>%
   ggplot(aes(x = confwidth, fill = cond)) +
-  geom_density(adjust = .5)+#, alpha = .4) +
+  geom_density(adjust = 1, outline.type = 'upper')+#, alpha = .4) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = 'confidence report width', y = '') +
   facet_wrap(~subid, ncol = 5) +
@@ -113,7 +109,6 @@ ggsave(filename = paste0(figpath, '/confwidth_density_20subs.eps'), device = cai
 
 #just look at raw confidence width here
 df %>%
-  dplyr::filter(clickresp == 1, confclicked == 1, DTcheck == 0) %>%
   dplyr::group_by(subid, cond) %>%
   summarise_at(.vars = 'confwidth', .funs = c('mean', 'sd')) %>%
   dplyr::group_by(cond) %>%
@@ -124,8 +119,8 @@ df %>%
   geom_errorbar(aes(ymin = mean_mean - mean_se, ymax = mean_mean + mean_se), width = .3, size=1, color = '#000000') +
   labs(y = 'confidence width (degrees)', x = 'cue condition') + 
   theme(legend.position = 'none')
-ggsave(filename = paste0(figpath, '/confwidthmean_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
-ggsave(filename = paste0(figpath, '/confwidthmean_20subs.eps'), device = cairo_ps, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_confwidthmean.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_confwidthmean.eps'), device = cairo_ps, dpi = 600, height = 9, width = 9)
 
 #mean confidence width
 df.cwmean <- df %>%
@@ -133,14 +128,35 @@ df.cwmean <- df %>%
   summarise_at(.vars = 'confwidth', .funs = c('mean'))
 aov.cwmean <- afex::aov_ez(id = 'subid', data = df.cwmean, 'confwidth', within = 'cond')
 nice(aov.cwmean, es = 'pes')
+
+# Anova Table (Type 3 tests)
+# 
+# Response: confwidth
+# Effect    df  MSE         F pes p.value
+# 1   cond 1, 19 0.37 17.84 *** .48   .0005
+# ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘+’ 0.1 ‘ ’ 1
+
 t.test(data = df.cwmean, confwidth ~ cond, paired = T)
+
+# Paired t-test
+# 
+# data:  confwidth by cond
+# t = -4.2241, df = 19, p-value = 0.0004593
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   -1.223208 -0.412652
+# sample estimates:
+#   mean of the differences 
+# -0.8179302 
+
+
 df.cwmean %>%
   dplyr::group_by(cond) %>%
   summarise_at(.vars = 'confwidth', .funs = c('mean', 'se'))
 
 
 df %>%
-  dplyr::filter(clickresp == 1, confclicked == 1, DTcheck == 0) %>%
   dplyr::group_by(subid, cond) %>%
   summarise_at(.vars = 'confwidth', .funs = c('mean', 'sd')) %>% as.data.frame(.) %>%
   dplyr::group_by(cond) %>%
@@ -148,13 +164,12 @@ df %>%
   ggplot(aes(x = cond, y = sd_mean, fill = cond)) +
   geom_bar(stat = 'identity') +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
-  geom_errorbar(aes(ymin = sd_mean - sd_se, ymax = sd_mean + sd_se), width = .5, color = '#000000') +
+  geom_errorbar(aes(ymin = sd_mean - sd_se, ymax = sd_mean + sd_se), width = .25, size = 1, color = '#000000') +
   labs(y = 'mean confidence width variability (SD)', x = 'cue condition')
 
 
 
 df %>%
-  dplyr::filter(clickresp == 1, confclicked == 1) %>% filter(DTcheck == 0) %>%
   ggplot(aes(x = confdiff, fill = cond)) +
   geom_histogram(aes(y = ..count../sum(..count..)*100),
                  binwidth = 4, #this sets a realistic resolution of people's use of the mouse
@@ -168,8 +183,8 @@ df %>%
   theme(strip.text.x = element_text(size = 10),
         axis.text.x  = element_text(size = 10),
         axis.text.y  = element_text(size = 10))
-ggsave(filename = paste0(figpath, '/confdiff_hist_12subs_eeg.pdf'), device = cairo_pdf, dpi = 600, height = 10, width = 10)
-ggsave(filename = paste0(figpath, '/confdiff_hist_12subs_eeg.eps'), device = cairo_ps, dpi = 600, height = 10, width = 10)
+ggsave(filename = paste0(figpath, '/confdiff_hist.pdf'), device = cairo_pdf, dpi = 600, height = 10, width = 10)
+ggsave(filename = paste0(figpath, '/confdiff_hist.eps'), device = cairo_ps, dpi = 600, height = 10, width = 10)
 
 
 #look at proportion of trials where the target orientation is actually in the confidence interval
@@ -198,8 +213,8 @@ df.confacc.diffs %>%
   xlim(c(0.5,1.5)) +
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank())
-ggsave(filename = paste0(figpath, '/targinconf_groupaverage_diffs_20subs.eps'), device = cairo_ps, dpi = 600, height = 8, width = 8)
-ggsave(filename = paste0(figpath, '/targinconf_groupaverage_diffs_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 8, width = 8)
+ggsave(filename = paste0(figpath, '/gave_targinconf_diffs.eps'), device = cairo_ps, dpi = 600, height = 8, width = 8)
+ggsave(filename = paste0(figpath, '/gave_targinconf_diffs.pdf'), device = cairo_pdf, dpi = 600, height = 8, width = 8)
 
 
 
@@ -215,23 +230,44 @@ df.confacc %>%
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = '', y = '% trials where target\ninside confidence interval') +
   theme(legend.position = 'none')
-ggsave(filename = paste0(figpath, '/targinconf_groupaverage_20subs.eps'), device = cairo_ps, dpi = 600, height = 9, width = 9)
-ggsave(filename = paste0(figpath, '/targinconf_groupaverage_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_targinconf.eps'), device = cairo_ps, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_targinconf.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
   
 aov_confacc = afex::aov_ez(id = 'subid', data = df.confacc, 'targinconf', within = 'cond')
 nice(aov_confacc, es = 'pes')
+
+# Anova Table (Type 3 tests)
+# 
+# Response: targinconf
+# Effect    df  MSE        F pes p.value
+# 1   cond 1, 19 7.91 12.51 ** .40    .002
+# ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘+’ 0.1 ‘ ’ 1
+
+
 t.test(data = df.confacc, targinconf ~ cond, paired = T)
+
+# Paired t-test
+# 
+# data:  targinconf by cond
+# t = 3.5369, df = 19, p-value = 0.002203
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   1.284096 5.006855
+# sample estimates:
+#   mean of the differences 
+# 3.145476 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 library(circular)
-df.confmu <- df %>%
+df.confdiffmu <- df %>%
   dplyr::mutate(cond = as.factor(cond)) %>%
   dplyr::mutate(absconfdiff = abs(confdiff)) %>% #need this to get mean absolute confidence error
   dplyr::group_by(subid, cond) %>%
   dplyr::summarise_at(.vars = 'absconfdiff', .funs = mean)
 
-df.confmu.separate <- df %>%
+df.confdiffmu.separate <- df %>%
   dplyr::mutate(cond = as.factor(cond)) %>%
   dplyr::mutate(targinconf = ifelse(confdiff <= 0, 'Target Inside', 'Target Outside')) %>%
   dplyr::mutate(targinconf = as.factor(targinconf)) %>%
@@ -241,27 +277,27 @@ df.confmu.separate <- df %>%
   dplyr::summarise_at(.vars = 'absconfdiff', .funs = mean)
   
 
-df.confmu.diffs <- df.confmu %>%
+df.confdiffmu.diffs <- df.confdiffmu %>%
   dplyr::group_by(subid) %>%
   dplyr::summarise(diff = last(absconfdiff) - first(absconfdiff))
 #here, positive values mean that neutral was higher than cued (i.e. on average less accurate with confidence)
 
 #plot as one difference bar, rather than separate condition bars
-df.confmu.diffs %>%
+df.confdiffmu.diffs %>%
   dplyr::summarise_at(.vars = 'diff', .funs = c('mean', 'se')) %>%
   ggplot(aes(x = 1, y = mean, ymin = mean-se, ymax = mean + se)) +
   geom_bar(stat = 'identity', width = .4, fill = diffcol) + 
   geom_errorbar(stat = 'identity', width = .15, size = 1) +
-  geom_point(data = df.confmu.diffs, aes(x = 1, y = diff), inherit.aes = F,size = 1, position = position_jitter(width=.2,height=0)) + 
+  geom_point(data = df.confdiffmu.diffs, aes(x = 1, y = diff), inherit.aes = F,size = 1, position = position_jitter(width=.2,height=0)) + 
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = .5) +
   labs(x = '', y = 'difference in mean confidence error\nbetween neutral and cued') +
   xlim(c(0.5,1.5)) +
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank())
-ggsave(filename = paste0(figpath, '/confmu_groupaverage_diffs_20subs.eps'), device = cairo_ps,  dpi = 600, height = 9, width = 9)
-ggsave(filename = paste0(figpath, '/confmu_groupaverage_diffs_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_confdiffmean_diffs.eps'), device = cairo_ps,  dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_confdiffmean_diffs.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
 
-df.confmu %>%
+df.confdiffmu %>%
   dplyr::group_by(cond) %>%
   dplyr::summarise_at(.vars = 'absconfdiff', .funs = c('mean', 'se')) %>%
   ggplot(aes(x = cond, y = mean, ymin = mean-se, ymax = mean+se, fill = cond)) +
@@ -272,18 +308,37 @@ df.confmu %>%
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = '', y = 'mean confidence error') +
   theme(legend.position = 'none')
-ggsave(filename = paste0(figpath, '/confmu_groupaverage_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
-ggsave(filename = paste0(figpath, '/confmu_groupaverage_20subs.eps'), device = cairo_ps,  dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_confdiffmu.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_confdiffmu.eps'), device = cairo_ps,  dpi = 600, height = 9, width = 9)
 
-anova_confmu <- afex::aov_ez(id = 'subid', data = df.confmu, 'absconfdiff', within = c('cond'))
-nice(anova_confmu, es = 'pes') #significant main effect of cue (i.e. significant condition difference in confmu)
+anova_confdiffmu <- afex::aov_ez(id = 'subid', data = df.confdiffmu, 'absconfdiff', within = c('cond'))
+nice(anova_confdiffmu, es = 'pes') #significant main effect of cue (i.e. significant condition difference in confmu)
 
-t.test(data = df.confmu, absconfdiff ~ cond, paired = TRUE)
+# Anova Table (Type 3 tests)
+# 
+# Response: absconfdiff
+# Effect    df  MSE      F pes p.value
+# 1   cond 1, 19 0.31 6.69 * .26     .02
+# ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘+’ 0.1 ‘ ’ 1
+
+t.test(data = df.confdiffmu, absconfdiff ~ cond, paired = TRUE)
+
+# Paired t-test
+# 
+# data:  absconfdiff by cond
+# t = -2.5869, df = 19, p-value = 0.01808
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   -0.82989088 -0.08758045
+# sample estimates:
+#   mean of the differences 
+# -0.4587357 
 
 
 
 #plot separately for trials where people were over vs underconfident
-df.confmu.separate %>%
+df.confdiffmu.separate %>%
   dplyr::group_by(cond, targinconf) %>%
   dplyr::summarise_at(.vars = 'absconfdiff', .funs = c('mean', 'se')) %>%
   ggplot(aes(x = cond, y = mean, ymin = mean-se, ymax = mean+se, fill = cond)) +
@@ -295,47 +350,59 @@ df.confmu.separate %>%
   labs(x = '', y = 'mean confidence error') +
   theme(legend.position = 'none') +
   facet_wrap(~targinconf)
-ggsave(filename = paste0(figpath, '/confmu_separate_groupaverage_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 20)
-ggsave(filename = paste0(figpath, '/confmu_separate_groupaverage_20subs.eps'), device = cairo_ps, dpi = 600,  height = 9, width = 20)
+ggsave(filename = paste0(figpath, '/gave_confdiffmu_separate.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 20)
+ggsave(filename = paste0(figpath, '/gave_confdiffmu_separate.eps'), device = cairo_ps, dpi = 600,  height = 9, width = 20)
 
-df.confmu.separate.diffs1 <- 
-  df.confmu.separate %>%
+df.confdiffmu.separate.diffs1 <- 
+  df.confdiffmu.separate %>%
   dplyr::filter(targinconf == 'Target Inside') %>% #dplyr::select(-targinconf) %>%
   dplyr::group_by(subid) %>%
   dplyr::summarise(diff = last(absconfdiff) - first(absconfdiff)) %>% #neutral - cued
   dplyr::mutate(targinconf = 'Target Inside')
 
-df.confmu.separate.diffs2 <-
-  df.confmu.separate %>%
+df.confdiffmu.separate.diffs2 <-
+  df.confdiffmu.separate %>%
   dplyr::filter(targinconf == 'Target Outside') %>%
   dplyr::group_by(subid) %>%
   dplyr::summarise(diff = last(absconfdiff) - first(absconfdiff)) %>% #neutral - cued
   dplyr::mutate(targinconf = 'Target Outside')
   
-df.confmu.separate.diffs <- dplyr::bind_rows(df.confmu.separate.diffs1,df.confmu.separate.diffs2) %>%
+df.confdiffmu.separate.diffs <- dplyr::bind_rows(df.confdiffmu.separate.diffs1, df.confdiffmu.separate.diffs2) %>%
   dplyr::mutate(targinconf = as.factor(targinconf), #make factor for grouping in plot
                 subid = as.factor(subid)) 
 
 #plot of differences (shows distribution of effects more clearly than line paths between points)
-df.confmu.separate.diffs %>%
+df.confdiffmu.separate.diffs %>%
   dplyr::group_by(targinconf) %>% #to get the group average...
   dplyr::summarise_at(.vars = 'diff', .funs = c('mean', 'se')) %>%
   ggplot(aes(x = targinconf, y = mean, ymin = mean-se, ymax = mean+se)) +
   geom_bar(stat = 'identity', width = .7, fill = diffcol) +
   geom_errorbar(width = .35, size = 1) +
-  geom_point(inherit.aes = F, data = df.confmu.separate.diffs, aes(x = targinconf, y = diff), position = position_jitter(width=.2,height=0)) +
+  geom_point(inherit.aes = F, data = df.confdiffmu.separate.diffs, aes(x = targinconf, y = diff), position = position_jitter(width=.2,height=0)) +
   geom_hline(yintercept = 0, linetype = 'dashed', color = '#000000', size = 1) +
   labs(x='', y = 'Difference in mean confidence interval deviation\n(neutral - cued)')
-ggsave(filename = paste0(figpath, '/confmu_separate_groupaverage_diffs_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
-ggsave(filename = paste0(figpath, '/confmu_separate_groupaverage_diffs_20subs.eps'), device = cairo_ps,  dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_confdiffmu_separate_diffs.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/gave_confdiffmu_separate_diffs.eps'), device = cairo_ps,  dpi = 600, height = 9, width = 9)
   
-anova_dfconfmu <- afex::aov_ez('subid', data = df.confmu.separate, 'absconfdiff', within = c('targinconf', 'cond'))
-nice(anova_dfconfmu, es = 'pes')
+anova_dfconfdiffmu <- afex::aov_ez('subid', data = df.confdiffmu.separate, 'absconfdiff', within = c('targinconf', 'cond'))
+nice(anova_dfconfdiffmu, es = 'pes')
+# Anova Table (Type 3 tests)
+# Effect    df   MSE       F  pes p.value
+# 1      targinconf 1, 19 23.31 9.75 **  .34    .006
+# 2            cond 1, 19  2.93    2.52  .12     .13
+# 3 targinconf:cond 1, 19  2.62    0.09 .005     .77
+# ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘+’ 0.1 ‘ ’ 1
+
+
+
+
+
 library(BayesFactor)
-aovbf.data <- as.data.frame(df.confmu.separate) %>% dplyr::mutate(subid = factor(subid))
-aovbf_dfconfmu <-  BayesFactor::anovaBF(absconfdiff ~ subid + cond + targinconf + cond:targinconf + subid:cond + subid:targinconf, data = aovbf.data,
+aovbf.data <- as.data.frame(df.confdiffmu.separate) %>% dplyr::mutate(subid = factor(subid))
+aovbf_dfconfdiffmu <-  BayesFactor::anovaBF(absconfdiff ~ subid + cond + targinconf + cond:targinconf + subid:cond + subid:targinconf, data = aovbf.data,
                                         whichRandom = 'subid', iterations = 100000)
-aovbf_dfconfmu[4]/aovbf_dfconfmu[3] #strong evidence against the 2 way interaction here (i.e. it doesn't exist really )
+aovbf_dfconfdiffmu[4]/aovbf_dfconfdiffmu[3] #strong evidence against the 2 way interaction here (i.e. it doesn't exist really )
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -370,6 +437,7 @@ lmm.data$confwidth[lmm.data$confwidth==0] <- 0.0001
 lambdaList <- boxcox(confwidth~cond, data=lmm.data)
 (lambda <- lambdaList$x[which.max(lambdaList$y)])
 
+
 # - - - - - - - - - - - - - - - - - - - - - - 
 fullmodel_log <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond +
                               (1 + absrdif + cond + absrdif:cond|subid))
@@ -378,11 +446,11 @@ minmodel_log  <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + a
 summary(rePCA(minmodel_log))
 anova(fullmodel_log, minmodel_log)
                              
-summary(fullmodel_log)
-summary(minmodel_log)
+summary(fullmodel_log) # condition x error interaction: absrdif:cond1 -0.047282   0.024187  -1.955
+summary(minmodel_log)  # condition x error interaction: absrdif:cond1 -0.067720   0.022982  -2.947
 
 library(remef)
-fit <- keepef(fullmodel_log, fix = 'absrdif:cond1', grouping = TRUE)
+fit <- keepef(minmodel_log, fix = 'absrdif:cond1', grouping = TRUE)
 
 lmm.data$fitted <- fit
 
@@ -400,10 +468,9 @@ lmm.data %>%
   labs(x = 'absolute reponse error (radians)',
        y = 'confidence interval width (radians)') +
   geom_abline(intercept = 0, slope = 1, linetype = 'dashed', color = '#636363') +
-  coord_cartesian(xlim = c(0, 1.6), ylim = c(0,1.6)) +
-  theme_bw()
-ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_20subs.pdf'), device = 'pdf', dpi = 600, height = 10, width = 10)
-ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_20subs.eps'), device = 'eps', dpi = 600, height = 10, width = 10)
+  coord_cartesian(xlim = c(0, 1.6), ylim = c(0,1.6)) + theme(legend.position = 'top')
+ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_fromMinModel.pdf'), device = cairo_pdf, dpi = 600, height = 10, width = 10)
+ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_fromMinModel.eps'), device = cairo_ps, dpi = 600, height = 10, width = 10)
 
 
 #%%  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -435,6 +502,7 @@ df %>%
   facet_wrap(~subid)
 
 
+#this is just to check if it is normally distributed or not
 df %>%
   dplyr::filter(trialnum != 1) %>% #exclude first trial of every session of each participant as this doesn't have a previous trial
   dplyr::mutate(trladj = confwidth -prevtrlcw) %>%
@@ -449,6 +517,7 @@ lmm.trladjcw.data <- df %>%
 
 
 #check correlation between confidence width and the update
+# this should be correlated really, because the computation of the adjustment includes the previous trial confidence width anyways
 lmm.trladjcw.data %>% ggplot(aes(x = prevtrlcw, y = trladj)) +
   geom_point(size=.3) +
   geom_smooth(method='lm') +
@@ -477,7 +546,10 @@ contrasts(lmm.trladjerr.data$prevtrlinconf) <- contr.sum(2)
 lmm.trladjcw.full <- lme4::lmer(data = lmm.trladjcw.data,
                                 trladj ~ prevtrlconfdiff + prevtrlcw +
                                 (1 + prevtrlconfdiff + prevtrlcw | subid))
+lmm.trladjcw.min  <- lme4::lmer(data = lmm.trladjcw.data,
+                                trladj ~ prevtrlconfdiff + prevtrlcw + (1|subid))
 summary(lmm.trladjcw.full)
+summary(lmm.trladjcw.min)
 
 fit.trladjcw <- keepef(lmm.trladjcw.full, fix = c('prevtrlconfdiff', 'prevtrlcw'), grouping=T)
 lmm.trladjcw.data$fitted <- fit.trladjcw
@@ -493,9 +565,8 @@ lmm.trladjcw.data %>%
   labs(y = 'confidence adjustment\n(current trial - previous trial confidence width',
        x = 'previous trial confidence error') +
   coord_cartesian(ylim = c(-80, 80), xlim = c(-80, 80)) + #only add theme_bw if changing the device from cairo to normal to export into sketch
-  theme_bw()
-ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_20subs_agg.pdf'), device = 'pdf', dpi = 600, height = 9, width = 9)
-ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_20subs_agg.eps'), device = 'eps', dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_agg.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_agg.eps'), device = cairo_ps, dpi = 600, height = 9, width = 9)
 
 lmm.trladjcw.data %>%
   ggplot(aes(x = prevtrlconfdiff, y = trladj)) +
@@ -507,8 +578,13 @@ lmm.trladjcw.data %>%
 lmm.trladjerr.full <- lme4::lmer(data = lmm.trladjerr.data,
                                  trladj ~ prevtrlconfdiff + prevtrlabsrdif + 
                                    (1 + prevtrlconfdiff + prevtrlabsrdif | subid))
+lmm.trladjerr.min <- lme4::lmer(data = lmm.trladjerr.data,
+                                trladj ~ prevtrlconfdiff + prevtrlabsrdif + (1 + prevtrlconfdiff + prevtrlabsrdif |  subid))
+
 
 summary(lmm.trladjerr.full)
+summary(lmm.trladjerr.min)
+
 fit.trladjerr <- keepef(lmm.trladjerr.full, fix = c('prevtrlconfdiff', 'prevtrlabsrdif'), grouping=T)
 lmm.trladjerr.data$fitted <- fit.trladjerr
 
@@ -525,8 +601,8 @@ lmm.trladjerr.data %>%
   labs(y = 'error adjustment\n(current trial - previous trial error)',
        x = 'previous trial confidence error') +
   facet_wrap(~subid)
-ggsave(filename = paste0(figpath, '/trladjustment_error_prevtrlconferr_20subs_persub.pdf'), device = cairo_pdf, dpi = 600, height = 12, width = 18)
-ggsave(filename = paste0(figpath, '/trladjustment_error_prevtrlconferr_20subs_persub.eps'), device = cairo_ps , dpi = 600, height = 12, width = 18)
+ggsave(filename = paste0(figpath, '/trladjustment_error_prevtrlconferr_persub.pdf'), device = cairo_pdf, dpi = 600, height = 12, width = 18)
+ggsave(filename = paste0(figpath, '/trladjustment_error_prevtrlconferr_persub.eps'), device = cairo_ps , dpi = 600, height = 12, width = 18)
 
 lmm.trladjerr.data %>%
   dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%

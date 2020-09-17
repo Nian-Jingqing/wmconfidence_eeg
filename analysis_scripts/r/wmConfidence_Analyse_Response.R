@@ -7,7 +7,7 @@ loadfonts = T
 if(loadfonts){
   library(extrafont)
   font_import() #yes to this
-  font_import(paths='/home/sammirc/Desktop/fonts')
+  # font_import(paths='/home/sammirc/Desktop/fonts')
   fonts()
   loadfonts(device = "pdf");
   loadfonts(device = 'postscript')
@@ -57,14 +57,23 @@ df %>%
 # DTcheck   -- number of trials outside 2.5 SDs of the within condition mean
 # may need to replace some subjects on the basis of this, as some subjects are missing a lot of trials (like 30-40% get thrown out because of clickresp)
 
+df %>%
+  dplyr::group_by(subid) %>% count(.) %>% as.data.frame() #get trial numbers for each subject (before removing trials for outlying behaviours)
+
+df %>% dplyr::group_by(subid) %>% count(.) %>% as.data.frame() %>% dplyr::filter(n != 512)
+df %>% dplyr::group_by(subid) %>% count(.) %>% as.data.frame() %>% dplyr::filter(n == 512)
+#this shows which subjects didn't do two full sessions (256 trials per full session)
+
+
 #note:
 #subjects 1 & 2 have 320 trials (1 session of 10 blocks)
 #subject 3 has one session of 8 blocks (256 trials)
-#subjects 4 onwards have 2 sessions of 8 blocks (512 trials in total)
+#subjects 10 and 19 only did one session of 8 blocks (256 trials) as they withdrew after the first session
+#all other subjects have 2 sessions of 8 blocks (512 trials in total)
 
 subs2use <- c(4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 24, 25, 26) #these subs are included in eeg analyses, so just work with these for behavioural analyses too
 
-df  %<>% # shape = 12128, 45 at this point
+df  %<>% # shape = 12160, 45 at this point
   dplyr::group_by(subid, session) %>%
   dplyr::mutate(prevtrlconfdiff = lag(confdiff)) %>%
   as.data.frame(.)
@@ -73,7 +82,7 @@ df %<>% dplyr::filter(subid %in% subs2use) %>% #keep only subjects safe to use b
   dplyr::filter(clickresp == 1) %>%
   dplyr::filter(DTcheck == 0) #hard code this now
 
-dim(df) #9579, 45 at this point
+dim(df) #9608, 45 at this point
 
 
 #quickly look to see if there might be any proof of behavioural change following poor error awareness on the previous trial
@@ -86,18 +95,27 @@ df %>%
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = 'Decision Time (s)') +
   facet_wrap(subid~cond, ncol = 6, scales= 'free')
-ggsave(filename = paste0(figpath, '/DT_hist.pdf'),
-       dpi = 600, height = 10, width = 10)
+ggsave(filename = paste0(figpath, '/DT_hist.pdf'), device = cairo_pdf,
+       dpi = 300, height = 12, width = 12)
 
 #density plot of decision times (time taken to press space, after the probe appears)
 df %>%
   ggplot(aes(x = DT, fill = cond)) +
-  geom_density(alpha = .5, adjust = 2) + #adjust sets the kernel width of the gaussian smoothing
+  geom_density(alpha = .5, adjust = 2, outline.type = 'upper') + #adjust sets the kernel width of the gaussian smoothing
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = 'Decision Time (s)') +
   facet_wrap(~subid, scales = 'free')
 ggsave(filename = paste0(figpath, '/DT_density_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 15, width = 15)
 ggsave(filename = paste0(figpath, '/DT_density_20subs.eps'), device = cairo_ps, dpi = 600, height = 15, width = 15)
+
+#plot all subjects in one plot to see what it looks like
+df %>%
+  ggplot(aes(x = DT, fill = cond)) +
+  geom_density(alpha = .5, adjust = 2, outline.type = 'upper') +
+  scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
+  labs(x = 'Decision Time (s)')
+#it looks nice
+
 
 df.dt <- df %>%
   dplyr::group_by(subid, cond) %>%
@@ -144,25 +162,25 @@ wrap <- function(x) (x+180)%%360 - 180 #function to wrap data between +/- 90 deg
 wrap90 <- function(x) (x+90)%%180 - 90
 
 #check for uniformity (if u wanna)
-test <- df %>%
-  dplyr::group_by(subid,cond) %>%
-  dplyr::select(rdif) %>%
-  group_map(~ rayleigh.test(.$rdif, mu = circular(0)))
+# test <- df %>%
+#   dplyr::group_by(subid,cond) %>%
+#   dplyr::select(rdif) %>%
+#   group_map(~ rayleigh.test(.$rdif, mu = circular(0)))
+# 
+# pvals     = vector(length = length(test), mode = 'numeric')
+# teststats = vector(length = length(test), mode = 'numeric')
+# for(i in seq(1,length(test),1)){
+#   pvals[i] = test[[i]]$p.value
+#   teststats[i] = test[[i]]$statistic
+# }
+# 
+# rtest <- df %>% 
+#   dplyr::group_by(subid, cond) %>%
+#   dplyr::select(rdif) %>%
+#   summarise(mean(abs(rdif))) %>% ungroup() %>% as.data.frame() %>%
+#   dplyr::mutate(rayleigh_p = pvals)
 
-pvals     = vector(length = length(test), mode = 'numeric')
-teststats = vector(length = length(test), mode = 'numeric')
-for(i in seq(1,length(test),1)){
-  pvals[i] = test[[i]]$p.value
-  teststats[i] = test[[i]]$statistic
-}
-
-rtest <- df %>% 
-  dplyr::group_by(subid, cond) %>%
-  dplyr::select(rdif) %>%
-  summarise(mean(abs(rdif))) %>% ungroup() %>% as.data.frame() %>%
-  dplyr::mutate(rayleigh_p = pvals)
-
-
+#this is legitimately a terrible plot (i really can't bear to look at it 99% of the time)
 df %>%
   ggplot(aes(x = rdif, fill = cond)) +
   geom_histogram(stat = 'bin', binwidth = 3) +
@@ -175,7 +193,7 @@ df %>%
 df %>%
   dplyr::filter(subid %in% subs2use) %>%
   ggplot(aes(x = rdif, color = cond, fill=NULL)) +
-  geom_density(alpha = .4, adjust = 1, size=1.5) +
+  geom_density(alpha = .4, size=1, outline.type = 'upper') +
   geom_vline(xintercept = 0, linetype = 'dashed', color = '#000000', size = .2) +
   scale_color_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = 'response deviation (degrees)') +
@@ -227,7 +245,7 @@ df.mad %>%
   dplyr::summarise_at(.vars = c('absrdif'), .funs = c('mean', 'se')) %>%
   ggplot(aes(x = cond, y = mean, ymin = mean-se, ymax = mean+se, fill = cond)) +
   geom_bar(stat = 'identity', width = .7) +
-  geom_errorbar(stat = 'identity', position = position_dodge(), width = 0.35, size = 1) +
+  geom_errorbar(stat = 'identity', width = .2, size = 1) +
   #geom_point(inherit.aes=F, data = df.mad, aes(x = cond, y = absrdif), size = 1) +
   #geom_line(inherit.aes=F, data = df.mad, aes(x = cond,y = absrdif, group = subid), size = .5) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
@@ -296,37 +314,103 @@ ggsave(filename = paste0(figpath, '/errorvar_groupaverage_20subs.pdf'), device =
 
 
 #one-way anova on decision time
+library('afex')
 anova_dt  <- afex::aov_ez(id = 'subid', data = df.dt , 'DT' , within = 'cond')
 nice(anova_dt, es = 'pes') #significant main effect of condition (cue) on decision time
 t.test(DT~cond, data = df.dt, paired = T) #mean diff output here
+# Anova Table (Type 3 tests)
+# 
+# Response: DT
+# Effect    df  MSE         F pes p.value
+# 1   cond 1, 19 0.01 66.32 *** .78  <.0001
+# ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘+’ 0.1 ‘ ’ 1
 
+# Paired t-test
+# 
+# data:  DT by cond
+# t = -8.1435, df = 19, p-value = 1.286e-07
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   -0.3094271 -0.1828920
+# sample estimates:
+#   mean of the differences 
+# -0.2461595 
 
 anova_mad <- afex::aov_ez(id = 'subid', data = df.mad, 'absrdif', within = 'cond')
 nice(anova_mad, es = 'pes') #signif main effect of condition (cue) on mean absolute deviation
 t.test(absrdif ~ cond, df.mad, paired = T)
+
+# Anova Table (Type 3 tests)
+# 
+# Response: absrdif
+# Effect    df  MSE         F pes p.value
+# 1   cond 1, 19 0.79 16.64 *** .47   .0006
+# ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘+’ 0.1 ‘ ’ 1
+
+# Paired t-test
+# 
+# data:  absrdif by cond
+# t = -4.0798, df = 19, p-value = 0.0006385
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   -1.7297401 -0.5567332
+# sample estimates:
+#   mean of the differences 
+# -1.143237 
+
 
 #one-way anova on accuracy(1/sd measure)
 anova_acc <- afex::aov_ez(id = 'subid', data = df.acc, 'acc', within = 'cond')
 nice(anova_acc, es = 'pes') 
 t.test(acc ~ cond, df.acc, paired = T)
 
+# Anova Table (Type 3 tests)
+# 
+# Response: acc
+# Effect    df  MSE      F pes p.value
+# 1   cond 1, 19 0.00 5.46 * .22     .03
+# ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘+’ 0.1 ‘ ’ 1
+
+# Paired t-test
+# 
+# data:  acc by cond
+# t = -2.3358, df = 19, p-value = 0.03062
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   -0.034973558 -0.001916821
+# sample estimates:
+#   mean of the differences 
+# -0.01844519 
+
 
 #are people better at oblique angles?
 
 df_oblique <- df %>%
+  dplyr::mutate(dist_to_0 = targori - 0) %>%
   dplyr::mutate(dist_to_45 = targori - 45) %>%
   dplyr::mutate(dist_to_90 = targori - 90) %>%
   dplyr::mutate(dist_to_135 = targori - 135) %>%
-  dplyr::select(cond, pside, subid, ori1, ori2, targori, nontargori, pstartang, DT, resp, rdif, confwidth, absrdif, confdiff, dist_to_45, dist_to_90, dist_to_135)
+  dplyr::select(cond, pside, subid, ori1, ori2, targori, nontargori, pstartang, DT, resp, rdif, confwidth, absrdif, confdiff, dist_to_0, dist_to_45, dist_to_90, dist_to_135)
 
 df_oblique %<>%
   rowwise() %>%
-  dplyr::mutate(dist_oblique = min(abs(c(dist_to_45, dist_to_135)))) %>% as.data.frame()
+  dplyr::mutate(dist_oblique = min(abs(c(dist_to_45, dist_to_135)))) %>% as.data.frame() %>%
+  rowwise() %>%
+  dplyr::mutate(dist_cardinal = min(abs(c(dist_to_0, dist_to_90)))) %>% as.data.frame()
 
 df_oblique %>%
   ggplot(aes(x = dist_oblique, y = absrdif)) +
   geom_point(size = .5) +
   geom_smooth(method = 'gam', formula = y ~s(x, bs='cr')) +
+  facet_wrap(~subid)
+
+df_oblique %>%
+  ggplot(aes(x = dist_cardinal, y = absrdif)) +
+  geom_point(size = .5) +
+  geom_smooth(method = 'gam', formula = y ~ s(x, bs = 'cr')) +
   facet_wrap(~subid)
 
 #doesn't really look like any oblique effects here across subjects to be honest
