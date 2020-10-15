@@ -441,16 +441,51 @@ lambdaList <- boxcox(confwidth~cond, data=lmm.data)
 # - - - - - - - - - - - - - - - - - - - - - - 
 fullmodel_log <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond +
                               (1 + absrdif + cond + absrdif:cond|subid))
+#this model has a singular fit, suggesting is is overfitted/overparameterised
 summary(rePCA(fullmodel_log))#check if model is degenerate
-minmodel_log  <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond  + (1|subid))
+#cumulative propertion suggests only two random effects needed
+
+model2 <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond + (1 +absrdif + cond|subid)) #removing the interaction from random effects
+#this model also has singular fit, but check the pca components
+summary(rePCA(model2)) #the third can be dropped from this
+anova(fullmodel_log, model2) #model doesnt significantly degrade removing this interaction, so can throw it out
+
+model3 <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond + (1 + absrdif|subid)) #doesn't generate a singular fit (overfitted)
+summary(rePCA(model3))
+summary(model3)
+
+
+
+# so it makes sense to remove cond first because it explains the least variance in the more complex model
+# do i also need to check what a model would look like removing absrdif (leaving cond in?)
+
+# if i remove absrdif and leave cond in the random effects structure, the PCA still doesnt look great(adding in the cond only explains like <.0000000001%)
+# ok so kinda dont need to bother with model4 formula then really
+model4 <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond + (1 + cond|subid))    #doesn't generate a singular fit (overfitted)
+summary(rePCA(model4))
+summary(model4)
+
+
+
+#should i still compare model 3 (with absrdif in random effects) against the minimal model?
+minmodel_log  <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond  + (1|subid)) #model only allowing across participant fitting of intercept
 summary(rePCA(minmodel_log))
-anova(fullmodel_log, minmodel_log)
-                             
+summary(minmodel_log)
+
+anova(minmodel_log, model3) #model3 is better than minimal model log, and we need absrdif in the random effects structure.
+#reporting from this model onwards
+
+
+#compare model fits of the reduced models to the full model
+anova(minmodel_log, model3) #model 3 is better
 summary(fullmodel_log) # condition x error interaction: absrdif:cond1 -0.047282   0.024187  -1.955
 summary(minmodel_log)  # condition x error interaction: absrdif:cond1 -0.067720   0.022982  -2.947
 
+
+summary(model3) #this is the model that we will report on in the paper
+
 library(remef)
-fit <- keepef(minmodel_log, fix = 'absrdif:cond1', grouping = TRUE)
+fit <- keepef(model3, fix = 'absrdif:cond1', grouping = TRUE)
 
 lmm.data$fitted <- fit
 
