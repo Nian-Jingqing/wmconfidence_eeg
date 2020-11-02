@@ -446,8 +446,40 @@ minmodel_log  <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + a
 summary(rePCA(minmodel_log))
 anova(fullmodel_log, minmodel_log)
                              
-summary(fullmodel_log) # condition x error interaction: absrdif:cond1 -0.047282   0.024187  -1.955
-summary(minmodel_log)  # condition x error interaction: absrdif:cond1 -0.067720   0.022982  -2.947
+summary(fullmodel_log) # condition x error interaction: absrdif:cond1 -0.047282   0.024187  -1.955 (beta, std err, t value)
+summary(minmodel_log)  # condition x error interaction: absrdif:cond1 -0.067720   0.022982  -2.947 (beta, std err, t value)
+
+# > summary(minmodel_log)  # condition x error interaction: absrdif:cond1 -0.067720   0.022982  -2.947 (beta, std err, t value)
+# Linear mixed model fit by REML ['lmerMod']
+# Formula: log(confwidth) ~ absrdif + cond + absrdif:cond + (1 | subid)
+# Data: lmm.data
+# 
+# REML criterion at convergence: 8906.4
+# 
+# Scaled residuals: 
+#   Min       1Q   Median       3Q      Max 
+# -22.3562  -0.5616   0.0136   0.6022   4.4983 
+# 
+# Random effects:
+#   Groups   Name        Variance Std.Dev.
+# subid    (Intercept) 0.08245  0.2871  
+# Residual             0.14721  0.3837  
+# Number of obs: 9517, groups:  subid, 20
+# 
+# Fixed effects:
+#   Estimate Std. Error t value
+# (Intercept)   -1.367456   0.064454 -21.216
+# absrdif        0.538525   0.023817  22.611
+# cond1          0.024759   0.005538   4.471
+# absrdif:cond1 -0.067720   0.022982  -2.947
+# 
+# Correlation of Fixed Effects:
+#   (Intr) absrdf cond1 
+# absrdif     -0.063              
+# cond1       -0.001  0.049       
+# absrdf:cnd1  0.005 -0.129 -0.703
+
+
 
 library(remef)
 fit <- keepef(minmodel_log, fix = 'absrdif:cond1', grouping = TRUE)
@@ -549,7 +581,68 @@ lmm.trladjcw.full <- lme4::lmer(data = lmm.trladjcw.data,
 lmm.trladjcw.min  <- lme4::lmer(data = lmm.trladjcw.data,
                                 trladj ~ prevtrlconfdiff + prevtrlcw + (1|subid))
 summary(lmm.trladjcw.full)
+# > summary(lmm.trladjcw.full)
+# Linear mixed model fit by REML ['lmerMod']
+# Formula: trladj ~ prevtrlconfdiff + prevtrlcw + (1 + prevtrlconfdiff +      prevtrlcw | subid)
+# Data: lmm.trladjcw.data
+# 
+# REML criterion at convergence: 65613.7
+# 
+# Scaled residuals: 
+#   Min      1Q  Median      3Q     Max 
+# -4.2043 -0.5277 -0.1291  0.3628  8.5922 
+# 
+# Random effects:
+#   Groups   Name            Variance  Std.Dev. Corr       
+# subid    (Intercept)     3.724e+01 6.10206             
+# prevtrlconfdiff 1.291e-04 0.01136   0.99      
+# prevtrlcw       6.514e-03 0.08071  -0.24 -0.20
+# Residual                 5.783e+01 7.60428             
+# Number of obs: 9494, groups:  subid, 20
+# 
+# Fixed effects:
+#   Estimate Std. Error t value
+# (Intercept)     15.393630   1.380431  11.151
+# prevtrlconfdiff  0.043461   0.008396   5.176
+# prevtrlcw       -0.840411   0.021777 -38.592
+# 
+# Correlation of Fixed Effects:
+#   (Intr) prvtrlcn
+# prvtrlcnfdf  0.279         
+# prevtrlcw   -0.272  0.165  
+# convergence code: 0
+# unable to evaluate scaled gradient
+# Model failed to converge: degenerate  Hessian with 1 negative eigenvalues
+
+
 summary(lmm.trladjcw.min)
+# > summary(lmm.trladjcw.min)
+# Linear mixed model fit by REML ['lmerMod']
+# Formula: trladj ~ prevtrlconfdiff + prevtrlcw + (1 | subid)
+# Data: lmm.trladjcw.data
+# 
+# REML criterion at convergence: 65666.6
+# 
+# Scaled residuals: 
+#   Min      1Q  Median      3Q     Max 
+# -4.0324 -0.5284 -0.1314  0.3653  8.6031 
+# 
+# Random effects:
+#   Groups   Name        Variance Std.Dev.
+# subid    (Intercept) 24.18    4.917   
+# Residual             58.35    7.639   
+# Number of obs: 9494, groups:  subid, 20
+# 
+# Fixed effects:
+#   Estimate Std. Error t value
+# (Intercept)     15.471133   1.115593  13.868
+# prevtrlconfdiff  0.043767   0.007981   5.484
+# prevtrlcw       -0.844348   0.010457 -80.745
+# 
+# Correlation of Fixed Effects:
+#   (Intr) prvtrlcn
+# prvtrlcnfdf -0.021         
+# prevtrlcw   -0.145  0.460  
 
 fit.trladjcw <- keepef(lmm.trladjcw.full, fix = c('prevtrlconfdiff', 'prevtrlcw'), grouping=T)
 lmm.trladjcw.data$fitted <- fit.trladjcw
