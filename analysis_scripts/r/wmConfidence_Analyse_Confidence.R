@@ -439,18 +439,20 @@ lambdaList <- boxcox(confwidth~cond, data=lmm.data)
 
 
 # - - - - - - - - - - - - - - - - - - - - - - 
-fullmodel_log <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond +
+library(lmerTest)
+
+fullmodel_log <- lmerTest::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond +
                               (1 + absrdif + cond + absrdif:cond|subid))
 #this model has a singular fit, suggesting is is overfitted/overparameterised
 summary(rePCA(fullmodel_log))#check if model is degenerate
 #cumulative propertion suggests only two random effects needed
 
-model2 <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond + (1 +absrdif + cond|subid)) #removing the interaction from random effects
+model2 <- lmerTest::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond + (1 +absrdif + cond|subid)) #removing the interaction from random effects
 #this model also has singular fit, but check the pca components
 summary(rePCA(model2)) #the third can be dropped from this
 anova(fullmodel_log, model2) #model doesnt significantly degrade removing this interaction, so can throw it out
 
-model3 <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond + (1 + absrdif|subid)) #doesn't generate a singular fit (overfitted)
+model3 <- lmerTest::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond + (1 + absrdif|subid)) #doesn't generate a singular fit (overfitted)
 summary(rePCA(model3))
 summary(model3)
 
@@ -461,14 +463,14 @@ summary(model3)
 
 # if i remove absrdif and leave cond in the random effects structure, the PCA still doesnt look great(adding in the cond only explains like <.0000000001%)
 # ok so kinda dont need to bother with model4 formula then really
-model4 <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond + (1 + cond|subid))    #doesn't generate a singular fit (overfitted)
+model4 <- lmerTest::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond + (1 + cond|subid))    #doesn't generate a singular fit (overfitted)
 summary(rePCA(model4))
 summary(model4)
 
 
 
 #should i still compare model 3 (with absrdif in random effects) against the minimal model?
-minmodel_log  <- lme4::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond  + (1|subid)) #model only allowing across participant fitting of intercept
+minmodel_log  <- lmerTest::lmer(data = lmm.data, log(confwidth) ~ absrdif + cond + absrdif:cond  + (1|subid)) #model only allowing across participant fitting of intercept
 summary(rePCA(minmodel_log))
 summary(minmodel_log)
 
@@ -504,8 +506,8 @@ lmm.data %>%
        y = 'confidence interval width (radians)') +
   geom_abline(intercept = 0, slope = 1, linetype = 'dashed', color = '#636363') +
   coord_cartesian(xlim = c(0, 1.6), ylim = c(0,1.6)) + theme(legend.position = 'top')
-ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_fromMinModel.pdf'), device = cairo_pdf, dpi = 600, height = 10, width = 10)
-ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_fromMinModel.eps'), device = cairo_ps, dpi = 600, height = 10, width = 10)
+ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_fromModel3.pdf'), device = cairo_pdf, dpi = 600, height = 10, width = 10)
+ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_fromModel3.eps'), device = cairo_ps, dpi = 600, height = 10, width = 10)
 
 
 #%%  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
