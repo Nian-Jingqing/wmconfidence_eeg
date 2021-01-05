@@ -115,9 +115,10 @@ df %>%
   summarise_at(.vars = c('mean', 'sd'), .funs = c('mean', 'se')) %>%
   ggplot(aes(x = cond, y = mean_mean, fill = cond)) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
-  geom_bar(stat = 'identity') +
-  geom_errorbar(aes(ymin = mean_mean - mean_se, ymax = mean_mean + mean_se), width = .3, size=1, color = '#000000') +
+  geom_bar(stat = 'identity', width = .7) +
+  geom_errorbar(aes(ymin = mean_mean - mean_se, ymax = mean_mean + mean_se), width = .35, size=1, color = '#000000') +
   labs(y = 'confidence width (degrees)', x = 'cue condition') + 
+  coord_cartesian(ylim = c(12,20)) +
   theme(legend.position = 'none')
 ggsave(filename = paste0(figpath, '/gave_confwidthmean.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
 ggsave(filename = paste0(figpath, '/gave_confwidthmean.eps'), device = cairo_ps, dpi = 600, height = 9, width = 9)
@@ -128,6 +129,7 @@ df.cwmean <- df %>%
   summarise_at(.vars = 'confwidth', .funs = c('mean'))
 aov.cwmean <- afex::aov_ez(id = 'subid', data = df.cwmean, 'confwidth', within = 'cond')
 nice(aov.cwmean, es = 'pes')
+aov.cwmean$Anova #get exact values if you want to see them
 
 # Anova Table (Type 3 tests)
 # 
@@ -306,13 +308,15 @@ df.confdiffmu %>%
   #geom_point(inherit.aes = F, data = df.confmu, aes(x = cond, y = absconfdiff), size = 1) +
   #geom_line(inherit.aes = F, data = df.confmu, aes(x = cond, y = absconfdiff, group = subid), size = .5) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
-  labs(x = '', y = 'mean confidence error') +
+  labs(x = '', y = 'mean confidence error (degrees)') +
+  coord_cartesian(ylim = c(8,13)) +
   theme(legend.position = 'none')
 ggsave(filename = paste0(figpath, '/gave_confdiffmu.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
 ggsave(filename = paste0(figpath, '/gave_confdiffmu.eps'), device = cairo_ps,  dpi = 600, height = 9, width = 9)
 
 anova_confdiffmu <- afex::aov_ez(id = 'subid', data = df.confdiffmu, 'absconfdiff', within = c('cond'))
 nice(anova_confdiffmu, es = 'pes') #significant main effect of cue (i.e. significant condition difference in confmu)
+anova_confdiffmu$Anova
 
 # Anova Table (Type 3 tests)
 # 
@@ -495,7 +499,7 @@ lmm.data$fitted <- fit
 lmm.data %>%
   dplyr::mutate(cond = ifelse(cond=='neutral', 'Neutral', 'Cued')) %>%
   ggplot(aes(x = absrdif, y = confwidth)) + #y = exp(fitted))) +
-  #geom_point(size = 1, aes(colour = cond)) +
+  # geom_point(inherit.aes = F,  aes(x = absrdif, y = exp(fitted), color = cond), size = .1) +
   #geom_ribbon(stat = 'smooth', method = 'lm', aes(fill = cond), alpha=.5) +
   #geom_line(stat = 'smooth', method = 'lm', aes(colour=cond)) +
   geom_ribbon(inherit.aes = F, aes(x = absrdif, y = exp(fitted), fill = cond), stat = 'smooth', method = 'lm') +
@@ -505,7 +509,7 @@ lmm.data %>%
   labs(x = 'absolute reponse error (radians)',
        y = 'confidence interval width (radians)') +
   geom_abline(intercept = 0, slope = 1, linetype = 'dashed', color = '#636363') +
-  coord_cartesian(xlim = c(0, 1.6), ylim = c(0,1.6)) + theme(legend.position = 'top')
+  coord_cartesian(xlim = c(0, 1.6), ylim = c(0,0.75)) + theme(legend.position = 'top')
 ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_fromModel3.pdf'), device = cairo_pdf, dpi = 600, height = 10, width = 10)
 ggsave(filename = paste0(figpath, '/absrdif~confwidth_fittedline_fromModel3.eps'), device = cairo_ps, dpi = 600, height = 10, width = 10)
 
@@ -563,32 +567,31 @@ lmm.trladjcw.data %>% ggplot(aes(x = prevtrlcw, y = trladj)) +
        x = 'previous trial confidence width')
 
 
-lmm.trladjerr.data <- df %>%
-  dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%
-  dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-  dplyr::mutate(trladj = absrdif - prevtrlabsrdif) %>% # difference in current trials confidence compared to the previous trial
-  dplyr::filter(trialnum != 1) %>% #exclude first trial of each session as no prev trial for it (these vals would be NA anyway)
-  dplyr::filter(!is.na(prevtrlconfdiff))
-
-# lmm.trladjcw.data %>%
-#   group_by(subid) %>%
+# lmm.trladjerr.data <- df %>%
 #   dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%
 #   dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-#   summarise(cor = cor(prevtrlconfdiff, trladj)) %>%
-#   summarise_at(.vars='cor', .funs = c('mean', 'se'))
+#   dplyr::mutate(trladj = absrdif - prevtrlabsrdif) %>% # difference in current trials confidence compared to the previous trial
+#   dplyr::filter(trialnum != 1) %>% #exclude first trial of each session as no prev trial for it (these vals would be NA anyway)
+#   dplyr::filter(!is.na(prevtrlconfdiff))
+
 
 contrasts(lmm.trladjcw.data$prevtrlinconf) <- contr.sum(2)
-contrasts(lmm.trladjerr.data$prevtrlinconf) <- contr.sum(2)
 
-lmm.trladjcw.full <- lme4::lmer(data = lmm.trladjcw.data,
-                                trladj ~ prevtrlconfdiff + prevtrlcw +
-                                (1 + prevtrlconfdiff + prevtrlcw | subid))
-lmm.trladjcw.min  <- lme4::lmer(data = lmm.trladjcw.data,
-                                trladj ~ prevtrlconfdiff + prevtrlcw + (1|subid))
+lmm.trladjcw.min  <- lmerTest::lmer(data = lmm.trladjcw.data, trladj ~ prevtrlconfdiff + prevtrlcw + (1| subid))
+lmm.trladjcw.full <- lmerTest::lmer(data = lmm.trladjcw.data, trladj ~ prevtrlconfdiff + prevtrlcw + (1 + prevtrlconfdiff + prevtrlcw | subid))
+
+trladjcw.model1 <- lmerTest::lmer(data = lmm.trladjcw.data, trladj ~ prevtrlconfdiff + prevtrlcw + (1 + prevtrlcw | subid))
+trladjcw.model2 <- lmerTest::lmer(data = lmm.trladjcw.data, trladj ~ prevtrlconfdiff + prevtrlcw + (1 + prevtrlconfdiff | subid))
+
+summary(rePCA(lmm.trladjcw.full))
+summary(rePCA(trladjcw.model1))
+summary(rePCA(trladjcw.model2))
+summary(rePCA(lmm.trladjcw.min))
+
 summary(lmm.trladjcw.full)
 summary(lmm.trladjcw.min)
 
-fit.trladjcw <- keepef(lmm.trladjcw.full, fix = c('prevtrlconfdiff', 'prevtrlcw'), grouping=T)
+fit.trladjcw <- keepef(lmm.trladjcw.min, fix = c('prevtrlconfdiff', 'prevtrlcw'), grouping=T)
 lmm.trladjcw.data$fitted <- fit.trladjcw
 
 #plot the fitted trialwise adjustments from this lmm
@@ -596,76 +599,58 @@ lmm.trladjcw.data$fitted <- fit.trladjcw
 lmm.trladjcw.data %>%
   ggplot(aes(x = prevtrlconfdiff, y = trladj)) +
   #geom_point(size = .5, color = '#bdbdbd') +
-  #geom_smooth(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), method = 'lm', color = '#756bb1') +
-  geom_ribbon(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), stat = 'smooth', method = 'lm', color = '#756bb1') +
+  geom_ribbon(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), stat = 'smooth', method = 'lm', fill = '#bdbdbd') +
   geom_line(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), stat = 'smooth', method = 'lm', color = '#756bb1', size = 1) +
   labs(y = 'confidence adjustment\n(current trial - previous trial confidence width',
        x = 'previous trial confidence error') +
-  coord_cartesian(ylim = c(-80, 80), xlim = c(-80, 80)) + #only add theme_bw if changing the device from cairo to normal to export into sketch
+  coord_cartesian(ylim = c(-80, 80), xlim = c(-80, 80)) #only add theme_bw if changing the device from cairo to normal to export into sketch
 ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_agg.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
-ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_agg.eps'), device = cairo_ps, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_agg.eps'), device = cairo_ps,  dpi = 600, height = 9, width = 9)
+
+lmm.trladjcw.data %<>% dplyr::mutate(xbin = 0)
+bins = seq(-90, 90, length.out = 20)
+for(i in seq(1,length(bins)-1,1)){
+  binlow = bins[i]
+  binhigh = bins[i+1]
+  lmm.trladjcw.data %<>% dplyr::mutate(xbin = ifelse(prevtrlconfdiff >= binlow & prevtrlconfdiff < binhigh, i, xbin))
+  
+}
+lmm.trladjcw.data %<>% dplyr::mutate(xbin = as.factor(xbin))
+
+lmm.trladjcw.data %>%
+  dplyr::group_by(xbin) %>% summarise_at(.vars = c('fitted', 'prevtrlconfdiff'),
+                                         .funs =c('mean', 'sd')) %>% as.data.frame() -> lmmtrladjcw_plotdata
+  dplyr::group_by(xbin) %>% summarise_at(.vars = c('fitted', 'prevtrlconfdiff'),
+                                         .funs = c('mean', 'se')) %>% as.data.frame() -> lmmtrladjcw_plotdata
+
 
 lmm.trladjcw.data %>%
   ggplot(aes(x = prevtrlconfdiff, y = trladj)) +
-  geom_point(size = .5, color = '#bdbdbd') +
-  geom_smooth(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), method = 'lm', color = '#756bb1') +
+  geom_point(aes(x = prevtrlconfdiff, y = fitted), size = 1, alpha = .5, color = '#bdbdbd') +
+  # geom_pointrange(inherit.aes=F, data =lmmtrladjcw_plotdata,aes(x = prevtrlconfdiff_mean, y = fitted_mean, ymin = fitted_mean-fitted_sd, ymax = fitted_mean+fitted_sd), size = .5, color = '#bdbdbd') +
+  geom_ribbon(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), stat = 'smooth', method = 'lm', fill = '#bdbdbd') +
+  geom_line(inherit.aes = F,   aes(x = prevtrlconfdiff, y = fitted), stat = 'smooth', method = 'lm', color = '#756bb1', size = 1) +
   labs(y = 'confidence adjustment\n(current trial - previous trial confidence width',
-       x = 'previous trial confidence error')#only add theme_bw if changing the device from cairo to normal to export into sketch
-
-lmm.trladjerr.full <- lme4::lmer(data = lmm.trladjerr.data,
-                                 trladj ~ prevtrlconfdiff + prevtrlabsrdif + 
-                                   (1 + prevtrlconfdiff + prevtrlabsrdif | subid))
-lmm.trladjerr.min <- lme4::lmer(data = lmm.trladjerr.data,
-                                trladj ~ prevtrlconfdiff + prevtrlabsrdif + (1 + prevtrlconfdiff + prevtrlabsrdif |  subid))
-
-
-summary(lmm.trladjerr.full)
-summary(lmm.trladjerr.min)
-
-fit.trladjerr <- keepef(lmm.trladjerr.full, fix = c('prevtrlconfdiff', 'prevtrlabsrdif'), grouping=T)
-lmm.trladjerr.data$fitted <- fit.trladjerr
-
-
-lmm.trladjerr.data %>%
-  dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%
-  dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-  dplyr::mutate(prevtrlinconf = ifelse(prevtrlinconf == 1, 'underconfident', 'overconfident')) %>%
-  dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-  ggplot(aes(x=prevtrlconfdiff, y = trladj)) +
-  geom_point(size=.5, color = '#bdbdbd', alpha = .5) +
-  geom_smooth(method = 'lm', size=.7, color = '#000000') +
-  scale_color_manual(values = c('underconfident' = '#4daf4a', 'overconfident' = '#e41a1c')) +
-  labs(y = 'error adjustment\n(current trial - previous trial error)',
        x = 'previous trial confidence error') +
-  facet_wrap(~subid)
-ggsave(filename = paste0(figpath, '/trladjustment_error_prevtrlconferr_persub.pdf'), device = cairo_pdf, dpi = 600, height = 12, width = 18)
-ggsave(filename = paste0(figpath, '/trladjustment_error_prevtrlconferr_persub.eps'), device = cairo_ps , dpi = 600, height = 12, width = 18)
-
-lmm.trladjerr.data %>%
-  dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%
-  dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-  dplyr::mutate(prevtrlinconf = ifelse(prevtrlinconf == 1, 'underconfident', 'overconfident')) %>%
-  dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-  ggplot(aes(x=prevtrlconfdiff, y = trladj)) +
-  geom_point(size=.5, color = '#bdbdbd', alpha = .5) +
-  geom_smooth(method = 'lm', size=.7, color = '#000000') +
-  scale_color_manual(values = c('underconfident' = '#4daf4a', 'overconfident' = '#e41a1c')) +
-  labs(y = 'error adjustment\n(current trial - previous trial error)',
-       x = 'previous trial confidence error') 
-ggsave(filename = paste0(figpath, '/trladjustment_error_prevtrlconferr_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 12, width = 18)
-ggsave(filename = paste0(figpath, '/trladjustment_error_prevtrlconferr_20subs.eps'), device = cairo_ps , dpi = 600, height = 12, width = 18)
-
-lmm.trladjerr.data %>%
-  dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%
-  dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-  dplyr::mutate(prevtrlinconf = ifelse(prevtrlinconf == 1, 'underconfident', 'overconfident')) %>%
-  dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-  ggplot(aes(x=prevtrlabsrdif, y = trladj)) +
-  geom_point(size=.5, color = '#bdbdbd', alpha = .5) +
-  geom_smooth(method = 'lm', size=.7, color = '#000000') +
-  scale_color_manual(values = c('underconfident' = '#4daf4a', 'overconfident' = '#e41a1c')) +
-  labs(y = 'error adjustment\n(current trial - previous trial error)',
-       x = 'previous trial response error') 
+  coord_cartesian(ylim = c(-80, 80), xlim = c(-80, 80)) #only add theme_bw if changing the device from cairo to normal to export into sketch
+ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_agg_singletrls.pdf'), device = cairo_pdf, dpi = 300, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_agg_singletrls.eps'), device = cairo_ps,  dpi = 300, height = 9, width = 9)
+#save with single trial data (pooled across subjects) on figure
+#the regression line is the relationship between prev trl confidence error and the adjustment *from the linear mixed effects model*
 
 
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+coefs_trladjmodel <- coef(lmm.trladjcw.full)$subid %>% as.data.frame(.) %>% dplyr::mutate(subid = subs2use)
+
+confdiff_eegregressor_data <- read.csv(paste0(dpath, '/glms/feedback/epochs_glm4/confdiff_cluster_avevalue_mediationdata.csv'),
+                                       as.is = T, header = T, sep = ',') %>% dplyr::select(-contains('X'))
+
+coefs_trladjmodel %<>% dplyr::right_join(confdiff_eegregressor_data, by = 'subid')
+
+ggplot(coefs_trladjmodel, aes(x = scale(prevtrlconfdiff), y = scale(confdiff_mean_regressor))) +
+  geom_smooth(method = 'lm') +
+  geom_point() + labs(x = 'subject specific beta for trial updating', y = 'average beta for significant cluster for the EEG regressor' )
+
+cor.test(x = coefs_trladjmodel$prevtrlconfdiff, y = coefs_trladjmodel$confdiff_mean_regressor)
 

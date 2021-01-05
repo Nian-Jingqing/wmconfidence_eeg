@@ -250,6 +250,7 @@ df.mad %>%
   #geom_line(inherit.aes=F, data = df.mad, aes(x = cond,y = absrdif, group = subid), size = .5) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = '', y = 'error (degrees)') +
+  coord_cartesian(ylim = c(5, 12)) +
   theme(legend.position = 'none')
 ggsave(filename = paste0(figpath, '/MAD_groupaverage_20subs.eps'), device = cairo_ps, dpi = 600, height = 9, width = 9)
 ggsave(filename = paste0(figpath, '/MAD_groupaverage_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 9, width =9)
@@ -308,6 +309,7 @@ df.acc %>%
   #geom_line(inherit.aes=F, data = df.acc, aes(x = cond,y = acc, group = subid), size = .5) +
   scale_fill_manual(values = c('neutral' = neutcol, 'cued' = cuedcol)) +
   labs(x = '', y = 'error variability (SD)') +
+  coord_cartesian(ylim = c(0.1, 0.2)) +
   theme(legend.position = 'none')
 ggsave(filename = paste0(figpath, '/errorvar_groupaverage_20subs.eps'), device = cairo_ps, dpi = 600, height = 8, width = 8)
 ggsave(filename = paste0(figpath, '/errorvar_groupaverage_20subs.pdf'), device = cairo_pdf, dpi = 600, height = 8, width = 8)
