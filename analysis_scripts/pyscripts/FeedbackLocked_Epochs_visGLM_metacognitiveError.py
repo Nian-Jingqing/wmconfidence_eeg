@@ -30,9 +30,9 @@ os.chdir(wd)
 
 subs = np.array([4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22,24, 25, 26])
 
-# glm_folder = 'epochs_glm4'
-glm_folder = 'epochs_glm5'
-figpath = op.join(wd,'figures', 'eeg_figs', 'fblocked', 'epochs_glm5')
+glm_folder = 'epochs_glm4'
+# glm_folder = 'epochs_glm5'
+figpath = op.join(wd,'figures', 'eeg_figs', 'fblocked', glm_folder)
 if not os.path.exists(figpath): 
     os.mkdir(figpath)
 
@@ -108,21 +108,21 @@ elif glm_folder == 'epochs_glm5':
 
 #%% for the error-confidence (metacognitive error) regressor:
         
-tmin, tmax = 0,.6 #set time window for the clustering
+tmin, tmax = 0,1 #set time window for the clustering
 
 #gonna store things in a dictionary so we dont need to constantly rerun
 t_cope, clu_cope, clupv_cope, h0_cope = dict(), dict(), dict(), dict()
 masks_cope = dict()
-# for contrast in ['confdiff_correct', 'confdiff_incorrect', 'confdiff_incorrvscorr', 'confdiff']:
-for contrast in ['confdiff']:
+for contrast in ['confdiff_correct', 'confdiff_incorrect', 'confdiff_incorrvscorr', 'confdiff']:
+# for contrast in ['confdiff']:
     for dictobj in [t_cope, clu_cope, clupv_cope, h0_cope, masks_cope]:
         dictobj[contrast] = dict()
         for channel in ['FCz', 'Cz']:
             dictobj[contrast][channel] = []
 
 clutimes = deepcopy(data['correct'][0]).crop(tmin = tmin, tmax = tmax).times
-# for contrast in ['confdiff_correct', 'confdiff_incorrect', 'confdiff_incorrvscorr', 'confdiff']:
-for contrast in ['confdiff']:
+for contrast in ['confdiff_correct', 'confdiff_incorrect', 'confdiff_incorrvscorr', 'confdiff']:
+# for contrast in ['confdiff']:
     for channel in ['FCz', 'Cz']:
         t_cope[contrast][channel], clu_cope[contrast][channel], clupv_cope[contrast][channel], h0_cope[contrast][channel] = runclustertest_epochs(
                     data = data,
@@ -139,21 +139,21 @@ for channel in ['FCz']:
     ax = fig.subplots(1)
     mne.viz.plot_compare_evokeds(
             evokeds = dict(
-                    # correct    = data['confdiff_correct'],
-                    #incorrect  = data['confdiff_incorrect'],
-                    # difference = data['confdiff_incorrvscorr'],
+                    correct    = data['confdiff_correct'],
+                    incorrect  = data['confdiff_incorrect'],
+                    difference = data['confdiff_incorrvscorr'],
                     all_trials = data['confdiff']),
             colors = dict(
-                    # correct = '#4daf4a',
-                    #incorrect = '#e41a1c',
-                    # difference = '#525252',
+                    correct = '#4daf4a',
+                    incorrect = '#e41a1c',
+                    difference = '#525252',
                     all_trials = '#1f78b4'),
             legend = 'upper right', picks = channel, ci = .68, #show standard error of the ERP at the channel
             show_sensors = False, title = 'error regressor: electrode '+channel, ylim = dict(eeg=[-4, 4]),
             axes = ax, truncate_xaxis = False, vlines = [0, 0.5])
     ax.set_title('error - confidence regressor on the feedback ERP at electrode '+channel)
     ax.set_ylabel('beta (AU)')
-    for contrast in ['confdiff']:#,'confdiff_correct']:#,'confdiff_incorrect', 'confdiff']:#,'confdiff_incorrvscorr']:
+    for contrast in ['confdiff','confdiff_correct','confdiff_incorrect']:#,'confdiff_incorrvscorr']:
         if contrast == 'confdiff_correct':
             col = '#4daf4a'
             liney = -2.5
@@ -175,23 +175,25 @@ for channel in ['FCz']:
     fig.savefig(fname = op.join(figpath, 'feedbackERP_confdiffRegressor_clustertimesFrom_%s_betas.pdf'%(channel)), dpi = 300, format = 'pdf')
             
 #and now just plot the topographies of any significant clusters
-contrast = 'confdiff'
-for channel in ['FCz']:
-    tmins, tmaxs = [], [] #we're going to get the start and end points in time of these clusters
-    for mask in masks_cope[contrast][channel]: #loop over clusters
-        tmins.append( clutimes[mask[1]].min() )
-        tmaxs.append( clutimes[mask[1]].max() )
-    
-    for imask in range(len(tmins)):
-        itmin = tmins[imask] #get start time of the cluster
-        itmax = tmaxs[imask] #get   end time of the cluster
+contrast = ['confdiff', 'confdiff_correct']
+for contrast in ['confdiff', 'confdiff_correct']:
+    for channel in ['FCz']:
+        tmins, tmaxs = [], [] #we're going to get the start and end points in time of these clusters
+        for mask in masks_cope[contrast][channel]: #loop over clusters
+            tmins.append( clutimes[mask[1]].min() )
+            tmaxs.append( clutimes[mask[1]].max() )
         
-        tcentre = np.add(itmin, np.divide(np.subtract(itmax,itmin),2)) #get the halfway point
-        twidth  = np.subtract(itmax,itmin) #get the width of the cluster (creates timerange for the topomap)
-        fig = mne.grand_average(data[contrast]).plot_topomap(times = tcentre,
-                                                               average = twidth,
-                                                               vmin = -.75, vmax = .75, contours = 0,
-                                                               extrapolate = 'head', res = 300, #dpi
-                                                               title = 'error-confidence all trials, %s to %sms\nclu from channel: %s'%(str(np.round(itmin,2)), str(np.round(itmax,2)), channel))
-        fig.savefig(fname = op.join(figpath, 'confdiff_cluster_%sms_to_%sms_betas_fromChannel_%s.eps'%(str(np.round(itmin,2)), str(np.round(itmax,2)),channel)), dpi = 300, format = 'eps')
-        fig.savefig(fname = op.join(figpath, 'confdiff_cluster_%sms_to_%sms_betas_fromChannel_%s.pdf'%(str(np.round(itmin,2)), str(np.round(itmax,2)),channel)), dpi = 300, format = 'pdf')
+        for imask in range(len(tmins)):
+            itmin = tmins[imask] #get start time of the cluster
+            itmax = tmaxs[imask] #get   end time of the cluster
+            
+            tcentre = np.add(itmin, np.divide(np.subtract(itmax,itmin),2)) #get the halfway point
+            twidth  = np.subtract(itmax,itmin) #get the width of the cluster (creates timerange for the topomap)
+            fig = mne.grand_average(data[contrast]).plot_topomap(times = tcentre,
+                                                                   average = twidth,
+                                                                   vmin = -.75, vmax = .75, contours = 0,
+                                                                   extrapolate = 'head', res = 300, #dpi
+                                                                   title = 'error-confidence from %s, %s to %sms\nclu from channel: %s'%(contrast, str(np.round(itmin,2)), str(np.round(itmax,2)), channel))
+            fig.set_figwidth(5); fig.set_figheight(5)
+            fig.savefig(fname = op.join(figpath, 'confdiff_%s_cluster_%sms_to_%sms_betas_fromChannel_%s.eps'%(contrast, str(np.round(itmin,2)), str(np.round(itmax,2)),channel)), dpi = 300, format = 'eps')
+            fig.savefig(fname = op.join(figpath, 'confdiff_%s_cluster_%sms_to_%sms_betas_fromChannel_%s.pdf'%(contrast, str(np.round(itmin,2)), str(np.round(itmax,2)),channel)), dpi = 300, format = 'pdf')
