@@ -4,6 +4,7 @@ library(magrittr)  # allows use of more pipes
 library(afex)      # anovas etc
 library(RePsychLing)
 library(MASS)
+library(lmerTest)
 
 loadfonts = T
 if(loadfonts){
@@ -170,37 +171,6 @@ lmm.posterr.confwidth <- lme4::lmer(data = lmm.posterr.conf,
                                     confwidth ~ prevtrlabsrdif + (1 + prevtrlabsrdif | subid))
 summary(lmm.posterr.confwidth)
 
-
-lmm.trladjcw.data <- df %>%
-  dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%
-  dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-  dplyr::mutate(trladj = confwidth - prevtrlcw) %>% # difference in current trials confidence compared to the previous trial
-  dplyr::filter(trialnum != 1) %>% #exclude first trial of each session as no prev trial for it (these vals would be NA anyway)
-  dplyr::filter(!is.na(prevtrlconfdiff))
-
-# lmm.trladjcw.data %>%
-#   group_by(subid) %>%
-#   dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%
-#   dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-#   summarise(cor = cor(prevtrlconfdiff, trladj)) %>%
-#   summarise_at(.vars='cor', .funs = c('mean', 'se'))
-
-contrasts(lmm.trladjcw.data$prevtrlinconf) <- contr.sum(2)
-contrasts(lmm.trladjerr.data$prevtrlinconf) <- contr.sum(2)
-
-lmm.trladjcw.full <- lme4::lmer(data = lmm.trladjcw.data,
-                                trladj ~ prevtrlconfdiff + prevtrlcw +
-                                  (1 + prevtrlconfdiff + prevtrlcw | subid))
-summary(lmm.trladjcw.full)
-
-library(remef)
-
-fit.trladjcw <- keepef(lmm.trladjcw.full, fix = c('prevtrlconfdiff', 'prevtrlcw'), grouping=T)
-lmm.trladjcw.data$fitted <- fit.trladjcw
-
-
-
-
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 #trialwise adjustments of confidence
@@ -221,38 +191,62 @@ lmm.trladjcw.data %>% ggplot(aes(x = prevtrlcw, y = trladj)) +
   labs(y = 'trialwise adjustment in confidence\n(negative = become more confident)',
        x = 'previous trial confidence width')
 
-# lmm.trladjcw.data %>%
-#   group_by(subid) %>%
-#   dplyr::mutate(prevtrlinconf = ifelse(prevtrlconfdiff <= 0, 1, 0)) %>%
-#   dplyr::mutate(prevtrlinconf = as.factor(prevtrlinconf)) %>%
-#   summarise(cor = cor(prevtrlconfdiff, trladj)) %>%
-#   summarise_at(.vars='cor', .funs = c('mean', 'se'))
 
 contrasts(lmm.trladjcw.data$prevtrlinconf) <- contr.sum(2)
-contrasts(lmm.trladjerr.data$prevtrlinconf) <- contr.sum(2)
 
-lmm.trladjcw.full <- lme4::lmer(data = lmm.trladjcw.data,
+lmm.trladjcw.full <- lmerTest::lmer(data = lmm.trladjcw.data,
                                 trladj ~ prevtrlconfdiff + prevtrlcw +
                                   (1 + prevtrlconfdiff + prevtrlcw | subid))
 summary(lmm.trladjcw.full)
+summary(lme4::rePCA(lmm.trladjcw.full)) #random effects structure is degenerate
 
-fit.trladjcw <- keepef(lmm.trladjcw.full, fix = c('prevtrlconfdiff', 'prevtrlcw'), grouping=T)
+#remove redundant parts of the random effects structure and check degeneracy using PCA
+
+lmm.trladjcw.model2 <- lmerTest::lmer(data = lmm.trladjcw.data,
+                                      trladj ~ prevtrlconfdiff + prevtrlcw + (1 + prevtrlcw | subid))
+summary(lmm.trladjcw.model2)
+summary(lme4::rePCA(lmm.trladjcw.model2))
+
+lmm.trladjcw.model3 <- lmerTest::lmer(data = lmm.trladjcw.data,
+                                      trladj ~ prevtrlconfdiff + prevtrlcw + (1 + prevtrlconfdiff | subid))
+summary(lmm.trladjcw.model3)
+summary(lme4::rePCA(lmm.trladjcw.model3)) #bad model
+
+anova(lmm.trladjcw.full, lmm.trladjcw.model2) #chooses the less complex model (model2)
+anova(lmm.trladjcw.model2, lmm.trladjcw.model3) #chooses model 2
+
+lmm.trladjcw.minmodel <- lmerTest::lmer(data = lmm.trladjcw.data,
+                                        trladj ~ prevtrlconfdiff + prevtrlcw + (1 | subid))
+summary(lmm.trladjcw.minmodel) #this model actually fits without issues
+summary(lme4::rePCA(lmm.trladjcw.minmodel))
+
+anova(lmm.trladjcw.minmodel, lmm.trladjcw.model2) #the more complex model fits better, so proceed with model2
+
+summary(lmm.trladjcw.model2)
+# Fixed effects:
+#                     Estimate    Std. Error  df          t value   Pr(>|t|)    
+#   (Intercept)       1.539e+01   1.115e+00   1.920e+01   13.801    2.03e-11 ***
+#   prevtrlconfdiff   4.518e-02   7.995e-03   9.468e+03   5.651     1.64e-08 ***
+#   prevtrlcw         -8.405e-01  2.153e-02   2.085e+01   -39.048   < 2e-16 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+fit.trladjcw <- keepef(lmm.trladjcw.model2, fix = c('prevtrlconfdiff', 'prevtrlcw'), grouping=T)
 lmm.trladjcw.data$fitted <- fit.trladjcw
 
 #plot the fitted trialwise adjustments from this lmm
 #this will get the fitted values per trial across subjects, having controlled for the within and between subject variance of the model
 lmm.trladjcw.data %>%
   ggplot(aes(x = prevtrlconfdiff, y = trladj)) +
-  #geom_point(size = .5, color = '#bdbdbd') +
-  #geom_smooth(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), method = 'lm', color = '#756bb1') +
+  geom_point(size = .5, color = '#bdbdbd') +
+  geom_smooth(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), method = 'lm', color = '#756bb1') +
   geom_ribbon(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), stat = 'smooth', method = 'lm', color = '#756bb1') +
   geom_line(inherit.aes = F, aes(x = prevtrlconfdiff, y = fitted), stat = 'smooth', method = 'lm', color = '#756bb1', size = 1) +
   labs(y = 'confidence adjustment\n(current trial - previous trial confidence width',
        x = 'previous trial confidence error') +
-  coord_cartesian(ylim = c(-80, 80), xlim = c(-80, 80)) + #only add theme_bw if changing the device from cairo to normal to export into sketch
-  theme_bw()
-# ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_20subs_agg.pdf'), device = 'pdf', dpi = 600, height = 9, width = 9)
-# ggsave(filename = paste0(figpath, '/trladjustment_confidence_prevtrlconferr_20subs_agg.eps'), device = 'eps', dpi = 600, height = 9, width = 9)
+  coord_cartesian(ylim = c(-80, 80), xlim = c(-80, 80))
+ggsave(filename = paste0(figpath, '/trladjustment~prevtrlconferr_fitted.pdf'), device = cairo_pdf, dpi = 600, height = 9, width = 9)
+ggsave(filename = paste0(figpath, '/trladjustment~prevtrlconferr_fitted.eps'), device = cairo_ps, dpi = 600, height = 9, width = 9)
 
 lmm.trladjcw.data %>%
   ggplot(aes(x = prevtrlconfdiff, y = trladj)) +
